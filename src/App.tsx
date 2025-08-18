@@ -43,7 +43,7 @@ function App() {
         />
         <button type="submit">Greet</button>
       </form>
-      <p>{greetMsg}</p>
+      <p className="bg-sky-400">{greetMsg}</p>
     </main>
   );
 }
