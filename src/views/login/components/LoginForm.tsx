@@ -1,9 +1,8 @@
 import {cn} from '@/lib/utils'
 import {Button} from '@/components/ui/button'
-import {Input} from '@/components/ui/input'
-import {Label} from '@/components/ui/label'
 import {useForm, SubmitHandler} from 'react-hook-form'
 import {useCallback} from 'react'
+import FormInput from '@/components/ui/form-input'
 
 type LoginInputs = {
 	username: string
@@ -29,20 +28,26 @@ export function LoginForm({className, ...props}: React.ComponentProps<'form'>) {
 				<p className='text-muted-foreground text-sm text-balance'>Welcome to Rommate!</p>
 			</div>
 			<div className='grid gap-6'>
-				<div className='grid gap-3'>
-					<Label htmlFor='server-url'>Server URL</Label>
-					<Input type='url' {...register('serverURL', {required: true})} />
-				</div>
-				<div className='grid gap-3'>
-					<Label htmlFor='username'>Username</Label>
-					<Input {...register('username', {required: true})} />
-				</div>
-				<div className='grid gap-3'>
-					<div className='flex items-center'>
-						<Label htmlFor='password'>Password</Label>
-					</div>
-					<Input type='password' {...register('password', {required: true})} />
-				</div>
+				<FormInput
+					label='Server URL'
+					id='server-url'
+					type='url'
+					register={register('serverURL', {required: true})}
+					fieldError={errors.serverURL}
+				/>
+				<FormInput
+					label='Username'
+					id='username'
+					register={register('username', {required: true})}
+					fieldError={errors.username}
+				/>
+				<FormInput
+					label='Password'
+					id='password'
+					type='password'
+					register={register('password', {required: true})}
+					fieldError={errors.password}
+				/>
 				<Button type='submit' className='w-full'>
 					Login
 				</Button>
