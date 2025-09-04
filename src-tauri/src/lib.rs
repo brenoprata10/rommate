@@ -3,6 +3,7 @@ use commands::login::login;
 mod commands;
 mod store;
 mod enums;
+mod romm;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {

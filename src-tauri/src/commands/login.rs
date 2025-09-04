@@ -21,7 +21,6 @@ pub async fn login(app_handle: AppHandle, payload: LoginPayload) -> Result<(), E
     } = payload;
 
     let client = reqwest::Client::builder()
-        .cookie_store(true)
         .build()?;
 
     let response = client
