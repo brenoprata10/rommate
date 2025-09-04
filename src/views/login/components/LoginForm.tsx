@@ -1,4 +1,5 @@
 import {cn} from '@/lib/utils'
+import {invoke} from '@tauri-apps/api/core'
 import {Button} from '@/components/ui/button'
 import {useForm, SubmitHandler} from 'react-hook-form'
 import {useCallback} from 'react'
@@ -14,12 +15,19 @@ export function LoginForm({className, ...props}: React.ComponentProps<'form'>) {
 	const {
 		register,
 		handleSubmit,
-		formState: {errors}
+		formState: {errors, isValid}
 	} = useForm<LoginInputs>()
 
-	const onSubmit: SubmitHandler<LoginInputs> = useCallback((data) => {
-		console.log(data)
-	}, [])
+	const onSubmit: SubmitHandler<LoginInputs> = useCallback(
+		async (payload) => {
+			if (!isValid) {
+				return
+			}
+			const response = await invoke('login', {payload})
+			console.log(response)
+		},
+		[isValid]
+	)
 
 	return (
 		<form className={cn('flex flex-col gap-6', className)} {...props} onSubmit={handleSubmit(onSubmit)}>
