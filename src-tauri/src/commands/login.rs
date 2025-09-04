@@ -1,5 +1,7 @@
 use serde::{Serialize, Deserialize};
-use crate::enums::error::Error;
+use serde_json::json;
+use tauri::AppHandle;
+use crate::{enums::error::Error, store::set_store_value};
 use tauri_plugin_http::reqwest;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -11,7 +13,7 @@ pub struct LoginPayload {
 }
 
 #[tauri::command]
-pub async fn login(payload: LoginPayload) -> Result<(), Error> {
+pub async fn login(app_handle: AppHandle, payload: LoginPayload) -> Result<(), Error> {
     let LoginPayload {
         username,
         password,
@@ -27,10 +29,8 @@ pub async fn login(payload: LoginPayload) -> Result<(), Error> {
         .basic_auth(username, Some(password))
         .send().await?;
 
-    // Print cookies received
-    println!("Cookies received:");
     for cookie in response.cookies() {
-        println!("{} = {}", cookie.name(), cookie.value());
+        set_store_value(app_handle.clone(), "romm_session", json!({"value": cookie.value()}))?;
     }
 
     Ok(())
