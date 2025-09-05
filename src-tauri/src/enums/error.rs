@@ -8,6 +8,8 @@ pub enum Error {
     Reqwest(#[from] tauri_plugin_http::reqwest::Error),
     #[error("Romm URL is not set")]
     RommUrlNotSet(),
+    #[error("Cannot parse: {0}")]
+    SerdeError(#[from] serde_json::Error)
 }
 
 #[derive(serde::Serialize)]
@@ -18,6 +20,7 @@ enum ErrorKind {
     StoreError(String),
     Reqwest(String),
     RommUrlNotSet,
+    SerdeError(String)
 }
 
 impl serde::Serialize for Error {
@@ -31,6 +34,7 @@ impl serde::Serialize for Error {
             Self::StoreError(_) => ErrorKind::StoreError(error_message),
             Self::Reqwest(_) => ErrorKind::Reqwest(error_message),
             Self::RommUrlNotSet() => ErrorKind::RommUrlNotSet,
+            Self::SerdeError(_) => ErrorKind::SerdeError(error_message),
         };
         error_kind.serialize(serializer)
     }

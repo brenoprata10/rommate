@@ -26,6 +26,7 @@ pub async fn login(app_handle: AppHandle, payload: LoginPayload) -> Result<Vec<U
         server_url,
     } = payload;
 
+
     let client = reqwest::Client::builder()
         .build()?;
 
@@ -39,11 +40,24 @@ pub async fn login(app_handle: AppHandle, payload: LoginPayload) -> Result<Vec<U
     }
     set_store_value(&app_handle, "romm_url", json!(server_url))?;
 
-    let body = get_romm_request(&app_handle, "/api/users", reqwest::Method::GET)
-        ?.send().await?.text().await?;
+let response = get_romm_request(&app_handle, "/api/users", reqwest::Method::GET)
+        ?.send().await?;
 
+    let url = response.url().clone();
+    for (name, value) in response.headers() {
+        
+    println!("Header: {} - {}",name, value.to_str().unwrap());
+    }
+
+    let status = response.status();
+    let body = response.text().await?;
+
+    println!("URL: {}", url);
+    println!("Status: {}", status);
+    println!("Response body: {}", body);
 
     let users: Vec<User> = serde_json::from_str(&body)?;
+
 
     Ok(users)
 }

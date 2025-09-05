@@ -16,9 +16,11 @@ pub fn get_romm_request(app_handle: &AppHandle, url: &str, method: reqwest::Meth
 
     let mut request = client.request(method, format!("{}{}", romm_url, url));
 
-    if let Some(romm_token) = romm_session {
-        request = request.header("Authorization", format!("Basic {}", romm_token.to_string()));
-    }
+    request = if let Some(romm_token) = romm_session {
+        request.bearer_auth(romm_token.as_str().unwrap())
+    } else {
+        request
+    };
 
     Ok(request)
 }
