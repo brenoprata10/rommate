@@ -5,9 +5,8 @@ use crate::{store::get_store_value, enums::error::Error};
 
 pub fn get_romm_request(app_handle: &AppHandle, url: &str, method: reqwest::Method) -> Result<RequestBuilder, Error> {
     let romm_url = get_store_value(app_handle, "romm_url")
-        .unwrap_or(
-            Err(Error::RommUrlNotSet())?
-        ).ok_or(Error::RommUrlNotSet())?;
+        .unwrap_or_else(|_| None)
+        .ok_or(Error::RommUrlNotSet())?;
     let romm_session = get_store_value(app_handle, "romm_session")?;
     let client = reqwest::Client::builder()
         .build()?;

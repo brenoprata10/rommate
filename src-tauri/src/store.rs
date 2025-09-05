@@ -17,7 +17,6 @@ pub fn set_store_value(app_handle: &AppHandle, key: &str, value: Value) -> Resul
     let store = app_handle.store(STORE_PATH)?;
 
     store.set(key, value);
-    println!("{key}");
 
     Ok(())
 }

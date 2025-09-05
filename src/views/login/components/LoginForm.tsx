@@ -23,7 +23,7 @@ export function LoginForm({className, ...props}: React.ComponentProps<'form'>) {
 			if (!isValid) {
 				return
 			}
-			const response = await invoke('login', {payload})
+			const response = await invoke('login', {payload}).catch((error) => console.error(JSON.stringify(error)))
 			console.log(JSON.stringify(response))
 		},
 		[isValid]

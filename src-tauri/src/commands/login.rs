@@ -12,8 +12,14 @@ pub struct LoginPayload {
     server_url: String,
 }
 
+#[derive(Debug, Deserialize, Serialize)]
+pub struct User {
+    id: i32,
+    username: String,
+}
+
 #[tauri::command]
-pub async fn login(app_handle: AppHandle, payload: LoginPayload) -> Result<(), Error> {
+pub async fn login(app_handle: AppHandle, payload: LoginPayload) -> Result<Vec<User>, Error> {
     let LoginPayload {
         username,
         password,
@@ -33,9 +39,11 @@ pub async fn login(app_handle: AppHandle, payload: LoginPayload) -> Result<(), E
     }
     set_store_value(&app_handle, "romm_url", json!({"value": server_url}))?;
 
-    let users = get_romm_request(&app_handle, "/api/users", reqwest::Method::GET)
-        ?.send().await?;
-    let text = users.text().await.unwrap();
+    let body = get_romm_request(&app_handle, "/api/users", reqwest::Method::GET)
+        ?.send().await?
+        .text().await?;
 
-    Ok(())
+    let users: Vec<User> = serde_json::from_str(&body).unwrap();
+
+    Ok(users)
 }
