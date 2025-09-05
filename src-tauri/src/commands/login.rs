@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 use serde_json::json;
 use tauri::AppHandle;
-use crate::{enums::error::Error, romm::romm_http::get_romm_request, store::set_store_value};
+use crate::{enums::error::Error, store::set_store_value};
 use tauri_plugin_http::reqwest;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -12,14 +12,8 @@ pub struct LoginPayload {
     server_url: String,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
-pub struct User {
-    id: i32,
-    username: String,
-}
-
 #[tauri::command]
-pub async fn login(app_handle: AppHandle, payload: LoginPayload) -> Result<Vec<User>, Error> {
+pub async fn login(app_handle: AppHandle, payload: LoginPayload) -> Result<(), Error> {
     let LoginPayload {
         username,
         password,
@@ -40,24 +34,5 @@ pub async fn login(app_handle: AppHandle, payload: LoginPayload) -> Result<Vec<U
     }
     set_store_value(&app_handle, "romm_url", json!(server_url))?;
 
-let response = get_romm_request(&app_handle, "/api/users", reqwest::Method::GET)
-        ?.send().await?;
-
-    let url = response.url().clone();
-    for (name, value) in response.headers() {
-        
-    println!("Header: {} - {}",name, value.to_str().unwrap());
-    }
-
-    let status = response.status();
-    let body = response.text().await?;
-
-    println!("URL: {}", url);
-    println!("Status: {}", status);
-    println!("Response body: {}", body);
-
-    let users: Vec<User> = serde_json::from_str(&body)?;
-
-
-    Ok(users)
+    Ok(())
 }
