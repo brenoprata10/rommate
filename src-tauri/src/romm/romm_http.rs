@@ -4,9 +4,12 @@ use tauri_plugin_http::reqwest::{self, RequestBuilder};
 use crate::{store::get_store_value, enums::error::Error};
 
 pub fn get_romm_request(app_handle: &AppHandle, url: &str, method: reqwest::Method) -> Result<RequestBuilder, Error> {
-    let romm_url = get_store_value(app_handle, "romm_url")
-        .unwrap_or_else(|_| None)
-        .ok_or(Error::RommUrlNotSet())?;
+    let stored_url = match get_store_value(app_handle, "romm_url") {
+        Ok(Some(stored_url)) => Ok(stored_url),
+        Ok(None) | Err(_) => Err(Error::RommUrlNotSet())
+    }?;
+    let romm_url = stored_url.as_str().unwrap();
+
     let romm_session = get_store_value(app_handle, "romm_session")?;
     let client = reqwest::Client::builder()
         .build()?;

@@ -35,15 +35,15 @@ pub async fn login(app_handle: AppHandle, payload: LoginPayload) -> Result<Vec<U
         .send().await?;
 
     for cookie in response.cookies() {
-        set_store_value(&app_handle, "romm_session", json!({"value": cookie.value()}))?;
+        set_store_value(&app_handle, "romm_session", json!(cookie.value()))?;
     }
-    set_store_value(&app_handle, "romm_url", json!({"value": server_url}))?;
+    set_store_value(&app_handle, "romm_url", json!(server_url))?;
 
     let body = get_romm_request(&app_handle, "/api/users", reqwest::Method::GET)
-        ?.send().await?
-        .text().await?;
+        ?.send().await?.text().await?;
 
-    let users: Vec<User> = serde_json::from_str(&body).unwrap();
+
+    let users: Vec<User> = serde_json::from_str(&body)?;
 
     Ok(users)
 }
