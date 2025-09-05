@@ -1,22 +1,22 @@
 use tauri::AppHandle;
-use tauri_plugin_http::reqwest;
+use tauri_plugin_http::reqwest::{self, RequestBuilder};
 
 use crate::{store::get_store_value, enums::error::Error};
 
-pub fn getRommRequest(app_handle: AppHandle, method: reqwest::Method) -> Result<(), Error> {
+pub fn get_romm_request(app_handle: &AppHandle, url: &str, method: reqwest::Method) -> Result<RequestBuilder, Error> {
     let romm_url = get_store_value(app_handle, "romm_url")
-        ?.unwrap_or(
-            Err("Romm URL is not set.".to_string())?
-        );
+        .unwrap_or(
+            Err(Error::RommUrlNotSet())?
+        ).ok_or(Error::RommUrlNotSet())?;
     let romm_session = get_store_value(app_handle, "romm_session")?;
     let client = reqwest::Client::builder()
         .build()?;
 
-    let request = client.request(method, format!("{}", romm_url));
+    let mut request = client.request(method, format!("{}{}", romm_url, url));
 
     if let Some(romm_token) = romm_session {
-        request.header("Authorization", romm_token.to_string());
+        request = request.header("Authorization", format!("Basic {}", romm_token.to_string()));
     }
 
-    request
+    Ok(request)
 }

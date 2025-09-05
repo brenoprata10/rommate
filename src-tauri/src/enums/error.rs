@@ -6,8 +6,8 @@ pub enum Error {
     StoreError(#[from] tauri_plugin_store::Error),
     #[error("Failed to fetch: {0}")]
     Reqwest(#[from] tauri_plugin_http::reqwest::Error),
-    #[error("Failed: {0}")]
-    GenericError(#[from] std::string::String),
+    #[error("Romm URL is not set")]
+    RommUrlNotSet(),
 }
 
 #[derive(serde::Serialize)]
@@ -17,7 +17,7 @@ enum ErrorKind {
     Io(String),
     StoreError(String),
     Reqwest(String),
-    GenericError(String)
+    RommUrlNotSet,
 }
 
 impl serde::Serialize for Error {
@@ -30,7 +30,7 @@ impl serde::Serialize for Error {
             Self::Io(_) => ErrorKind::Io(error_message),
             Self::StoreError(_) => ErrorKind::StoreError(error_message),
             Self::Reqwest(_) => ErrorKind::Reqwest(error_message),
-            Self::GenericError(_) => ErrorKind::Reqwest(error_message),
+            Self::RommUrlNotSet() => ErrorKind::RommUrlNotSet,
         };
         error_kind.serialize(serializer)
     }

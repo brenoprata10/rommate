@@ -24,7 +24,7 @@ export function LoginForm({className, ...props}: React.ComponentProps<'form'>) {
 				return
 			}
 			const response = await invoke('login', {payload})
-			console.log(response)
+			console.log(JSON.stringify(response))
 		},
 		[isValid]
 	)
