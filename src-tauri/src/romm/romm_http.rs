@@ -18,7 +18,8 @@ pub fn get_romm_request(app_handle: &AppHandle, url: &str, method: reqwest::Meth
     let mut request = client.request(method, format!("{}{}", romm_url, url));
 
     request = if let Some(romm_token) = romm_session {
-        request.bearer_auth(romm_token.as_str().unwrap())
+        let header_value = format!("romm_session={}", romm_token.as_str().unwrap());
+        request.header("Cookie", header_value)
     } else {
         request
     };
