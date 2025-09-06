@@ -5,7 +5,7 @@ pub enum Error {
     #[error("Failed to load store: {0}")]
     StoreError(#[from] tauri_plugin_store::Error),
     #[error("Failed to fetch: {0}")]
-    Reqwest(#[from] tauri_plugin_http::reqwest::Error),
+    Reqwest(#[from] reqwest::Error),
     #[error("Romm URL is not set")]
     RommUrlNotSet(),
     #[error("Cannot parse: {0}")]

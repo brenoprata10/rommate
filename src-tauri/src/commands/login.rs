@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 use serde_json::json;
 use tauri::AppHandle;
 use crate::{enums::error::Error, store::set_store_value};
-use tauri_plugin_http::reqwest;
+use reqwest;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct LoginPayload {

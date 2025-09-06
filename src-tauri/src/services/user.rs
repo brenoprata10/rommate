@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 use tauri::AppHandle;
+use reqwest;
 use crate::{enums::error::Error, romm::romm_http::get_romm_request};
-use tauri_plugin_http::reqwest;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct User {
