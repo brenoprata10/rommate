@@ -3,30 +3,54 @@ use reqwest::{self, RequestBuilder};
 
 use crate::{store::get_store_value, enums::error::Error};
 
-pub fn get_romm_request(app_handle: &AppHandle, url: &str, method: reqwest::Method) -> Result<RequestBuilder, Error> {
-    let stored_url = match get_store_value(app_handle, "romm_url") {
-        Ok(Some(stored_url)) => Ok(stored_url),
-        Ok(None) | Err(_) => Err(Error::RommUrlNotSet())
-    }?;
-    let romm_url = stored_url.as_str().unwrap();
+pub struct RommHttp {}
 
-    let romm_session = get_store_value(app_handle, "romm_session")?;
+impl RommHttp {
+    pub fn new(app_handle: &AppHandle, url: &str, method: reqwest::Method) -> Result<RequestBuilder, Error> {
+        let stored_url = match get_store_value(app_handle, "romm_url") {
+            Ok(Some(stored_url)) => Ok(stored_url),
+            Ok(None) | Err(_) => Err(Error::RommUrlNotSet())
+        }?;
+        let romm_url = stored_url.as_str().unwrap();
 
-    let client = reqwest::Client::builder()
-        .build()?;
+        let romm_session = get_store_value(app_handle, "romm_session")?;
 
-    let mut request = client.request(method, format!("{}{}", romm_url, url));
+        let client = reqwest::Client::builder()
+            .build()?;
 
-    request = if let Some(romm_token) = romm_session {
-        let header_value = format!("romm_session={}", romm_token.as_str().unwrap());
-        request.header("Cookie", header_value)
-    } else {
-        request
-    };
+        let mut request = client.request(method, format!("{}{}", romm_url, url));
 
-    pretty_print_request(&request);
+        request = if let Some(romm_token) = romm_session {
+            let header_value = format!("romm_session={}", romm_token.as_str().unwrap());
+            request.header("Cookie", header_value)
+        } else {
+            request
+        };
 
-    Ok(request)
+        pretty_print_request(&request);
+
+        Ok(request)
+    }
+
+    pub fn get(app_handle: &AppHandle, url: &str) -> Result<RequestBuilder, Error> {
+        RommHttp::new(&app_handle, url, reqwest::Method::GET)
+    }
+
+    pub fn post(app_handle: &AppHandle, url: &str) -> Result<RequestBuilder, Error> {
+        RommHttp::new(&app_handle, url, reqwest::Method::POST)
+    }
+
+    pub fn put(app_handle: &AppHandle, url: &str) -> Result<RequestBuilder, Error> {
+        RommHttp::new(&app_handle, url, reqwest::Method::PUT)
+    }
+
+    pub fn patch(app_handle: &AppHandle, url: &str) -> Result<RequestBuilder, Error> {
+        RommHttp::new(&app_handle, url, reqwest::Method::PATCH)
+    }
+
+    pub fn delete(app_handle: &AppHandle, url: &str) -> Result<RequestBuilder, Error> {
+        RommHttp::new(&app_handle, url, reqwest::Method::DELETE)
+    }
 }
 
 fn pretty_print_request(builder: &RequestBuilder) {

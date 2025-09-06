@@ -1,8 +1,8 @@
-use serde::{Serialize, Deserialize};
-use serde_json::json;
-use tauri::AppHandle;
 use crate::{enums::error::Error, store::set_store_value};
 use reqwest;
+use serde::{Deserialize, Serialize};
+use serde_json::json;
+use tauri::AppHandle;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct LoginPayload {
@@ -20,17 +20,18 @@ pub async fn login(app_handle: AppHandle, payload: LoginPayload) -> Result<(), E
         server_url,
     } = payload;
 
-
-    let client = reqwest::Client::builder()
-        .build()?;
+    let client = reqwest::Client::builder().build()?;
 
     let response = client
         .post(format!("{}/api/login", server_url))
         .basic_auth(username, Some(password))
-        .send().await?;
+        .send()
+        .await?;
 
     for cookie in response.cookies() {
-        set_store_value(&app_handle, "romm_session", json!(cookie.value()))?;
+        if cookie.name() == "romm_session" {
+            set_store_value(&app_handle, "romm_session", json!(cookie.value()))?;
+        }
     }
     set_store_value(&app_handle, "romm_url", json!(server_url))?;
 

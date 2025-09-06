@@ -6,6 +6,7 @@ mod store;
 mod enums;
 mod romm;
 mod services;
+mod models;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {

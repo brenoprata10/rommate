@@ -9,7 +9,7 @@ pub enum Error {
     #[error("Romm URL is not set")]
     RommUrlNotSet(),
     #[error("Cannot parse: {0}")]
-    SerdeError(#[from] serde_json::Error)
+    SerdeError(#[from] serde_json::Error),
 }
 
 #[derive(serde::Serialize)]
@@ -20,7 +20,7 @@ enum ErrorKind {
     StoreError(String),
     Reqwest(String),
     RommUrlNotSet,
-    SerdeError(String)
+    SerdeError(String),
 }
 
 impl serde::Serialize for Error {
