@@ -1,14 +1,11 @@
-struct RomMetadatum {
-    rom_id: i64,
-    genres: Vec<String>
-        franchises: Vec<String>,
-        collections: Vec<String>,
-        companies: Vec<String>,
-        game_modes: Vec<String>,
-        age_ratings: Vec<String>,
-    first_release_date: i64,
-    average_rating: i8,
-}
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+
+use super::{
+    hasheous::HasheousMetadata, igdb::IgdbMetadata, launchbox::LaunchBoxMetadata,
+    moby::MobyMetadata, retroachievements::RetroAchievementsMetadata,
+    screen_scrapper::ScreenScrapperMetadata,
+};
 
 pub struct Rom {
     id: i32,
@@ -38,399 +35,201 @@ pub struct Rom {
     alternative_names: Vec<String>,
     youtube_video_id: String,
     metadatum: RomMetadatum,
-
+    igdb_metadata: IgdbMetadata,
+    moby_metadata: MobyMetadata,
+    ss_metadata: ScreenScrapperMetadata,
+    launchbox_metadata: LaunchBoxMetadata,
+    hasheous_metadata: HasheousMetadata,
+    path_cover_small: String,
+    path_cover_large: String,
+    url_cover: String,
+    has_manual: bool,
+    path_manual: String,
+    url_manual: String,
+    is_unidentified: bool,
+    is_identified: bool,
+    revision: String,
+    regions: Vec<String>,
+    languages: Vec<String>,
+    tags: Vec<String>,
+    crc_hash: String,
+    md5_hash: String,
+    sha1_hash: String,
+    multi: bool,
+    files: Vec<RomFile>,
+    full_path: String,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
+    missing_from_fs: bool,
+    merged_ra_metadata: RetroAchievementsMetadata,
+    merged_screenshots: Vec<String>,
+    siblings: Vec<RomSiblings>,
+    rom_user: RomUser,
+    user_saves: Vec<RomUserSave>,
+    user_states: Vec<RomUserState>,
+    user_screenshots: Vec<RomUserScreenshot>,
+    user_notes: Vec<RomUserNote>,
+    user_collections: Vec<RomUserCollection>,
 }
 
-  
-  "igdb_metadata": {
-    "total_rating": "string",
-    "aggregated_rating": "string",
-    "first_release_date": 0,
-    "youtube_video_id": "string",
-    "genres": [
-      "string"
-    ],
-    "franchises": [
-      "string"
-    ],
-    "alternative_names": [
-      "string"
-    ],
-    "collections": [
-      "string"
-    ],
-    "companies": [
-      "string"
-    ],
-    "game_modes": [
-      "string"
-    ],
-    "age_ratings": [
-      {
-        "rating": "string",
-        "category": "string",
-        "rating_cover_url": "string"
-      }
-    ],
-    "platforms": [
-      {
-        "igdb_id": 0,
-        "name": "string"
-      }
-    ],
-    "expansions": [
-      {
-        "id": 0,
-        "name": "string",
-        "slug": "string",
-        "type": "string",
-        "cover_url": "string"
-      }
-    ],
-    "dlcs": [
-      {
-        "id": 0,
-        "name": "string",
-        "slug": "string",
-        "type": "string",
-        "cover_url": "string"
-      }
-    ],
-    "remasters": [
-      {
-        "id": 0,
-        "name": "string",
-        "slug": "string",
-        "type": "string",
-        "cover_url": "string"
-      }
-    ],
-    "remakes": [
-      {
-        "id": 0,
-        "name": "string",
-        "slug": "string",
-        "type": "string",
-        "cover_url": "string"
-      }
-    ],
-    "expanded_games": [
-      {
-        "id": 0,
-        "name": "string",
-        "slug": "string",
-        "type": "string",
-        "cover_url": "string"
-      }
-    ],
-    "ports": [
-      {
-        "id": 0,
-        "name": "string",
-        "slug": "string",
-        "type": "string",
-        "cover_url": "string"
-      }
-    ],
-    "similar_games": [
-      {
-        "id": 0,
-        "name": "string",
-        "slug": "string",
-        "type": "string",
-        "cover_url": "string"
-      }
-    ]
-  },
-  "moby_metadata": {
-    "moby_score": "string",
-    "genres": [
-      "string"
-    ],
-    "alternate_titles": [
-      "string"
-    ],
-    "platforms": [
-      {
-        "moby_id": 0,
-        "name": "string"
-      }
-    ]
-  },
-  "ss_metadata": {
-    "ss_score": "string",
-    "first_release_date": 0,
-    "alternative_names": [
-      "string"
-    ],
-    "companies": [
-      "string"
-    ],
-    "franchises": [
-      "string"
-    ],
-    "game_modes": [
-      "string"
-    ],
-    "genres": [
-      "string"
-    ]
-  },
-  "launchbox_metadata": {
-    "first_release_date": 0,
-    "max_players": 0,
-    "release_type": "string",
-    "cooperative": true,
-    "youtube_video_id": "string",
-    "community_rating": 0,
-    "community_rating_count": 0,
-    "wikipedia_url": "string",
-    "esrb": "string",
-    "genres": [
-      "string"
-    ],
-    "companies": [
-      "string"
-    ],
-    "images": [
-      {
-        "url": "string",
-        "type": "string",
-        "region": "string"
-      }
-    ]
-  },
-  "hasheous_metadata": {
-    "tosec_match": true,
-    "mame_arcade_match": true,
-    "mame_mess_match": true,
-    "nointro_match": true,
-    "redump_match": true,
-    "whdload_match": true,
-    "ra_match": true,
-    "fbneo_match": true
-  },
-  "path_cover_small": "string",
-  "path_cover_large": "string",
-  "url_cover": "string",
-  "has_manual": true,
-  "path_manual": "string",
-  "url_manual": "string",
-  "is_unidentified": true,
-  "is_identified": true,
-  "revision": "string",
-  "regions": [
-    "string"
-  ],
-  "languages": [
-    "string"
-  ],
-  "tags": [
-    "string"
-  ],
-  "crc_hash": "string",
-  "md5_hash": "string",
-  "sha1_hash": "string",
-  "multi": true,
-  "files": [
-    {
-      "id": 0,
-      "rom_id": 0,
-      "file_name": "string",
-      "file_path": "string",
-      "file_size_bytes": 0,
-      "full_path": "string",
-      "created_at": "2025-09-07T11:54:21.364Z",
-      "updated_at": "2025-09-07T11:54:21.364Z",
-      "last_modified": "2025-09-07T11:54:21.364Z",
-      "crc_hash": "string",
-      "md5_hash": "string",
-      "sha1_hash": "string",
-      "category": "dlc"
-    }
-  ],
-  "full_path": "string",
-  "created_at": "2025-09-07T11:54:21.364Z",
-  "updated_at": "2025-09-07T11:54:21.364Z",
-  "missing_from_fs": true,
-  "merged_ra_metadata": {
-    "first_release_date": 0,
-    "genres": [
-      "string"
-    ],
-    "companies": [
-      "string"
-    ],
-    "achievements": [
-      {
-        "ra_id": 0,
-        "title": "string",
-        "description": "string",
-        "points": 0,
-        "num_awarded": 0,
-        "num_awarded_hardcore": 0,
-        "badge_id": "string",
-        "badge_url_lock": "string",
-        "badge_path_lock": "string",
-        "badge_url": "string",
-        "badge_path": "string",
-        "display_order": 0,
-        "type": "string"
-      }
-    ]
-  },
-  "merged_screenshots": [
-    "string"
-  ],
-  "siblings": [
-    {
-      "id": 0,
-      "name": "string",
-      "fs_name_no_tags": "string",
-      "fs_name_no_ext": "string",
-      "sort_comparator": "string"
-    }
-  ],
-  "rom_user": {
-    "id": 0,
-    "user_id": 0,
-    "rom_id": 0,
-    "created_at": "2025-09-07T11:54:21.365Z",
-    "updated_at": "2025-09-07T11:54:21.365Z",
-    "last_played": "2025-09-07T11:54:21.365Z",
-    "note_raw_markdown": "string",
-    "note_is_public": true,
-    "is_main_sibling": true,
-    "backlogged": true,
-    "now_playing": true,
-    "hidden": true,
-    "rating": 0,
-    "difficulty": 0,
-    "completion": 0,
-    "status": "incomplete",
-    "user__username": "string"
-  },
-  "user_saves": [
-    {
-      "id": 0,
-      "rom_id": 0,
-      "user_id": 0,
-      "file_name": "string",
-      "file_name_no_tags": "string",
-      "file_name_no_ext": "string",
-      "file_extension": "string",
-      "file_path": "string",
-      "file_size_bytes": 0,
-      "full_path": "string",
-      "download_path": "string",
-      "missing_from_fs": true,
-      "created_at": "2025-09-07T11:54:21.365Z",
-      "updated_at": "2025-09-07T11:54:21.365Z",
-      "emulator": "string",
-      "screenshot": {
-        "id": 0,
-        "rom_id": 0,
-        "user_id": 0,
-        "file_name": "string",
-        "file_name_no_tags": "string",
-        "file_name_no_ext": "string",
-        "file_extension": "string",
-        "file_path": "string",
-        "file_size_bytes": 0,
-        "full_path": "string",
-        "download_path": "string",
-        "missing_from_fs": true,
-        "created_at": "2025-09-07T11:54:21.365Z",
-        "updated_at": "2025-09-07T11:54:21.365Z"
-      }
-    }
-  ],
-  "user_states": [
-    {
-      "id": 0,
-      "rom_id": 0,
-      "user_id": 0,
-      "file_name": "string",
-      "file_name_no_tags": "string",
-      "file_name_no_ext": "string",
-      "file_extension": "string",
-      "file_path": "string",
-      "file_size_bytes": 0,
-      "full_path": "string",
-      "download_path": "string",
-      "missing_from_fs": true,
-      "created_at": "2025-09-07T11:54:21.365Z",
-      "updated_at": "2025-09-07T11:54:21.365Z",
-      "emulator": "string",
-      "screenshot": {
-        "id": 0,
-        "rom_id": 0,
-        "user_id": 0,
-        "file_name": "string",
-        "file_name_no_tags": "string",
-        "file_name_no_ext": "string",
-        "file_extension": "string",
-        "file_path": "string",
-        "file_size_bytes": 0,
-        "full_path": "string",
-        "download_path": "string",
-        "missing_from_fs": true,
-        "created_at": "2025-09-07T11:54:21.365Z",
-        "updated_at": "2025-09-07T11:54:21.365Z"
-      }
-    }
-  ],
-  "user_screenshots": [
-    {
-      "id": 0,
-      "rom_id": 0,
-      "user_id": 0,
-      "file_name": "string",
-      "file_name_no_tags": "string",
-      "file_name_no_ext": "string",
-      "file_extension": "string",
-      "file_path": "string",
-      "file_size_bytes": 0,
-      "full_path": "string",
-      "download_path": "string",
-      "missing_from_fs": true,
-      "created_at": "2025-09-07T11:54:21.365Z",
-      "updated_at": "2025-09-07T11:54:21.365Z"
-    }
-  ],
-  "user_notes": [
-    {
-      "user_id": 0,
-      "username": "string",
-      "note_raw_markdown": "string"
-    }
-  ],
-  "user_collections": [
-    {
-      "name": "string",
-      "description": "string",
-      "rom_ids": [
-        0
-      ],
-      "rom_count": 0,
-      "path_cover_small": "string",
-      "path_cover_large": "string",
-      "path_covers_small": [
-        "string"
-      ],
-      "path_covers_large": [
-        "string"
-      ],
-      "is_public": false,
-      "is_favorite": false,
-      "is_virtual": false,
-      "is_smart": false,
-      "created_at": "2025-09-07T11:54:21.365Z",
-      "updated_at": "2025-09-07T11:54:21.365Z",
-      "id": 0,
-      "url_cover": "string",
-      "user_id": 0,
-      "user__username": "string"
-    }
-  ]
+struct RomUserNote {
+    user_id: i32,
+    username: String,
+    note_raw_markdown: String,
+}
+
+struct RomUserCollection {
+    name: String,
+    description: String,
+    rom_ids: Vec<i32>,
+    rom_count: i32,
+    path_cover_small: String,
+    path_cover_large: String,
+    path_covers_small: Vec<String>,
+    path_covers_large: Vec<String>,
+    is_public: bool,
+    is_favorite: bool,
+    is_virtual: bool,
+    is_smart: bool,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
+    id: i16,
+    url_cover: String,
+    user_id: i32,
+    user__username: String,
+}
+
+struct RomUserSave {
+    id: i32,
+    rom_id: i32,
+    user_id: i32,
+    file_name: String,
+    file_name_no_tags: String,
+    file_name_no_ext: String,
+    file_extension: String,
+    file_path: String,
+    file_size_bytes: i64,
+    full_path: String,
+    download_path: String,
+    missing_from_fs: String,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
+    emulator: String,
+    screenshot: RomUserScreenshot,
+}
+
+struct RomUserScreenshot {
+    id: i32,
+    rom_id: i32,
+    user_id: i32,
+    file_name: String,
+    file_name_no_tags: String,
+    file_name_no_ext: String,
+    file_extension: String,
+    file_path: String,
+    file_size_bytes: i64,
+    full_path: String,
+    download_path: String,
+    missing_from_fs: bool,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
+}
+
+struct RomUserState {
+    id: i64,
+    rom_id: i64,
+    user_id: i64,
+    file_name: String,
+    file_name_no_tags: String,
+    file_name_no_ext: String,
+    file_extension: String,
+    file_path: String,
+    file_size_bytes: i64,
+    full_path: String,
+    download_path: String,
+    missing_from_fs: bool,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
+    emulator: String,
+    screenshot: RomUserScreenshot,
+}
+
+struct RomUser {
+    id: i32,
+    user_id: i32,
+    rom_id: i32,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
+    last_played: DateTime<Utc>,
+    note_raw_markdown: String,
+    note_is_public: bool,
+    is_main_sibling: bool,
+    backlogged: bool,
+    now_playing: bool,
+    hidden: bool,
+    rating: i8,
+    difficulty: i8,
+    completion: i8,
+    status: RomUserStatus,
+    user__username: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "lowercase")]
+enum RomUserStatus {
+    Incomplete,
+    Finished,
+    Completed_100,
+    Retired,
+    Never_playing,
+}
+
+struct RomSiblings {
+    id: i64,
+    name: String,
+    fs_name_no_tags: String,
+    fs_name_no_ext: String,
+    sort_comparator: String,
+}
+
+#[derive(Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "lowercase")]
+enum RomFileCategory {
+    Dlc,
+    Hack,
+    Manual,
+    Patch,
+    Update,
+    Mod,
+    Demo,
+    Translation,
+    Prototype,
+}
+
+struct RomFile {
+    id: i32,
+    rom_id: i32,
+    file_name: String,
+    file_path: String,
+    file_size_bytes: i64,
+    full_path: String,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
+    last_modified: DateTime<Utc>,
+    crc_hash: String,
+    md5_hash: String,
+    sha1_hash: String,
+    category: RomFileCategory,
+}
+
+struct RomMetadatum {
+    rom_id: i64,
+    genres: Vec<String>,
+    franchises: Vec<String>,
+    collections: Vec<String>,
+    companies: Vec<String>,
+    game_modes: Vec<String>,
+    age_ratings: Vec<String>,
+    first_release_date: i64,
+    average_rating: i8,
 }
