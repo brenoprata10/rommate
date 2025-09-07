@@ -1,8 +1,11 @@
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize)]
 pub struct IgdbMetadata {
     total_rating: String,
     aggregated_rating: String,
     first_release_date: i64,
-    youtube_video_id: String,
+    youtube_video_id: Option<String>,
     genres: Vec<String>,
     franchises: Vec<String>,
     alternative_names: Vec<String>,
@@ -19,11 +22,13 @@ pub struct IgdbMetadata {
     similar_games: Vec<IgdbSimilarGame>,
 }
 
+#[derive(Serialize, Deserialize)]
 struct IgdbPlatform {
     igdb_id: i32,
     name: String,
 }
 
+#[derive(Serialize, Deserialize)]
 struct IgdbExpansion {
     id: i64,
     name: String,
@@ -32,6 +37,7 @@ struct IgdbExpansion {
     cover_url: String,
 }
 
+#[derive(Serialize, Deserialize)]
 struct IgdbDlc {
     id: i64,
     name: String,
@@ -40,6 +46,7 @@ struct IgdbDlc {
     cover_url: String,
 }
 
+#[derive(Serialize, Deserialize)]
 struct IgdbRemaster {
     id: i64,
     name: String,
@@ -48,6 +55,7 @@ struct IgdbRemaster {
     cover_url: String,
 }
 
+#[derive(Serialize, Deserialize)]
 struct IgdbRemake {
     id: i64,
     name: String,
@@ -56,6 +64,7 @@ struct IgdbRemake {
     cover_url: String,
 }
 
+#[derive(Serialize, Deserialize)]
 struct IgdbExpandedGame {
     id: i64,
     name: String,
@@ -64,6 +73,7 @@ struct IgdbExpandedGame {
     cover_url: String,
 }
 
+#[derive(Serialize, Deserialize)]
 struct IgdbPort {
     id: i64,
     name: String,
@@ -71,6 +81,8 @@ struct IgdbPort {
     r#type: String,
     cover_url: String,
 }
+
+#[derive(Serialize, Deserialize)]
 struct IgdbSimilarGame {
     id: i64,
     name: String,

@@ -1,3 +1,6 @@
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize)]
 pub struct ScreenScrapperMetadata {
     ss_score: String,
     first_release_date: i64,

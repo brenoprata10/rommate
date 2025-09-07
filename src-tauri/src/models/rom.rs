@@ -7,16 +7,17 @@ use super::{
     screen_scrapper::ScreenScrapperMetadata,
 };
 
+#[derive(Serialize, Deserialize)]
 pub struct Rom {
     id: i32,
-    igdb_id: i64,
-    sgdb_id: i64,
-    moby_id: i64,
-    ss_id: i64,
-    ra_id: i64,
-    launchbox_id: i64,
-    hasheous_id: i64,
-    tgdb_id: i64,
+    igdb_id: Option<i64>,
+    sgdb_id: Option<i64>,
+    moby_id: Option<i64>,
+    ss_id: Option<i64>,
+    ra_id: Option<i64>,
+    launchbox_id: Option<i64>,
+    hasheous_id: Option<i64>,
+    tgdb_id: Option<i64>,
     platform_id: i16,
     platform_slug: String,
     platform_fs_slug: String,
@@ -33,13 +34,13 @@ pub struct Rom {
     slug: String,
     summary: String,
     alternative_names: Vec<String>,
-    youtube_video_id: String,
+    youtube_video_id: Option<String>,
     metadatum: RomMetadatum,
-    igdb_metadata: IgdbMetadata,
-    moby_metadata: MobyMetadata,
-    ss_metadata: ScreenScrapperMetadata,
-    launchbox_metadata: LaunchBoxMetadata,
-    hasheous_metadata: HasheousMetadata,
+    igdb_metadata: Option<IgdbMetadata>,
+    moby_metadata: Option<MobyMetadata>,
+    ss_metadata: Option<ScreenScrapperMetadata>,
+    launchbox_metadata: Option<LaunchBoxMetadata>,
+    hasheous_metadata: Option<HasheousMetadata>,
     path_cover_small: String,
     path_cover_large: String,
     url_cover: String,
@@ -72,12 +73,14 @@ pub struct Rom {
     user_collections: Vec<RomUserCollection>,
 }
 
+#[derive(Serialize, Deserialize)]
 struct RomUserNote {
     user_id: i32,
     username: String,
     note_raw_markdown: String,
 }
 
+#[derive(Serialize, Deserialize)]
 struct RomUserCollection {
     name: String,
     description: String,
@@ -98,6 +101,7 @@ struct RomUserCollection {
     user_id: i32,
 }
 
+#[derive(Serialize, Deserialize)]
 struct RomUserSave {
     id: i32,
     rom_id: i32,
@@ -117,6 +121,7 @@ struct RomUserSave {
     screenshot: RomUserScreenshot,
 }
 
+#[derive(Serialize, Deserialize)]
 struct RomUserScreenshot {
     id: i32,
     rom_id: i32,
@@ -134,6 +139,7 @@ struct RomUserScreenshot {
     updated_at: DateTime<Utc>,
 }
 
+#[derive(Serialize, Deserialize)]
 struct RomUserState {
     id: i64,
     rom_id: i64,
@@ -153,13 +159,14 @@ struct RomUserState {
     screenshot: RomUserScreenshot,
 }
 
+#[derive(Serialize, Deserialize)]
 struct RomUser {
     id: i32,
     user_id: i32,
     rom_id: i32,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
-    last_played: DateTime<Utc>,
+    last_played: Option<DateTime<Utc>>,
     note_raw_markdown: String,
     note_is_public: bool,
     is_main_sibling: bool,
@@ -169,7 +176,7 @@ struct RomUser {
     rating: i8,
     difficulty: i8,
     completion: i8,
-    status: RomUserStatus,
+    status: Option<RomUserStatus>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
@@ -184,6 +191,7 @@ enum RomUserStatus {
     NeverPlaying,
 }
 
+#[derive(Serialize, Deserialize)]
 struct RomSiblings {
     id: i64,
     name: String,
@@ -206,6 +214,7 @@ enum RomFileCategory {
     Prototype,
 }
 
+#[derive(Serialize, Deserialize)]
 struct RomFile {
     id: i32,
     rom_id: i32,
@@ -216,12 +225,13 @@ struct RomFile {
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
     last_modified: DateTime<Utc>,
-    crc_hash: String,
-    md5_hash: String,
-    sha1_hash: String,
-    category: RomFileCategory,
+    crc_hash: Option<String>,
+    md5_hash: Option<String>,
+    sha1_hash: Option<String>,
+    category: Option<RomFileCategory>,
 }
 
+#[derive(Serialize, Deserialize)]
 struct RomMetadatum {
     rom_id: i64,
     genres: Vec<String>,

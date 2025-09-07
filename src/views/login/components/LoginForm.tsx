@@ -25,7 +25,7 @@ export function LoginForm({className, ...props}: React.ComponentProps<'form'>) {
 			}
 			const response = await invoke('login', {payload}).catch((error) => console.error(JSON.stringify(error)))
 			console.log(JSON.stringify(response))
-			const responseUsers = await invoke('command_get_users').catch((error) => console.error(JSON.stringify(error)))
+			const responseUsers = await invoke('command_get_roms').catch((error) => console.error(JSON.stringify(error)))
 			console.log(JSON.stringify(responseUsers))
 		},
 		[isValid]

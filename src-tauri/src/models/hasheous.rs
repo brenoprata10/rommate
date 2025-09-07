@@ -1,3 +1,6 @@
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize)]
 pub struct HasheousMetadata {
     tosec_match: bool,
     mame_arcade_match: bool,

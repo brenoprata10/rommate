@@ -1,3 +1,6 @@
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize)]
 pub struct RetroAchievementsMetadata {
     first_release_date: i64,
     genres: Vec<String>,
@@ -5,6 +8,7 @@ pub struct RetroAchievementsMetadata {
     achievements: Vec<RetroAchievement>,
 }
 
+#[derive(Serialize, Deserialize)]
 struct RetroAchievement {
     ra_id: i64,
     title: String,
