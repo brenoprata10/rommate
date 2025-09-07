@@ -96,7 +96,6 @@ struct RomUserCollection {
     id: i16,
     url_cover: String,
     user_id: i32,
-    user__username: String,
 }
 
 struct RomUserSave {
@@ -171,7 +170,6 @@ struct RomUser {
     difficulty: i8,
     completion: i8,
     status: RomUserStatus,
-    user__username: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
@@ -179,9 +177,11 @@ struct RomUser {
 enum RomUserStatus {
     Incomplete,
     Finished,
-    Completed_100,
+    #[serde(rename = "completed_100")]
+    Completed100,
     Retired,
-    Never_playing,
+    #[serde(rename = "never_playing")]
+    NeverPlaying,
 }
 
 struct RomSiblings {
@@ -232,4 +232,15 @@ struct RomMetadatum {
     age_ratings: Vec<String>,
     first_release_date: i64,
     average_rating: i8,
+}
+
+#[derive(Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "UPPERCASE")]
+pub struct RomStats {
+    platforms: i32,
+    roms: i64,
+    saves: i32,
+    states: i32,
+    screenshots: i32,
+    total_filesize_bytes: i64,
 }
