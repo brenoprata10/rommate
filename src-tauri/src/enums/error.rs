@@ -1,3 +1,5 @@
+use std::error::Error as StdError;
+
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error(transparent)]
@@ -23,12 +25,23 @@ enum ErrorKind {
     Serde(String),
 }
 
+/// Helper to build a detailed error message by chaining sources.
+fn detailed_message(e: &dyn StdError) -> String {
+    let mut msg = e.to_string();
+    let mut current = e.source();
+    while let Some(source) = current {
+        msg.push_str(&format!(" - {}", source));
+        current = source.source();
+    }
+    msg
+}
+
 impl serde::Serialize for Error {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::ser::Serializer,
     {
-        let error_message = self.to_string();
+        let error_message = detailed_message(self);
         let error_kind = match self {
             Self::Io(_) => ErrorKind::Io(error_message),
             Self::Store(_) => ErrorKind::Store(error_message),

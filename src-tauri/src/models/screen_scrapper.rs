@@ -2,11 +2,11 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 pub struct ScreenScrapperMetadata {
-    ss_score: String,
-    first_release_date: i64,
-    alternative_names: Vec<String>,
-    companies: Vec<String>,
-    franchises: Vec<String>,
-    game_modes: Vec<String>,
-    genres: Vec<String>,
+    ss_score: Option<String>,
+    first_release_date: Option<i64>,
+    alternative_names: Option<Vec<String>>,
+    companies: Option<Vec<String>>,
+    franchises: Option<Vec<String>>,
+    game_modes: Option<Vec<String>>,
+    genres: Option<Vec<String>>,
 }

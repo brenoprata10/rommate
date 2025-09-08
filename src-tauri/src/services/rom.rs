@@ -1,11 +1,17 @@
+use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 
 use crate::{enums::error::Error, models::rom::Rom, romm::romm_http::RommHttp};
 
-pub async fn get_roms(app_handle: &AppHandle) -> Result<Vec<Rom>, Error> {
+#[derive(Serialize, Deserialize)]
+pub struct RomPayload {
+    items: Vec<Rom>,
+}
+
+pub async fn get_roms(app_handle: &AppHandle) -> Result<RomPayload, Error> {
     let response = RommHttp::get(app_handle, "/api/roms")?.send().await?;
 
-    let roms = response.json::<Vec<Rom>>().await?;
+    let roms = response.json::<RomPayload>().await?;
 
     Ok(roms)
 }

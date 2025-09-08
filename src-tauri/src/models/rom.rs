@@ -62,15 +62,15 @@ pub struct Rom {
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
     missing_from_fs: bool,
-    merged_ra_metadata: RetroAchievementsMetadata,
-    merged_screenshots: Vec<String>,
+    merged_ra_metadata: Option<RetroAchievementsMetadata>,
+    merged_screenshots: Option<Vec<String>>,
     siblings: Vec<RomSiblings>,
     rom_user: RomUser,
-    user_saves: Vec<RomUserSave>,
-    user_states: Vec<RomUserState>,
-    user_screenshots: Vec<RomUserScreenshot>,
-    user_notes: Vec<RomUserNote>,
-    user_collections: Vec<RomUserCollection>,
+    user_saves: Option<Vec<RomUserSave>>,
+    user_states: Option<Vec<RomUserState>>,
+    user_screenshots: Option<Vec<RomUserScreenshot>>,
+    user_notes: Option<Vec<RomUserNote>>,
+    user_collections: Option<Vec<RomUserCollection>>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -241,7 +241,7 @@ struct RomMetadatum {
     game_modes: Vec<String>,
     age_ratings: Vec<String>,
     first_release_date: i64,
-    average_rating: i8,
+    average_rating: f32,
 }
 
 #[derive(Serialize, Deserialize, PartialEq)]
