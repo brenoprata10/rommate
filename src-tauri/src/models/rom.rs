@@ -45,7 +45,7 @@ pub struct Rom {
     path_cover_large: String,
     url_cover: String,
     has_manual: bool,
-    path_manual: String,
+    path_manual: Option<String>,
     url_manual: String,
     is_unidentified: bool,
     is_identified: bool,
