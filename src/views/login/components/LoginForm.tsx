@@ -15,7 +15,7 @@ export function LoginForm({className, ...props}: React.ComponentProps<'form'>) {
 	const {
 		register,
 		handleSubmit,
-		formState: {errors, isValid}
+		formState: {errors, isValid, isSubmitting}
 	} = useForm<LoginInputs>()
 
 	const onSubmit: SubmitHandler<LoginInputs> = useCallback(
@@ -42,6 +42,7 @@ export function LoginForm({className, ...props}: React.ComponentProps<'form'>) {
 					label='Server URL'
 					id='server-url'
 					type='url'
+					autoFocus
 					register={register('serverURL', {required: true})}
 					fieldError={errors.serverURL}
 				/>
@@ -58,7 +59,7 @@ export function LoginForm({className, ...props}: React.ComponentProps<'form'>) {
 					register={register('password', {required: true})}
 					fieldError={errors.password}
 				/>
-				<Button type='submit' className='w-full'>
+				<Button type='submit' className='w-full' disabled={isSubmitting}>
 					Login
 				</Button>
 			</div>
