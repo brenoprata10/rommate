@@ -2,8 +2,9 @@ import {cn} from '@/lib/utils'
 import {invoke} from '@tauri-apps/api/core'
 import {Button} from '@/components/ui/button'
 import {useForm, SubmitHandler} from 'react-hook-form'
-import {useCallback} from 'react'
+import {useCallback, useState} from 'react'
 import FormInput from '@/components/ui/form-input'
+import AlertError from '@/components/ui/alert-error'
 
 type LoginInputs = {
 	username: string
@@ -17,16 +18,22 @@ export function LoginForm({className, ...props}: React.ComponentProps<'form'>) {
 		handleSubmit,
 		formState: {errors, isValid, isSubmitting}
 	} = useForm<LoginInputs>()
+	const [loginError, setLoginError] = useState<string | null>(null)
 
 	const onSubmit: SubmitHandler<LoginInputs> = useCallback(
 		async (payload) => {
 			if (!isValid) {
 				return
 			}
-			const response = await invoke('login', {payload}).catch((error) => console.error(JSON.stringify(error)))
-			console.log(JSON.stringify(response))
-			const responseUsers = await invoke('command_get_roms').catch((error) => console.error(JSON.stringify(error)))
-			console.log(JSON.stringify(responseUsers))
+			setLoginError(null)
+			await invoke('login', {payload}).catch((error) => {
+				console.log(error)
+				setLoginError(error.message)
+			})
+			/*const responseUsers = await invoke('command_get_roms').catch((error) =>
+				setLoginError(JSON.stringify(error.message))
+			)
+			console.log(JSON.stringify(responseUsers))*/
 		},
 		[isValid]
 	)
@@ -63,6 +70,7 @@ export function LoginForm({className, ...props}: React.ComponentProps<'form'>) {
 					Login
 				</Button>
 			</div>
+			{loginError && <AlertError title={'Login Failed.'} description={loginError} />}
 		</form>
 	)
 }

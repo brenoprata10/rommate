@@ -1,5 +1,5 @@
 use crate::{enums::error::Error, store::set_store_value};
-use reqwest;
+use reqwest::{self, StatusCode};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tauri::AppHandle;
@@ -28,12 +28,23 @@ pub async fn login(app_handle: AppHandle, payload: LoginPayload) -> Result<(), E
         .send()
         .await?;
 
-    for cookie in response.cookies() {
-        if cookie.name() == "romm_session" {
-            set_store_value(&app_handle, "romm_session", json!(cookie.value()))?;
-        }
-    }
-    set_store_value(&app_handle, "romm_url", json!(server_url))?;
+    println!("{}", response.status());
 
-    Ok(())
+    match response.status() {
+        StatusCode::OK => {
+            for cookie in response.cookies() {
+                if cookie.name() == "romm_session" {
+                    set_store_value(&app_handle, "romm_session", json!(cookie.value()))?;
+                }
+            }
+            set_store_value(&app_handle, "romm_url", json!(server_url))?;
+            Ok(())
+        }
+        StatusCode::UNAUTHORIZED => Err(Error::InvalidCredentials()),
+        StatusCode::NOT_FOUND => Err(Error::NotFound("Server URL not found.".to_string())),
+        StatusCode::INTERNAL_SERVER_ERROR => Err(Error::InternalServer(response.text().await?)),
+        _ => Err(Error::InternalServer(
+            "Could not fetch credentials.".to_string(),
+        )),
+    }
 }
