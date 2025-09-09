@@ -1,11 +1,16 @@
-import { createBrowserRouter } from "react-router";
-import Login from "../views/login";
+import {createBrowserRouter} from 'react-router'
+import Login from '@/views/login'
+import Home from '@/views/home'
 
 const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Login/>,
-  },
-]);
+	{
+		path: '/',
+		element: <Home />
+	},
+	{
+		path: '/login',
+		element: <Login />
+	}
+])
 
 export default router

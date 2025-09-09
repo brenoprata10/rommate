@@ -12,9 +12,10 @@
   "app": {
     "windows": [
       {
-        "title": "rommate",
-        "width": 800,
-        "height": 600
+        "title": "Rommate",
+	"fullscreen": false,
+        "width": 1920,
+        "height": 1080
       }
     ],
     "security": {

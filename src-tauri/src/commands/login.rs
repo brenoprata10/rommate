@@ -28,8 +28,6 @@ pub async fn login(app_handle: AppHandle, payload: LoginPayload) -> Result<(), E
         .send()
         .await?;
 
-    println!("{}", response.status());
-
     match response.status() {
         StatusCode::OK => {
             for cookie in response.cookies() {

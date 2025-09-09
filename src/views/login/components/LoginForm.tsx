@@ -5,6 +5,7 @@ import {useForm, SubmitHandler} from 'react-hook-form'
 import {useCallback, useState} from 'react'
 import FormInput from '@/components/ui/form-input'
 import AlertError from '@/components/ui/alert-error'
+import {useNavigate} from 'react-router'
 
 type LoginInputs = {
 	username: string
@@ -19,6 +20,7 @@ export function LoginForm({className, ...props}: React.ComponentProps<'form'>) {
 		formState: {errors, isValid, isSubmitting}
 	} = useForm<LoginInputs>()
 	const [loginError, setLoginError] = useState<string | null>(null)
+	const navigate = useNavigate()
 
 	const onSubmit: SubmitHandler<LoginInputs> = useCallback(
 		async (payload) => {
@@ -27,15 +29,11 @@ export function LoginForm({className, ...props}: React.ComponentProps<'form'>) {
 			}
 			setLoginError(null)
 			await invoke('login', {payload}).catch((error) => {
-				console.log(error)
 				setLoginError(error.message)
 			})
-			/*const responseUsers = await invoke('command_get_roms').catch((error) =>
-				setLoginError(JSON.stringify(error.message))
-			)
-			console.log(JSON.stringify(responseUsers))*/
+			navigate('/')
 		},
-		[isValid]
+		[isValid, navigate]
 	)
 
 	return (
