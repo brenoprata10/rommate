@@ -8,3 +8,11 @@ pub async fn get_users(app_handle: &AppHandle) -> Result<Vec<User>, Error> {
 
     Ok(users)
 }
+
+pub async fn get_logged_in_user(app_handle: &AppHandle) -> Result<User, Error> {
+    let response = RommHttp::get(app_handle, "/api/users/me")?.send().await?;
+
+    let user = response.json::<User>().await?;
+
+    Ok(user)
+}

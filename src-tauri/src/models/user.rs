@@ -13,7 +13,7 @@ pub enum UserRole {
 pub struct User {
     id: i32,
     username: String,
-    email: String,
+    email: i64,
     enabled: bool,
     role: UserRole,
     avatar_path: String,

@@ -1,15 +1,17 @@
 import {createBrowserRouter} from 'react-router'
 import Login from '@/views/login'
 import Home from '@/views/home'
+import Layout from '@/layout'
 
 const router = createBrowserRouter([
 	{
 		path: '/',
-		element: <Home />
+		Component: Layout,
+		children: [{index: true, Component: Home}]
 	},
 	{
 		path: '/login',
-		element: <Login />
+		Component: Login
 	}
 ])
 

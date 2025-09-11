@@ -28,10 +28,12 @@ export function LoginForm({className, ...props}: React.ComponentProps<'form'>) {
 				return
 			}
 			setLoginError(null)
-			await invoke('login', {payload}).catch((error) => {
-				setLoginError(error.message)
-			})
-			navigate('/')
+			try {
+				await invoke('login', {payload})
+				navigate('/')
+			} catch (error) {
+				setLoginError((error as Error).message)
+			}
 		},
 		[isValid, navigate]
 	)

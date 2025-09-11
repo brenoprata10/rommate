@@ -8,7 +8,8 @@ export type TauriCommandPayload<T> =
 	| {success: false; error: string}
 
 export enum TauriCommandKey {
-	GET_ROMS = 'command_get_roms'
+	GET_ROMS = 'command_get_roms',
+	GET_LOGGED_IN_USER = 'command_get_logged_in_user'
 }
 
 export const tauriInvoke = async <T>(command: TauriCommandKey): Promise<TauriCommandPayload<T>> => {

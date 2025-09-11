@@ -1,3 +1,4 @@
+import useLoggedInUser from '@/hooks/api/useLoggedInUser'
 import useRoms from '@/hooks/api/useRoms'
 import useRommSession from '@/hooks/useRommSession'
 import {useCallback, useEffect} from 'react'
@@ -5,7 +6,8 @@ import {useNavigate} from 'react-router'
 
 export default function Home() {
 	const {isAuthenticated, logout} = useRommSession()
-	const {data, error} = useRoms()
+	const {data: roms, error} = useRoms()
+	const {data: currentUser, error: userError} = useLoggedInUser()
 	const navigate = useNavigate()
 
 	useEffect(() => {
@@ -23,7 +25,7 @@ export default function Home() {
 		logout().catch((e) => console.error(e))
 	}, [logout])
 
-	console.log({data, error})
+	console.log({roms, currentUser, error, userError})
 
 	return (
 		<div>
