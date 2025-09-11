@@ -1,10 +1,11 @@
+import useRoms from '@/hooks/api/useRoms'
 import useRommSession from '@/hooks/useRommSession'
-import {invoke} from '@tauri-apps/api/core'
 import {useCallback, useEffect} from 'react'
 import {useNavigate} from 'react-router'
 
 export default function Home() {
 	const {isAuthenticated, logout} = useRommSession()
+	const {data, error} = useRoms()
 	const navigate = useNavigate()
 
 	useEffect(() => {
@@ -18,18 +19,11 @@ export default function Home() {
 		checkAuthentication()
 	}, [navigate, isAuthenticated])
 
-	useEffect(() => {
-		const loadRoms = async () => {
-			const responseRoms = await invoke('command_get_roms').catch((e) => console.error(e))
-			console.log(JSON.stringify(responseRoms))
-		}
-
-		loadRoms()
-	}, [])
-
 	const handleLogout = useCallback(() => {
 		logout().catch((e) => console.error(e))
 	}, [logout])
+
+	console.log({data, error})
 
 	return (
 		<div>
