@@ -8,6 +8,7 @@ use super::{
 };
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 pub struct Rom {
     id: i32,
     igdb_id: Option<i64>,
@@ -74,6 +75,7 @@ pub struct Rom {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 struct RomUserNote {
     user_id: i32,
     username: String,
@@ -81,6 +83,7 @@ struct RomUserNote {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 struct RomUserCollection {
     name: String,
     description: String,
@@ -102,6 +105,7 @@ struct RomUserCollection {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 struct RomUserSave {
     id: i32,
     rom_id: i32,
@@ -122,6 +126,7 @@ struct RomUserSave {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 struct RomUserScreenshot {
     id: i32,
     rom_id: i32,
@@ -140,6 +145,7 @@ struct RomUserScreenshot {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 struct RomUserState {
     id: i64,
     rom_id: i64,
@@ -160,6 +166,7 @@ struct RomUserState {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 struct RomUser {
     id: i32,
     user_id: i32,
@@ -192,6 +199,7 @@ enum RomUserStatus {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 struct RomSiblings {
     id: i64,
     name: String,
@@ -215,6 +223,7 @@ enum RomFileCategory {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 struct RomFile {
     id: i32,
     rom_id: i32,
@@ -232,6 +241,7 @@ struct RomFile {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 struct RomMetadatum {
     rom_id: i64,
     genres: Vec<String>,

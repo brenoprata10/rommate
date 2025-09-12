@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 pub struct ScreenScrapperMetadata {
     ss_score: Option<String>,
     first_release_date: Option<i64>,

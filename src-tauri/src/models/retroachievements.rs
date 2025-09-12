@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 pub struct RetroAchievementsMetadata {
     first_release_date: i64,
     genres: Vec<String>,
@@ -9,6 +10,7 @@ pub struct RetroAchievementsMetadata {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 struct RetroAchievement {
     ra_id: i64,
     title: String,

@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 pub struct HasheousMetadata {
     tosec_match: Option<bool>,
     mame_arcade_match: Option<bool>,

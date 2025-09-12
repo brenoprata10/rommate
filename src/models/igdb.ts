@@ -1,26 +1,26 @@
 export type IgdbMetadata = {
-	total_rating: string
-	aggregated_rating: string
-	first_release_date: number
-	youtube_video_id: string | null
+	totalRating: string
+	aggregatedRating: string
+	firstReleaseDate: number
+	youtubeVideoId: (string | null)[]
 	genres: string[]
 	franchises: string[]
-	alternative_names: string[]
+	alternativeNames: string[]
 	collections: string[]
 	companies: string[]
-	game_modes: string[]
+	gameModes: string[]
 	platforms: IgdbPlatform[]
 	expansions: IgdbExpansion[]
-	dlcs: IgdbDlc[]
+	dlc: IgdbDlc[]
 	remasters: IgdbRemaster[]
 	remakes: IgdbRemake[]
-	expanded_games: IgdbExpandedGame[]
+	expandedGames: IgdbExpandedGame[]
 	ports: IgdbPort[]
-	similar_games: IgdbSimilarGame[]
+	similarGames: IgdbSimilarGame[]
 }
 
 type IgdbPlatform = {
-	igdb_id: number
+	igdbId: number
 	name: string
 }
 
@@ -29,7 +29,7 @@ type IgdbExpansion = {
 	name: string
 	slug: string
 	type: string
-	cover_url: string
+	coverUrl: string
 }
 
 type IgdbDlc = {
@@ -37,7 +37,7 @@ type IgdbDlc = {
 	name: string
 	slug: string
 	type: string
-	cover_url: string
+	coverUrl: string
 }
 
 type IgdbRemaster = {
@@ -45,7 +45,7 @@ type IgdbRemaster = {
 	name: string
 	slug: string
 	type: string
-	cover_url: string
+	coverUrl: string
 }
 
 type IgdbRemake = {
@@ -53,7 +53,7 @@ type IgdbRemake = {
 	name: string
 	slug: string
 	type: string
-	cover_url: string
+	coverUrl: string
 }
 
 type IgdbExpandedGame = {
@@ -61,7 +61,7 @@ type IgdbExpandedGame = {
 	name: string
 	slug: string
 	type: string
-	cover_url: string
+	coverUrl: string
 }
 
 type IgdbPort = {
@@ -69,7 +69,7 @@ type IgdbPort = {
 	name: string
 	slug: string
 	type: string
-	cover_url: string
+	coverUrl: string
 }
 
 type IgdbSimilarGame = {
@@ -77,5 +77,5 @@ type IgdbSimilarGame = {
 	name: string
 	slug: string
 	type: string
-	cover_url: string
+	coverUrl: string
 }

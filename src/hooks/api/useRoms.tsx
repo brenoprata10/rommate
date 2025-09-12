@@ -11,7 +11,7 @@ export default function useRoms() {
 				throw Error(response.error)
 			}
 
-			return response.data
+			return response.data.items
 		}
 	})
 }

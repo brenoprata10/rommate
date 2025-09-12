@@ -10,10 +10,11 @@ pub enum UserRole {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 pub struct User {
     id: i32,
     username: String,
-    email: i64,
+    email: String,
     enabled: bool,
     role: UserRole,
     avatar_path: String,

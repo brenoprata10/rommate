@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 pub struct LaunchBoxMetadata {
     first_release_date: Option<i64>,
     max_players: Option<i16>,
@@ -16,6 +17,7 @@ pub struct LaunchBoxMetadata {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 struct LaunchBoxImage {
     url: String,
     r#type: String,

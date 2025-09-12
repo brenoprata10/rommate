@@ -2,7 +2,7 @@ import {Rom} from '@/models/rom'
 import {TauriCommandKey, TauriCommandPayload, tauriInvoke} from '.'
 import {User} from '@/models/user'
 
-export const getRoms = async (): Promise<TauriCommandPayload<Rom[]>> => {
+export const getRoms = async (): Promise<TauriCommandPayload<{items: Rom[]}>> => {
 	return tauriInvoke(TauriCommandKey.GET_ROMS)
 }
 

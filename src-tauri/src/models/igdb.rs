@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 pub struct IgdbMetadata {
     total_rating: String,
     aggregated_rating: String,
@@ -23,12 +24,14 @@ pub struct IgdbMetadata {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 struct IgdbPlatform {
     igdb_id: i32,
     name: String,
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 struct IgdbExpansion {
     id: i64,
     name: String,
@@ -38,6 +41,7 @@ struct IgdbExpansion {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 struct IgdbDlc {
     id: i64,
     name: String,
@@ -47,6 +51,7 @@ struct IgdbDlc {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 struct IgdbRemaster {
     id: i64,
     name: String,
@@ -56,6 +61,7 @@ struct IgdbRemaster {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 struct IgdbRemake {
     id: i64,
     name: String,
@@ -65,6 +71,7 @@ struct IgdbRemake {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 struct IgdbExpandedGame {
     id: i64,
     name: String,
@@ -74,6 +81,7 @@ struct IgdbExpandedGame {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 struct IgdbPort {
     id: i64,
     name: String,
@@ -83,6 +91,7 @@ struct IgdbPort {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 struct IgdbSimilarGame {
     id: i64,
     name: String,

@@ -7,12 +7,12 @@ export default function ContinuePlaying({roms}: {roms: Rom[]}) {
 			<Heading variant={'h3'}>Continue Playing</Heading>
 			<div className='flex gap-6 box-border'>
 				{roms.map((rom) => (
-					<div key={rom.id} className='grid grid-cols-[14.875rem_16.812rem] gap-[1.375rem] max-w-[31.688rem] w-full'>
+					<div key={rom.id} className='grid grid-cols-[14.875rem_16.812rem] max-w-[31.688rem] w-full'>
 						<img
 							className='min-w-[14.875rem] aspect-[2/3] object-cover rounded-md'
 							width={238}
 							height={356}
-							src={rom.urlCover}
+							src={`http://192.168.178.20:8089/${rom.pathCoverLarge}`}
 						/>
 						<div className='pt-[1.375rem] px-[1.375rem]'>
 							<Heading variant={'h2'}>{rom.name}</Heading>

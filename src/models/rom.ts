@@ -71,98 +71,98 @@ export type Rom = {
 }
 
 type RomUserNote = {
-	user_id: number
+	userId: number
 	username: string
-	note_raw_markdown: string
+	noteRawMarkdown: string
 }
 
 type RomUserCollection = {
 	name: string
 	description: string
-	rom_ids: number[]
-	rom_count: number
-	path_cover_small: string
-	path_cover_large: string
-	path_covers_small: string[]
-	path_covers_large: string[]
-	is_public: boolean
-	is_favorite: boolean
-	is_virtual: boolean
-	is_smart: boolean
-	created_at: string
-	updated_at: string
+	romIds: number[]
+	romCount: number
+	pathCoverSmall: string
+	pathCoverLarge: string
+	pathCoversSmall: string[]
+	pathCoversLarge: string[]
+	isPublic: boolean
+	isFavorite: boolean
+	isVirtual: boolean
+	isSmart: boolean
+	createdAt: string
+	updatedAt: string
 	id: number
-	url_cover: string
-	user_id: number
+	urlCover: string
+	userId: number
 }
 
 type RomUserSave = {
 	id: number
-	rom_id: number
-	user_id: number
-	file_name: string
-	file_name_no_tags: string
-	file_name_no_ext: string
-	file_extension: string
-	file_path: string
-	file_size_bytes: number
-	full_path: string
-	download_path: string
-	missing_from_fs: string
-	created_at: string
-	updated_at: string
+	romId: number
+	userId: number
+	fileName: string
+	fileNameNoTags: string
+	fileNameNoExt: string
+	fileExtension: string
+	filePath: string
+	fileSizeBytes: number
+	fullPath: string
+	downloadPath: string
+	missingFromFs: string
+	createdAt: string
+	updatedAt: string
 	emulator: string
 	screenshot: RomUserScreenshot
 }
 
 type RomUserScreenshot = {
 	id: number
-	rom_id: number
-	user_id: number
-	file_name: string
-	file_name_no_tags: string
-	file_name_no_ext: string
-	file_extension: string
-	file_path: string
-	file_size_bytes: number
-	full_path: string
-	download_path: string
-	missing_from_fs: boolean
-	created_at: string
-	updated_at: string
+	romId: number
+	userId: number
+	fileName: string
+	fileNameNoTags: string
+	fileNameNoExt: string
+	fileExtension: string
+	filePath: string
+	fileSizeBytes: number
+	fullPath: string
+	downloadPath: string
+	missingFromFs: boolean
+	createdAt: string
+	updatedAt: string
 }
 
 type RomUserState = {
 	id: number
-	rom_id: number
-	user_id: number
-	file_name: string
-	file_name_no_tags: string
-	file_name_no_ext: string
-	file_extension: string
-	file_path: string
-	file_size_bytes: number
-	full_path: string
-	download_path: string
-	missing_from_fs: boolean
-	created_at: string
-	updated_at: string
+	romId: number
+	userId: number
+	fileName: string
+	fileNameNoTags: string
+	fileNameNoExt: string
+	fileExtension: string
+	filePath: string
+	fileSizeBytes: number
+	fullPath: string
+	downloadPath: string
+	missingFromFs: string
+	createdAt: string
+	updatedAt: string
 	emulator: string
 	screenshot: RomUserScreenshot
 }
 
 type RomUser = {
 	id: number
-	user_id: number
-	rom_id: number
-	created_at: string
-	updated_at: string
-	last_played: string | null
-	note_raw_markdown: string
-	note_is_public: boolean
-	is_main_sibling: boolean
+	userId: number
+	romId: number
+	createdAt: string
+	updatedAt: string
+	lastPlayed: string | null
+	noteRawMarkdown: string
+	noteIsPublic: boolean
+	isMainSibling: boolean
 	backlogged: boolean
-	now_playing: boolean
+	nowPlaying: boolean
 	hidden: boolean
 	rating: number
 	difficulty: number
@@ -170,12 +170,12 @@ type RomUser = {
 	status?: RomUserStatus
 }
 
-type RomSiblings = {
+export type RomSiblings = {
 	id: number
 	name: string
-	fs_name_no_tags: string
-	fs_name_no_ext: string
-	sort_comparator: string
+	fsNameNoTags: string
+	fsNameNoExt: string
+	sortComparator: string
 }
 
 enum RomFileCategory {
@@ -190,32 +190,32 @@ enum RomFileCategory {
 	PROTOTYPE = 'prototype'
 }
 
-type RomFile = {
+export type RomFile = {
 	id: number
-	rom_id: number
-	file_name: string
-	file_path: string
-	file_size_bytes: number
-	full_path: string
-	created_at: string
-	updated_at: string
-	last_modified: string
-	crc_hash?: string
-	md5_hash?: string
-	sha1_hash?: string
-	category?: RomFileCategory
+	romId: number
+	fileName: string
+	filePath: string
+	fileSizeBytes: number
+	fullPath: string
+	createdAt: string
+	updatedAt: string
+	lastModified: string
+	crcHash?: string
+	md5Hash?: string
+	sha1Hash?: string
+	category: RomFileCategory
 }
 
 type RomMetadatum = {
-	rom_id: number
+	romId: number
 	genres: string[]
 	franchises: string[]
 	collections: string[]
 	companies: string[]
-	game_modes: string[]
-	age_ratings: string[]
-	first_release_date: number
-	average_rating: number
+	gameModes: string[]
+	ageRatings: string[]
+	firstReleaseDate: number
+	averageRating: number
 }
 
 enum RomUserStatus {
