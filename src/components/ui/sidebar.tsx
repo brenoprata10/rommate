@@ -98,6 +98,14 @@ function SidebarProvider({
 	// This makes it easier to style the sidebar with Tailwind classes.
 	const state = open ? 'expanded' : 'collapsed'
 
+	const getWidth = React.useCallback(() => {
+		if (isMobile) {
+			return '0px'
+		}
+
+		return state === 'expanded' ? SIDEBAR_WIDTH : SIDEBAR_WIDTH_ICON
+	}, [isMobile, state])
+
 	const contextValue = React.useMemo<SidebarContextProps>(
 		() => ({
 			state,
@@ -107,9 +115,9 @@ function SidebarProvider({
 			openMobile,
 			setOpenMobile,
 			toggleSidebar,
-			width: state === 'expanded' ? SIDEBAR_WIDTH : SIDEBAR_WIDTH_ICON
+			width: getWidth()
 		}),
-		[state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
+		[state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar, getWidth]
 	)
 
 	return (

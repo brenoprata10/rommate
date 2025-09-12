@@ -12,7 +12,7 @@ export default function ContinuePlaying({roms}: {roms: Rom[]}) {
 				Continue Playing
 			</Heading>
 			<div
-				className={'flex gap-6 w-full overflow-auto'}
+				className={'flex gap-6 w-full overflow-auto scrollbar-hidden'}
 				style={{
 					maxWidth: `calc(100vw - ${sidebarWidth})`
 				}}
