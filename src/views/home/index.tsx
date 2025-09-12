@@ -1,10 +1,10 @@
 import Heading from '@/components/ui/heading'
 import useLoggedInUser from '@/hooks/api/useLoggedInUser'
 import useRoms from '@/hooks/api/useRoms'
-import useRommSession from '@/hooks/useRommSession'
 import {useEffect} from 'react'
 import {useNavigate} from 'react-router'
 import ContinuePlaying from './components/continue-playing'
+import useRommSession from '@/hooks/use-romm-session'
 
 export default function Home() {
 	const {isAuthenticated} = useRommSession()
@@ -27,7 +27,7 @@ export default function Home() {
 	console.log({roms, currentUser, error, userError})
 
 	return (
-		<div>
+		<div style={{'--home-page-padding': '32px'} as React.CSSProperties}>
 			<div
 				className='
 					after:absolute
@@ -47,7 +47,7 @@ export default function Home() {
 							'url("https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1030300/8e09f2b2eedd3fa9b4479dd5c26d8bdf60562478/ss_8e09f2b2eedd3fa9b4479dd5c26d8bdf60562478.600x338.jpg")'
 					}}
 				/>
-				<div className='z-10 py-12 px-8 gap-9 flex flex-col'>
+				<div className='z-10 py-12 px-(--home-page-padding) gap-9 flex flex-col'>
 					<Heading variant={'h1'}>Welcome {currentUser?.username}</Heading>
 					{isRomsListEmpty ? (
 						<div>

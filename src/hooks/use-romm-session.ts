@@ -1,5 +1,5 @@
 import {useCallback} from 'react'
-import useStore from './useStore'
+import useStore from './use-store'
 import {useNavigate} from 'react-router'
 
 const ROMM_SESSION_KEY = 'romm_session'
