@@ -15,7 +15,7 @@ export default function ContinuePlayingRom({rom, className}: {rom: Rom; classNam
 				src={`${serverURL}/${rom.pathCoverLarge}`}
 			/>
 			<div className='pt-[1.375rem] px-[1.375rem]'>
-				<Heading variant={rom.name.length > 16 ? 'h3' : 'h2'} className='text-neutral-200'>
+				<Heading variant={rom.name.length > 21 ? 'h3' : 'h2'} className='text-neutral-200'>
 					{rom.name}
 				</Heading>
 			</div>

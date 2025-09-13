@@ -28,7 +28,7 @@ export type Rom = {
 	fsPath: string
 	fsSizeBytes: number
 	name: string
-	slug: string
+	slug?: string
 	summary: string
 	alternativeNames: string[]
 	youtubeVideoId: string | null
@@ -214,8 +214,8 @@ type RomMetadatum = {
 	companies: string[]
 	gameModes: string[]
 	ageRatings: string[]
-	firstReleaseDate: number
-	averageRating: number
+	firstReleaseDate?: number
+	averageRating?: number
 }
 
 enum RomUserStatus {

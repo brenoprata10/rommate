@@ -1,22 +1,22 @@
 export type IgdbMetadata = {
-	totalRating: string
-	aggregatedRating: string
-	firstReleaseDate: number
-	youtubeVideoId: (string | null)[]
-	genres: string[]
-	franchises: string[]
-	alternativeNames: string[]
-	collections: string[]
-	companies: string[]
-	gameModes: string[]
-	platforms: IgdbPlatform[]
-	expansions: IgdbExpansion[]
-	dlc: IgdbDlc[]
-	remasters: IgdbRemaster[]
-	remakes: IgdbRemake[]
-	expandedGames: IgdbExpandedGame[]
-	ports: IgdbPort[]
-	similarGames: IgdbSimilarGame[]
+	totalRating?: string
+	aggregatedRating?: string
+	firstReleaseDate?: number
+	youtubeVideoId?: string | null
+	genres?: string[]
+	franchises?: string[]
+	alternativeNames?: string[]
+	collections?: string[]
+	companies?: string[]
+	gameModes?: string[]
+	platforms?: IgdbPlatform[]
+	expansions?: IgdbExpansion[]
+	dlc?: IgdbDlc[]
+	remasters?: IgdbRemaster[]
+	remakes?: IgdbRemake[]
+	expandedGames?: IgdbExpandedGame[]
+	ports?: IgdbPort[]
+	similarGames?: IgdbSimilarGame[]
 }
 
 type IgdbPlatform = {

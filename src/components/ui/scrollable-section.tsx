@@ -6,10 +6,12 @@ import ScrollContainer from './scroll-container'
 export default function ScrollableSection({
 	title,
 	itemsLength,
+	itemGap,
 	children
 }: {
 	title: string
 	itemsLength: number
+	itemGap?: string
 	children: React.ReactNode
 }) {
 	const scrollRef = useRef<HTMLDivElement>(null)
@@ -46,7 +48,9 @@ export default function ScrollableSection({
 				<Navigation className={'px-header'} onNext={onNext} onPrevious={onPrevious} />
 			</div>
 
-			<ScrollContainer scrollRef={scrollRef}>{children}</ScrollContainer>
+			<ScrollContainer scrollRef={scrollRef} itemGap={itemGap}>
+				{children}
+			</ScrollContainer>
 		</div>
 	)
 }

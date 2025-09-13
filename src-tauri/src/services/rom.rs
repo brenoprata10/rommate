@@ -32,7 +32,7 @@ pub async fn get_recently_played(app_handle: &AppHandle) -> Result<RomPayload, E
 pub async fn get_recently_added(app_handle: &AppHandle) -> Result<RomPayload, Error> {
     let response = RommHttp::get(
         app_handle,
-        "/api/roms?order_by=last_played&order_dir=desc&limit=15&with_char_index=false",
+        "/api/roms?order_by=id&order_dir=desc&limit=25&with_char_index=false",
     )?
     .send()
     .await?;

@@ -32,7 +32,7 @@ pub struct Rom {
     fs_path: String,
     fs_size_bytes: i64,
     name: String,
-    slug: String,
+    slug: Option<String>,
     summary: String,
     alternative_names: Vec<String>,
     youtube_video_id: Option<String>,
@@ -250,8 +250,8 @@ struct RomMetadatum {
     companies: Vec<String>,
     game_modes: Vec<String>,
     age_ratings: Vec<String>,
-    first_release_date: i64,
-    average_rating: f32,
+    first_release_date: Option<i64>,
+    average_rating: Option<f32>,
 }
 
 #[derive(Serialize, Deserialize, PartialEq)]

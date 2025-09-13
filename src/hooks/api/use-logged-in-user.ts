@@ -1,5 +1,5 @@
 import QueryKey from '@/models/enums/QueryKey'
-import {getLoggedInUser} from '@/utils/http/rom'
+import {getLoggedInUser} from '@/utils/http/user'
 import {useQuery} from '@tanstack/react-query'
 
 export default function useLoggedInUser() {
