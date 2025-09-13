@@ -6,7 +6,7 @@ const queryClient = new QueryClient()
 
 export default function App() {
 	return (
-		<div className='dark'>
+		<div className='dark overflow-x-hidden'>
 			<QueryClientProvider client={queryClient}>
 				<RouterProvider router={router} />
 			</QueryClientProvider>
