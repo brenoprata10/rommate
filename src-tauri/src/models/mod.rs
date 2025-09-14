@@ -1,3 +1,4 @@
+pub mod collection;
 pub mod hasheous;
 pub mod igdb;
 pub mod launchbox;

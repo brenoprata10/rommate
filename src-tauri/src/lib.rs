@@ -1,3 +1,4 @@
+use commands::collection::command_get_collections;
 use commands::login::login;
 use commands::platform::command_get_platforms;
 use commands::rom::{
@@ -27,6 +28,7 @@ pub fn run() {
             command_get_recently_added,
             command_get_platforms,
             command_get_rom_by_id,
+            command_get_collections,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
