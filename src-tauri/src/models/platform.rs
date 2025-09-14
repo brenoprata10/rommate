@@ -7,7 +7,7 @@ pub struct Platform {
     id: i32,
     slug: String,
     fs_slug: String,
-    rom_count: String,
+    rom_count: i32,
     name: String,
     igdb_slug: Option<String>,
     moby_slug: Option<String>,

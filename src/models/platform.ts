@@ -2,7 +2,7 @@ export type Platform = {
 	id: number
 	slug: string
 	fsSlug: string
-	romCount: string
+	romCount: number
 	name: string
 	igdbSlug: string | null
 	mobySlug: string | null

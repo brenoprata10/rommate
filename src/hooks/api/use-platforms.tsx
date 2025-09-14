@@ -2,7 +2,7 @@ import QueryKey from '@/models/enums/QueryKey'
 import {getPlatforms} from '@/utils/http/platform'
 import {useQuery} from '@tanstack/react-query'
 
-export default function useRoms() {
+export default function usePlatforms() {
 	return useQuery({
 		queryKey: [QueryKey.PLATFORMS],
 		queryFn: async () => {

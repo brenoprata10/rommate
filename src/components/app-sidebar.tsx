@@ -1,23 +1,9 @@
-'use client'
-
 import * as React from 'react'
-import {
-	AudioWaveform,
-	BookOpen,
-	Bot,
-	Command,
-	Frame,
-	GalleryVerticalEnd,
-	Map,
-	PieChart,
-	Settings2,
-	SquareTerminal
-} from 'lucide-react'
+import {BookOpen, Bot, ComponentIcon, Frame, Gamepad2, Map, PieChart, Settings2, SquareTerminal} from 'lucide-react'
 
 import {NavMain} from '@/components/nav-main'
 import {NavProjects} from '@/components/nav-projects'
 import {NavUser} from '@/components/nav-user'
-import {TeamSwitcher} from '@/components/team-switcher'
 import {
 	Sidebar,
 	SidebarContent,
@@ -26,31 +12,11 @@ import {
 	SidebarRail,
 	SidebarTrigger
 } from '@/components/ui/sidebar'
+import useLoggedInUser from '@/hooks/api/use-logged-in-user'
+import usePlatforms from '@/hooks/api/use-platforms'
 
 // This is sample data.
 const data = {
-	user: {
-		name: 'shadcn',
-		email: 'm@example.com',
-		avatar: '/avatars/shadcn.jpg'
-	},
-	teams: [
-		{
-			name: 'Acme Inc',
-			logo: GalleryVerticalEnd,
-			plan: 'Enterprise'
-		},
-		{
-			name: 'Acme Corp.',
-			logo: AudioWaveform,
-			plan: 'Startup'
-		},
-		{
-			name: 'Evil Corp.',
-			logo: Command,
-			plan: 'Free'
-		}
-	],
 	navMain: [
 		{
 			title: 'Playground',
@@ -158,18 +124,38 @@ const data = {
 }
 
 export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
+	const {data: currentUser, error: userError} = useLoggedInUser()
+	const {data: platforms, error: platformsError} = usePlatforms()
+	const platformMenuItem =
+		platforms && !platformsError
+			? {
+					title: 'Platfoms',
+					icon: Gamepad2,
+					url: '#',
+					items: platforms?.map((platform) => ({
+						title: platform.name,
+						url: platform.url ?? '#'
+					}))
+				}
+			: null
+
 	return (
 		<Sidebar collapsible='icon' {...props}>
 			<SidebarHeader>
-				<TeamSwitcher teams={data.teams} />
+				<div className='p-2 flex items-center gap-2 font-medium text-lg overflow-hidden'>
+					<div className='text-primary flex size-8 items-center justify-center rounded-md'>
+						<ComponentIcon className='size-4' />
+					</div>
+					Rommate
+				</div>
 			</SidebarHeader>
 			<SidebarContent>
-				<NavMain items={data.navMain} />
+				<NavMain items={platformMenuItem ? [platformMenuItem, ...data.navMain] : [...data.navMain]} />
 				<NavProjects projects={data.projects} />
 			</SidebarContent>
 			<SidebarFooter>
 				<SidebarTrigger />
-				<NavUser user={data.user} />
+				{currentUser && !userError && <NavUser user={currentUser} />}
 			</SidebarFooter>
 			<SidebarRail />
 		</Sidebar>
