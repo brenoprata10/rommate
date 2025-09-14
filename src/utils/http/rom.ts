@@ -12,3 +12,7 @@ export const getRecentlyPlayed = async (): Promise<TauriCommandPayload<{items: R
 export const getRecentlyAdded = async (): Promise<TauriCommandPayload<{items: Rom[]}>> => {
 	return tauriInvoke(TauriCommandKey.GET_RECENTLY_ADDED)
 }
+
+export const getRomById = async (id: number): Promise<TauriCommandPayload<Rom>> => {
+	return tauriInvoke(TauriCommandKey.GET_ROMS_BY_ID, {id})
+}

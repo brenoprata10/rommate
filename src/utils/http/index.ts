@@ -1,4 +1,4 @@
-import {invoke} from '@tauri-apps/api/core'
+import {invoke, InvokeArgs} from '@tauri-apps/api/core'
 
 export type TauriCommandPayload<T> =
 	| {
@@ -9,14 +9,19 @@ export type TauriCommandPayload<T> =
 
 export enum TauriCommandKey {
 	GET_ROMS = 'command_get_roms',
+	GET_ROMS_BY_ID = 'command_get_rom_by_id',
 	GET_RECENTLY_PLAYED = 'command_get_recently_played',
 	GET_RECENTLY_ADDED = 'command_get_recently_added',
-	GET_LOGGED_IN_USER = 'command_get_logged_in_user'
+	GET_LOGGED_IN_USER = 'command_get_logged_in_user',
+	GET_PLATFORMS = 'command_get_platforms'
 }
 
-export const tauriInvoke = async <T>(command: TauriCommandKey): Promise<TauriCommandPayload<T>> => {
+export const tauriInvoke = async <T>(
+	command: TauriCommandKey,
+	params?: InvokeArgs
+): Promise<TauriCommandPayload<T>> => {
 	try {
-		const data = (await invoke(command)) as T
+		const data = (await invoke(command, params)) as T
 		return {success: true, data}
 	} catch (error) {
 		const parsedError = error as {kind?: string; message: string}

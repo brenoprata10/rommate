@@ -118,11 +118,11 @@ struct RomUserSave {
     file_size_bytes: i64,
     full_path: String,
     download_path: String,
-    missing_from_fs: String,
+    missing_from_fs: bool,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
-    emulator: String,
-    screenshot: RomUserScreenshot,
+    emulator: Option<String>,
+    screenshot: Option<RomUserScreenshot>,
 }
 
 #[derive(Serialize, Deserialize)]

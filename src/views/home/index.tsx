@@ -24,7 +24,7 @@ export default function Home() {
 		checkAuthentication()
 	}, [navigate, isAuthenticated])
 
-	console.log({currentUser, userError})
+	console.log({currentUser, userError, backgroundImageUrl})
 
 	return (
 		<div
@@ -40,7 +40,7 @@ export default function Home() {
 			'
 		>
 			<div
-				className='absolute w-screen h-screen top-0 left-0 bg-no-repeat bg-cover z-[-1]'
+				className='absolute w-screen h-screen top-0 left-0 bg-no-repeat bg-center bg-cover z-[-1]'
 				style={{
 					backgroundImage: `url("${backgroundImageUrl}")`
 				}}

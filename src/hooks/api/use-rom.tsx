@@ -4,7 +4,7 @@ import {useQuery} from '@tanstack/react-query'
 
 export default function useRom({id}: {id?: number}) {
 	return useQuery({
-		queryKey: [QueryKey.ROM_BY_ID],
+		queryKey: [QueryKey.ROM_BY_ID, id],
 		queryFn: async () => {
 			if (!id) {
 				return null

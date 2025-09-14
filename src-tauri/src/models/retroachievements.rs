@@ -3,10 +3,10 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all(serialize = "camelCase"))]
 pub struct RetroAchievementsMetadata {
-    first_release_date: i64,
-    genres: Vec<String>,
-    companies: Vec<String>,
-    achievements: Vec<RetroAchievement>,
+    first_release_date: Option<i64>,
+    genres: Option<Vec<String>>,
+    companies: Option<Vec<String>>,
+    achievements: Option<Vec<RetroAchievement>>,
 }
 
 #[derive(Serialize, Deserialize)]
