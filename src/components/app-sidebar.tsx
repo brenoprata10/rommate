@@ -126,18 +126,31 @@ const data = {
 export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
 	const {data: currentUser, error: userError} = useLoggedInUser()
 	const {data: platforms, error: platformsError} = usePlatforms()
-	const platformMenuItem =
-		platforms && !platformsError
-			? {
-					title: 'Platfoms',
-					icon: Gamepad2,
-					url: '#',
-					items: platforms?.map((platform) => ({
-						title: platform.name,
-						url: platform.url ?? '#'
-					}))
-				}
-			: null
+	const platformMenuItem = React.useMemo(
+		() =>
+			platforms && !platformsError
+				? {
+						title: 'Platfoms',
+						icon: Gamepad2,
+						url: '#',
+						items: platforms
+							?.map((platform) => ({
+								title: platform.name,
+								url: platform.url ?? '#'
+							}))
+							.reduce(
+								(result, platform) => {
+									const isPlatformDuplicated = result.some(
+										({title}) => title.toUpperCase() === platform.title.toUpperCase()
+									)
+									return isPlatformDuplicated ? result : [...result, platform]
+								},
+								[] as Array<{title: string; url: string}>
+							)
+					}
+				: null,
+		[platforms, platformsError]
+	)
 
 	return (
 		<Sidebar collapsible='icon' {...props}>
