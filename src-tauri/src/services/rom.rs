@@ -41,3 +41,13 @@ pub async fn get_recently_added(app_handle: &AppHandle) -> Result<RomPayload, Er
 
     Ok(roms)
 }
+
+pub async fn get_rom_by_id(app_handle: &AppHandle, id: i32) -> Result<Rom, Error> {
+    let response = RommHttp::get(app_handle, &format!("/api/roms/{}", id))?
+        .send()
+        .await?;
+
+    let rom = response.json::<Rom>().await?;
+
+    Ok(rom)
+}
