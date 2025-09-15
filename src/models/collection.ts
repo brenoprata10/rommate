@@ -13,7 +13,7 @@ export type Collection = {
 	isSmart: boolean
 	createdAt: string
 	updatedAt: string
-	id: number
+	id: string
 	urlCover: string
 	userId: number
 }
