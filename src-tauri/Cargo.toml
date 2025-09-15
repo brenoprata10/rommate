@@ -26,4 +26,4 @@ thiserror = "2"
 tauri-plugin-store = "2"
 reqwest = {version = "0.12.23", features = ["cookies", "json"] }
 chrono = {version = "0.4.41", features = ["serde"] }
-
+tokio = "1.47.1"

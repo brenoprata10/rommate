@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/sidebar'
 import useLoggedInUser from '@/hooks/api/use-logged-in-user'
 import usePlatforms from '@/hooks/api/use-platforms'
+import useCollections from '@/hooks/api/use-collections'
 
 // This is sample data.
 const data = {
@@ -126,14 +127,15 @@ const data = {
 export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
 	const {data: currentUser, error: userError} = useLoggedInUser()
 	const {data: platforms, error: platformsError} = usePlatforms()
+	const {data: collections, error: collectionsError} = useCollections()
 	const platformMenuItem = React.useMemo(
-		() =>
-			platforms && !platformsError
-				? {
-						title: 'Platfoms',
-						icon: Gamepad2,
-						url: '#',
-						items: platforms
+		() => ({
+			title: 'Platfoms',
+			icon: Gamepad2,
+			url: '#',
+			items:
+				platforms && !platformsError
+					? platforms
 							?.map((platform) => ({
 								title: platform.name,
 								url: platform.url ?? '#'
@@ -147,9 +149,24 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
 								},
 								[] as Array<{title: string; url: string}>
 							)
-					}
-				: null,
+					: []
+		}),
 		[platforms, platformsError]
+	)
+	const collectionMenuItem = React.useMemo(
+		() => ({
+			title: 'Collections',
+			icon: Gamepad2,
+			url: '#',
+			items:
+				collections && !collectionsError
+					? collections?.map((collection) => ({
+							title: collection.name,
+							url: '#'
+						}))
+					: []
+		}),
+		[collections, collectionsError]
 	)
 
 	return (
@@ -163,7 +180,7 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
 				</div>
 			</SidebarHeader>
 			<SidebarContent>
-				<NavMain items={platformMenuItem ? [platformMenuItem, ...data.navMain] : [...data.navMain]} />
+				<NavMain items={[platformMenuItem, collectionMenuItem]} />
 				<NavProjects projects={data.projects} />
 			</SidebarContent>
 			<SidebarFooter>
