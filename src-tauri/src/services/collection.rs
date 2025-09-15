@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+
 use tauri::AppHandle;
 use tokio::join;
 
@@ -19,14 +21,15 @@ pub async fn get_all_collections(app_handle: &AppHandle) -> Result<Vec<VirtualCo
     all_collections.extend(
         collections?
             .into_iter()
-            .map(|collection| VirtualCollection::from_user_collection(collection)),
+            .map(VirtualCollection::from_user_collection),
     );
     all_collections.extend(
         smart_collections?
             .into_iter()
-            .map(|collection| VirtualCollection::from_user_collection(collection)),
+            .map(VirtualCollection::from_user_collection),
     );
     all_collections.extend(virtual_collections?);
+    all_collections.sort_by(|collection_a, collection_b| collection_a.name.cmp(&collection_b.name));
 
     Ok(all_collections)
 }

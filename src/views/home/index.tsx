@@ -33,7 +33,7 @@ export default function Home() {
 				after:w-screen
 				after:h-screen
 				after:bg-black
-				after:opacity-85
+				after:opacity-80
 				after:top-0
 				after:left-0
 				after:z-[-1]

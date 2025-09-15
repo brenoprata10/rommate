@@ -1,5 +1,16 @@
 import * as React from 'react'
-import {BookOpen, Bot, ComponentIcon, Frame, Gamepad2, Map, PieChart, Settings2, SquareTerminal} from 'lucide-react'
+import {
+	BookOpen,
+	Bot,
+	ComponentIcon,
+	Frame,
+	Gamepad2,
+	Map,
+	PieChart,
+	Settings2,
+	SquaresUnite,
+	SquareTerminal
+} from 'lucide-react'
 
 import {NavMain} from '@/components/nav-main'
 import {NavProjects} from '@/components/nav-projects'
@@ -156,7 +167,7 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
 	const collectionMenuItem = React.useMemo(
 		() => ({
 			title: 'Collections',
-			icon: Gamepad2,
+			icon: SquaresUnite,
 			url: '#',
 			items:
 				collections && !collectionsError

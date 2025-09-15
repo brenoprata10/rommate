@@ -26,7 +26,7 @@ pub struct UserCollection {
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all(serialize = "camelCase"))]
 pub struct VirtualCollection {
-    name: String,
+    pub name: String,
     description: String,
     rom_ids: Vec<i32>,
     rom_count: i32,
