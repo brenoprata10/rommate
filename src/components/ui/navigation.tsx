@@ -4,19 +4,21 @@ import clsx from 'clsx'
 
 export default function Navigation({
 	className,
+	disabled,
 	onPrevious,
 	onNext
 }: {
 	className?: string
+	disabled?: boolean
 	onPrevious: () => void
 	onNext: () => void
 }) {
 	return (
 		<div className={clsx(['flex gap-2', className])}>
-			<NavigationButton onClick={onPrevious}>
+			<NavigationButton disabled={disabled} onClick={onPrevious}>
 				<ChevronLeftIcon />
 			</NavigationButton>
-			<NavigationButton onClick={onNext}>
+			<NavigationButton disabled={disabled} onClick={onNext}>
 				<ChevronRightIcon />
 			</NavigationButton>
 		</div>

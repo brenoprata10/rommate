@@ -1,16 +1,5 @@
 import * as React from 'react'
-import {
-	BookOpen,
-	Bot,
-	ComponentIcon,
-	Frame,
-	Gamepad2,
-	Map,
-	PieChart,
-	Settings2,
-	SquaresUnite,
-	SquareTerminal
-} from 'lucide-react'
+import {BookOpen, Bot, ComponentIcon, Gamepad2, Settings, Settings2, SquaresUnite, SquareTerminal} from 'lucide-react'
 
 import {NavMain} from '@/components/nav-main'
 import {NavProjects} from '@/components/nav-projects'
@@ -116,21 +105,11 @@ const data = {
 			]
 		}
 	],
-	projects: [
+	settings: [
 		{
-			name: 'Design Engineering',
+			name: 'General',
 			url: '#',
-			icon: Frame
-		},
-		{
-			name: 'Sales & Marketing',
-			url: '#',
-			icon: PieChart
-		},
-		{
-			name: 'Travel',
-			url: '#',
-			icon: Map
+			icon: Settings
 		}
 	]
 }
@@ -183,16 +162,16 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
 	return (
 		<Sidebar collapsible='icon' {...props}>
 			<SidebarHeader>
-				<div className='p-2 flex items-center gap-2 font-medium text-lg overflow-hidden'>
+				<a className='p-2 flex items-center gap-2 font-medium text-lg overflow-hidden' href={'/'}>
 					<div className='text-primary flex size-8 items-center justify-center rounded-md'>
 						<ComponentIcon className='size-4' />
 					</div>
 					Rommate
-				</div>
+				</a>
 			</SidebarHeader>
 			<SidebarContent>
 				<NavMain items={[platformMenuItem, collectionMenuItem]} />
-				<NavProjects projects={data.projects} />
+				<NavProjects projects={data.settings} />
 			</SidebarContent>
 			<SidebarFooter>
 				<SidebarTrigger />

@@ -7,11 +7,13 @@ export default function ScrollableSection({
 	title,
 	itemsLength,
 	itemGap,
+	isScrollButtonDisabled,
 	children
 }: {
 	title: string
 	itemsLength: number
 	itemGap?: string
+	isScrollButtonDisabled?: boolean
 	children: React.ReactNode
 }) {
 	const scrollRef = useRef<HTMLDivElement>(null)
@@ -45,7 +47,7 @@ export default function ScrollableSection({
 				<Heading variant={'h3'} className='px-header'>
 					{title}
 				</Heading>
-				<Navigation className={'px-header'} onNext={onNext} onPrevious={onPrevious} />
+				<Navigation className={'px-header'} disabled={isScrollButtonDisabled} onNext={onNext} onPrevious={onPrevious} />
 			</div>
 
 			<ScrollContainer scrollRef={scrollRef} itemGap={itemGap}>
