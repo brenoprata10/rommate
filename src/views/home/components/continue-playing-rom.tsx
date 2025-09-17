@@ -10,16 +10,18 @@ import {useCallback} from 'react'
 export default function ContinuePlayingRom({
 	rom,
 	className,
+	hideTitle,
 	onHover
 }: {
 	rom: Rom
 	className?: string
-	onHover: (romId: number) => void
+	hideTitle?: boolean
+	onHover?: (romId: number) => void
 }) {
 	const romURL = `/rom/${rom.id}`
 
 	const handleHover = useCallback(() => {
-		onHover(rom.id)
+		onHover?.(rom.id)
 	}, [onHover, rom.id])
 
 	return (
@@ -28,13 +30,23 @@ export default function ContinuePlayingRom({
 			animate={{opacity: 1}}
 			className={clsx(['grid grid-cols-[14.8rem_16.812rem] max-w-[31.688rem] w-full', className])}
 		>
-			<GameCover src={rom.pathCoverLarge} id={rom.id} width='237' height='316' onHover={handleHover} />
+			<GameCover
+				src={rom.pathCoverLarge}
+				id={rom.id}
+				width='237'
+				height='316'
+				onHover={onHover ? handleHover : undefined}
+			/>
 			<div className='flex flex-col pt-[1.375rem] px-[1.375rem] justify-between'>
-				<a href={romURL}>
-					<Heading variant={rom.name.length > 21 ? 'h3' : 'h2'} className='text-neutral-200'>
-						{rom.name}
-					</Heading>
-				</a>
+				{hideTitle ? (
+					<div>&nbsp;</div>
+				) : (
+					<a href={romURL}>
+						<Heading variant={rom.name.length > 21 ? 'h3' : 'h2'} className='text-neutral-200'>
+							{rom.name}
+						</Heading>
+					</a>
+				)}
 				<Button
 					className={`
 						bg-neutral-900

@@ -6,9 +6,7 @@ export default function Layout() {
 	return (
 		<SidebarProvider>
 			<AppSidebar />
-			<main>
-				<Outlet />
-			</main>
+			<Outlet />
 		</SidebarProvider>
 	)
 }

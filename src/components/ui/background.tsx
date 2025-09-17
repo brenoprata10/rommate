@@ -18,6 +18,7 @@ export default function Background({
 				after:top-0
 				after:left-0
 				after:z-[-1]
+				w-full
 			'
 		>
 			{backgroundImageUrl && (

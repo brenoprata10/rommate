@@ -15,6 +15,7 @@ import {
 import useLoggedInUser from '@/hooks/api/use-logged-in-user'
 import usePlatforms from '@/hooks/api/use-platforms'
 import useCollections from '@/hooks/api/use-collections'
+import {NavLink} from 'react-router'
 
 // This is sample data.
 const data = {
@@ -108,7 +109,7 @@ const data = {
 	settings: [
 		{
 			name: 'General',
-			url: '#',
+			url: '/',
 			icon: Settings
 		}
 	]
@@ -162,12 +163,12 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
 	return (
 		<Sidebar collapsible='icon' {...props}>
 			<SidebarHeader>
-				<a className='p-2 flex items-center gap-2 font-medium text-lg overflow-hidden' href={'/'}>
+				<NavLink className='p-2 flex items-center gap-2 font-medium text-lg overflow-hidden' to={'/'}>
 					<div className='text-primary flex size-8 items-center justify-center rounded-md'>
 						<ComponentIcon className='size-4' />
 					</div>
 					Rommate
-				</a>
+				</NavLink>
 			</SidebarHeader>
 			<SidebarContent>
 				<NavMain items={[platformMenuItem, collectionMenuItem]} />

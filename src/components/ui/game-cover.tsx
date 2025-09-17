@@ -4,7 +4,7 @@ import {motion} from 'motion/react'
 import {useCallback} from 'react'
 import {useNavigate} from 'react-router'
 
-const className = 'border border-neutral-700 rounded-md aspect-[3/4] cursor-pointer hover:border-neutral-200 transition'
+const className = 'border border-neutral-700 rounded-md aspect-[3/4] transition'
 
 export default function GameCover({
 	src,
@@ -17,7 +17,7 @@ export default function GameCover({
 	id: number
 	width: string
 	height: string
-	onHover: () => void
+	onHover?: () => void
 }) {
 	const serverURL = useServerUrl()
 	const navigate = useNavigate()
@@ -32,7 +32,7 @@ export default function GameCover({
 
 	return (
 		<motion.img
-			className={className}
+			className={clsx([className, onHover && 'hover:border-neutral-200 cursor-pointer'])}
 			width={width}
 			height={height}
 			src={`${serverURL}/${src}`}
