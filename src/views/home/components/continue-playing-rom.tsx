@@ -4,12 +4,17 @@ import useServerUrl from '@/hooks/use-server-url'
 import {Rom} from '@/models/rom'
 import clsx from 'clsx'
 import {PlayIcon} from 'lucide-react'
+import {motion} from 'motion/react'
 
 export default function ContinuePlayingRom({rom, className}: {rom: Rom; className?: string}) {
 	const serverURL = useServerUrl()
 
 	return (
-		<div className={clsx(['grid grid-cols-[14.8rem_16.812rem] max-w-[31.688rem] w-full', className])}>
+		<motion.div
+			initial={{opacity: 0}}
+			animate={{opacity: 1}}
+			className={clsx(['grid grid-cols-[14.8rem_16.812rem] max-w-[31.688rem] w-full', className])}
+		>
 			<a href={`/rom/${rom.id}`}>
 				<img
 					className='border border-neutral-700  object-cover rounded-md'
@@ -35,6 +40,6 @@ export default function ContinuePlayingRom({rom, className}: {rom: Rom; classNam
 					<PlayIcon /> Install
 				</Button>
 			</div>
-		</div>
+		</motion.div>
 	)
 }

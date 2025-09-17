@@ -9,6 +9,7 @@ import RecentlyAdded from './components/recently-added'
 import Background from '@/components/ui/background'
 import {Skeleton} from '@/components/ui/skeleton'
 import SkeletonWrapper from '@/components/ui/skeleton-wrapper'
+import {motion} from 'motion/react'
 
 export default function Home() {
 	const {isAuthenticated} = useRommSession()
@@ -31,8 +32,12 @@ export default function Home() {
 		<Background backgroundImageUrl={backgroundImageUrl}>
 			<div className='z-10 py-12 gap-9 flex flex-col'>
 				<Heading variant={'h1'} className='px-header flex gap-2'>
-					Welcome{' '}
-					{currentUser?.username ?? (
+					<span>Welcome</span>
+					{currentUser?.username ? (
+						<motion.span animate={{opacity: 1}} initial={{opacity: 0}}>
+							{currentUser?.username}
+						</motion.span>
+					) : (
 						<SkeletonWrapper>
 							<Skeleton className='h-[3rem] w-[15rem]' />
 						</SkeletonWrapper>
