@@ -7,6 +7,7 @@ import {motion} from 'motion/react'
 import ContinuePlayingRom from '../home/components/continue-playing-rom'
 import useServerUrl from '@/hooks/use-server-url'
 import RomCarousel from '@/components/ui/rommate-carousel'
+import ContentCard from '@/components/ui/content-card'
 
 export default function RomDetail() {
 	const params = useParams()
@@ -25,13 +26,16 @@ export default function RomDetail() {
 			<motion.div
 				initial={{opacity: 0, translateX: -5}}
 				animate={{opacity: 1, translateX: 0}}
-				className='flex justify-between w-full items-end px-header'
+				className='px-header w-full'
 			>
-				<div className='z-10 py-12 gap-9 flex flex-col'>
-					<Heading variant={'h1'}>{rom?.name}</Heading>
-					<ContinuePlayingRom rom={rom} hideTitle />
+				<div className='flex justify-between items-end'>
+					<div className='z-10 py-12 gap-9 flex flex-col'>
+						<Heading variant={'h1'}>{rom?.name}</Heading>
+						<ContinuePlayingRom rom={rom} hideTitle />
+					</div>
+					<RomCarousel images={screenshots} />
 				</div>
-				<RomCarousel images={screenshots} />
+				<ContentCard title='Description'>{rom.summary}</ContentCard>
 			</motion.div>
 		</Background>
 	)
