@@ -1,6 +1,6 @@
 import Heading from '@/components/ui/heading'
 import useLoggedInUser from '@/hooks/api/use-logged-in-user'
-import {useEffect} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {useNavigate} from 'react-router'
 import ContinuePlaying from './components/continue-playing'
 import useRommSession from '@/hooks/use-romm-session'
@@ -10,10 +10,14 @@ import Background from '@/components/ui/background'
 import {Skeleton} from '@/components/ui/skeleton'
 import SkeletonWrapper from '@/components/ui/skeleton-wrapper'
 import {motion} from 'motion/react'
+import useRecentlyPlayed from '@/hooks/api/use-recently-played'
+import {debounce} from 'lodash'
 
 export default function Home() {
+	const [featuredRomId, setFeaturedRomId] = useState<number | null>(null)
 	const {isAuthenticated} = useRommSession()
-	const backgroundImageUrl = useBackgroundImage()
+	const {data: roms} = useRecentlyPlayed()
+	const backgroundImageUrl = useBackgroundImage({romId: featuredRomId ?? roms?.[0].id})
 	const {data: currentUser} = useLoggedInUser()
 	const navigate = useNavigate()
 
@@ -27,6 +31,17 @@ export default function Home() {
 
 		checkAuthentication()
 	}, [navigate, isAuthenticated])
+
+	const onHoverRom = useCallback(
+		debounce(
+			(romId: number) => {
+				setFeaturedRomId(romId)
+			},
+			500,
+			{trailing: true}
+		),
+		[]
+	)
 
 	return (
 		<Background backgroundImageUrl={backgroundImageUrl}>
@@ -44,8 +59,8 @@ export default function Home() {
 					)}
 				</Heading>
 				<div className='grid gap-8'>
-					<ContinuePlaying />
-					<RecentlyAdded />
+					<ContinuePlaying onHover={onHoverRom} />
+					<RecentlyAdded onHover={onHoverRom} />
 				</div>
 			</div>
 		</Background>

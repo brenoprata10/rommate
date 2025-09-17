@@ -1,15 +1,23 @@
-import useRecentlyPlayed from './api/use-recently-played'
+import {useEffect, useState} from 'react'
 import useRom from './api/use-rom'
 import useServerUrl from './use-server-url'
 
-export default function useBackgroundImage() {
-	const {data: roms} = useRecentlyPlayed()
-	const {data: rom} = useRom({id: roms?.[0].id})
+export default function useBackgroundImage({romId}: {romId?: number}) {
+	const [currentBackgroundImage, setCurrentBackgroundImage] = useState<string | null>(null)
+	const {data: rom} = useRom({id: romId})
 	const serverURL = useServerUrl()
 
-	if (!rom) {
+	useEffect(() => {
+		const newBackgroundImage = rom?.mergedScreenshots?.[0]
+		if (!newBackgroundImage) {
+			return
+		}
+		setCurrentBackgroundImage(newBackgroundImage)
+	}, [rom?.mergedScreenshots])
+
+	if (!rom || !currentBackgroundImage) {
 		return null
 	}
 
-	return rom.mergedScreenshots?.[0] ? `${serverURL}/${rom.mergedScreenshots?.[0]}` : null
+	return `${serverURL}/${currentBackgroundImage}`
 }

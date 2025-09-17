@@ -22,6 +22,7 @@ export default function Background({
 		>
 			{backgroundImageUrl && (
 				<motion.div
+					key={backgroundImageUrl}
 					initial={{opacity: 0, filter: 'blur(10px)', translateX: 10}}
 					animate={{opacity: 1, filter: 'blur(0)', translateX: 0}}
 					className='absolute w-screen h-screen top-0 left-0 bg-no-repeat bg-center bg-cover z-[-1]'
