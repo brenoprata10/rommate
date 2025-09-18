@@ -2,7 +2,7 @@ import {Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious}
 
 export default function RomCarousel({images}: {images: string[]}) {
 	return (
-		<Carousel className='max-h-[21rem] max-w-[32.312rem] mb-12 flex flex-col gap-3'>
+		<Carousel className='max-w-[30.312rem] mb-12 flex flex-col gap-3'>
 			<div className='flex gap-3 justify-end'>
 				<CarouselPrevious />
 				<CarouselNext />
