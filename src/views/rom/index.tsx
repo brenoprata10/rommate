@@ -22,6 +22,7 @@ export default function RomDetail() {
 	const notes = rom?.userNotes?.find((note) => note.userId === user?.id)?.noteRawMarkdown
 	const gameSaves = rom?.userSaves?.filter((save) => save.userId === user?.id)
 	const gameStates = rom?.userStates?.filter((state) => state.userId === user?.id)
+	const isGameSavesEmpty = (!gameSaves || gameSaves.length === 0) && (!gameStates || gameStates.length === 0)
 
 	if (!rom) {
 		return null
@@ -44,7 +45,7 @@ export default function RomDetail() {
 				<div className='grid gap-6 grid-cols-2'>
 					<MarkdownCard title='Description' markdownData={rom.summary} className='col-span-2' />
 					{notes && <MarkdownCard title='Notes' markdownData={notes} />}
-					<GameData saves={gameSaves ?? []} states={gameStates ?? []} />
+					{!isGameSavesEmpty && <GameData saves={gameSaves ?? []} states={gameStates ?? []} />}
 				</div>
 			</motion.div>
 		</Background>

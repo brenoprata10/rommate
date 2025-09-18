@@ -10,7 +10,7 @@ export default function Background({
 	return (
 		<div
 			className='
-				after:absolute
+				after:fixed
 				after:w-screen
 				after:h-screen
 				after:bg-black
@@ -26,7 +26,7 @@ export default function Background({
 					key={backgroundImageUrl}
 					initial={{opacity: 0, filter: 'blur(10px)', translateX: 10}}
 					animate={{opacity: 1, filter: 'blur(0)', translateX: 0}}
-					className='absolute w-screen h-screen top-0 left-0 bg-no-repeat bg-center bg-cover z-[-1]'
+					className='fixed w-screen h-screen top-0 left-0 bg-no-repeat bg-center bg-cover z-[-1]'
 					style={{
 						backgroundImage: `url("${backgroundImageUrl}")`
 					}}
