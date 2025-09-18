@@ -7,15 +7,22 @@ import {motion} from 'motion/react'
 import ContinuePlayingRom from '../home/components/continue-playing-rom'
 import useServerUrl from '@/hooks/use-server-url'
 import RomCarousel from '@/components/ui/rommate-carousel'
+import MarkdownCard from '@/components/ui/markdown-card'
+import useLoggedInUser from '@/hooks/api/use-logged-in-user'
 import ContentCard from '@/components/ui/content-card'
+import UserSave from './components/user-save'
 
 export default function RomDetail() {
 	const params = useParams()
+	const {data: user} = useLoggedInUser()
 	const serverURL = useServerUrl()
 	const romId = Number(params.id)
 	const {data: rom} = useRom({id: romId})
 	const backgroundImageURL = useBackgroundImage({romId})
 	const screenshots = [...(rom?.mergedScreenshots ?? [])].map((screenshot) => `${serverURL}/${screenshot}`).reverse()
+	const notes = rom?.userNotes?.find((note) => note.userId === user?.id)?.noteRawMarkdown
+	const gameSaves = rom?.userSaves?.filter((save) => save.userId === user?.id)
+	//console.log(rom?.userStates?.filter((save) => save.userId === user?.id))
 
 	if (!rom) {
 		return null
@@ -35,7 +42,15 @@ export default function RomDetail() {
 					</div>
 					<RomCarousel images={screenshots} />
 				</div>
-				<ContentCard title='Description'>{rom.summary}</ContentCard>
+				<div className='grid gap-6 grid-cols-2'>
+					<MarkdownCard title='Description' markdownData={rom.summary} className='col-span-2' />
+					{notes && <MarkdownCard title='Notes' markdownData={notes} />}
+					<ContentCard title='Game Data'>
+						{gameSaves?.map((save) => (
+							<UserSave key={save.id} data={save} />
+						))}
+					</ContentCard>
+				</div>
 			</motion.div>
 		</Background>
 	)

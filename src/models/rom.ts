@@ -96,7 +96,7 @@ type RomUserCollection = {
 	userId: number
 }
 
-type RomUserSave = {
+export type RomUserSave = {
 	id: number
 	romId: number
 	userId: number
@@ -112,7 +112,7 @@ type RomUserSave = {
 	createdAt: string
 	updatedAt: string
 	emulator: string
-	screenshot: RomUserScreenshot
+	screenshot: RomUserScreenshot | null
 }
 
 type RomUserScreenshot = {
