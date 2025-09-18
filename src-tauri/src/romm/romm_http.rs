@@ -30,7 +30,7 @@ impl RommHttp {
             request
         };
 
-        pretty_print_request(&request);
+        //pretty_print_request(&request);
 
         Ok(request)
     }

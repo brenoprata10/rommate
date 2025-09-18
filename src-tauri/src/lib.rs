@@ -1,3 +1,4 @@
+use commands::asset::command_get_asset;
 use commands::collection::command_get_collections;
 use commands::login::login;
 use commands::platform::command_get_platforms;
@@ -29,6 +30,7 @@ pub fn run() {
             command_get_platforms,
             command_get_rom_by_id,
             command_get_collections,
+            command_get_asset
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -9,8 +9,7 @@ import useServerUrl from '@/hooks/use-server-url'
 import RomCarousel from '@/components/ui/rommate-carousel'
 import MarkdownCard from '@/components/ui/markdown-card'
 import useLoggedInUser from '@/hooks/api/use-logged-in-user'
-import ContentCard from '@/components/ui/content-card'
-import UserSave from './components/user-save'
+import GameData from './components/game-data'
 
 export default function RomDetail() {
 	const params = useParams()
@@ -22,7 +21,7 @@ export default function RomDetail() {
 	const screenshots = [...(rom?.mergedScreenshots ?? [])].map((screenshot) => `${serverURL}/${screenshot}`).reverse()
 	const notes = rom?.userNotes?.find((note) => note.userId === user?.id)?.noteRawMarkdown
 	const gameSaves = rom?.userSaves?.filter((save) => save.userId === user?.id)
-	//console.log(rom?.userStates?.filter((save) => save.userId === user?.id))
+	const gameStates = rom?.userStates?.filter((state) => state.userId === user?.id)
 
 	if (!rom) {
 		return null
@@ -45,11 +44,7 @@ export default function RomDetail() {
 				<div className='grid gap-6 grid-cols-2'>
 					<MarkdownCard title='Description' markdownData={rom.summary} className='col-span-2' />
 					{notes && <MarkdownCard title='Notes' markdownData={notes} />}
-					<ContentCard title='Game Data'>
-						{gameSaves?.map((save) => (
-							<UserSave key={save.id} data={save} />
-						))}
-					</ContentCard>
+					<GameData saves={gameSaves ?? []} states={gameStates ?? []} />
 				</div>
 			</motion.div>
 		</Background>

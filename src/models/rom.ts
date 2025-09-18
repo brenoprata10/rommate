@@ -132,7 +132,7 @@ type RomUserScreenshot = {
 	updatedAt: string
 }
 
-type RomUserState = {
+export type RomUserState = {
 	id: number
 	romId: number
 	userId: number
