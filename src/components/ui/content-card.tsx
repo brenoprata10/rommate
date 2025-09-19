@@ -6,12 +6,14 @@ export default function ContentCard({
 	title,
 	headerTrailing,
 	children,
-	className
+	className,
+	contentClassName
 }: {
 	title: string
 	headerTrailing?: React.ReactNode
 	children: React.ReactNode
 	className?: string
+	contentClassName?: string
 }) {
 	return (
 		<Card className={clsx(['gap-3', className])}>
@@ -21,7 +23,7 @@ export default function ContentCard({
 				</CardTitle>
 				{headerTrailing}
 			</CardHeader>
-			<CardContent className='text-neutral-400'>{children}</CardContent>
+			<CardContent className={clsx(['text-neutral-400', contentClassName])}>{children}</CardContent>
 		</Card>
 	)
 }

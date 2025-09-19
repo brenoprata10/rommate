@@ -11,8 +11,7 @@ import MarkdownCard from '@/components/ui/markdown-card'
 import useLoggedInUser from '@/hooks/api/use-logged-in-user'
 import GameData from './components/game-data'
 import About from './components/about'
-import ContentCard from '@/components/ui/content-card'
-import IGDBImage from './components/igdb-image'
+import Score from './components/score'
 
 export default function RomDetail() {
 	const params = useParams()
@@ -48,9 +47,7 @@ export default function RomDetail() {
 				<div className='flex gap-6'>
 					<div className='grid gap-6 grid-cols-2 w-full h-fit'>
 						<MarkdownCard title='Description' markdownData={rom.summary} />
-						<ContentCard title='Score'>
-							<IGDBImage />
-						</ContentCard>
+						<Score igdbScore={Number(rom.igdbMetadata?.totalRating)} />
 						{notes && <MarkdownCard title='Notes' markdownData={notes} />}
 						{!isGameSavesEmpty && <GameData saves={gameSaves ?? []} states={gameStates ?? []} />}
 					</div>
