@@ -10,6 +10,7 @@ import RomCarousel from '@/components/ui/rommate-carousel'
 import MarkdownCard from '@/components/ui/markdown-card'
 import useLoggedInUser from '@/hooks/api/use-logged-in-user'
 import GameData from './components/game-data'
+import About from './components/about'
 
 export default function RomDetail() {
 	const params = useParams()
@@ -42,10 +43,13 @@ export default function RomDetail() {
 					</div>
 					<RomCarousel images={screenshots} />
 				</div>
-				<div className='grid gap-6 grid-cols-2'>
-					<MarkdownCard title='Description' markdownData={rom.summary} className='col-span-2' />
-					{notes && <MarkdownCard title='Notes' markdownData={notes} />}
-					{!isGameSavesEmpty && <GameData saves={gameSaves ?? []} states={gameStates ?? []} />}
+				<div className='flex gap-6'>
+					<div className='grid gap-6 grid-cols-2 w-full h-fit'>
+						<MarkdownCard title='Description' markdownData={rom.summary} className='col-span-2' />
+						{notes && <MarkdownCard title='Notes' markdownData={notes} />}
+						{!isGameSavesEmpty && <GameData saves={gameSaves ?? []} states={gameStates ?? []} />}
+					</div>
+					<About rom={rom} />
 				</div>
 			</motion.div>
 		</Background>
