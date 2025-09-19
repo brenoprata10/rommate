@@ -9,6 +9,7 @@ import {
 	HardDrive,
 	Joystick,
 	LibraryBig,
+	LucideProps,
 	Map,
 	Puzzle,
 	Rocket,
@@ -22,22 +23,27 @@ import {
 import bytes from 'bytes'
 import AboutBadge from './about-badge'
 import {Rom} from '@/models/rom'
+import React from 'react'
 
 const BADGE_SIZE = {width: 14, height: 14}
 
-const GENRE_CONFIG: Record<string, React.ReactNode> = {
-	adventure: <Map {...BADGE_SIZE} />,
-	shooter: <BowArrow {...BADGE_SIZE} />,
-	platform: <ToyBrick {...BADGE_SIZE} />,
-	puzzle: <Puzzle {...BADGE_SIZE} />,
-	'role-playing (rpg)': <Sword {...BADGE_SIZE} />,
-	arcade: <Joystick {...BADGE_SIZE} />,
-	racing: <Car {...BADGE_SIZE} />,
-	"hack and slash/beat 'em up": <Swords {...BADGE_SIZE} />,
-	indie: <TrendingUpDownIcon {...BADGE_SIZE} />,
-	strategy: <Puzzle {...BADGE_SIZE} />,
-	sport: <Volleyball {...BADGE_SIZE} />,
-	'turn-based strategy (tbs)': <Dices {...BADGE_SIZE} />
+type LucideIconComponent = React.ForwardRefExoticComponent<
+	Omit<LucideProps, 'ref'> & React.RefAttributes<SVGSVGElement>
+>
+
+const GENRE_CONFIG: Record<string, LucideIconComponent> = {
+	adventure: Map,
+	shooter: BowArrow,
+	platform: ToyBrick,
+	puzzle: Puzzle,
+	'role-playing (rpg)': Sword,
+	arcade: Joystick,
+	racing: Car,
+	"hack and slash/beat 'em up": Swords,
+	indie: TrendingUpDownIcon,
+	strategy: Puzzle,
+	sport: Volleyball,
+	'turn-based strategy (tbs)': Dices
 }
 
 export default function About({rom}: {rom: Rom}) {
@@ -54,29 +60,30 @@ export default function About({rom}: {rom: Rom}) {
 					<AboutBadge label={rom.fsName} badge={<File {...BADGE_SIZE} />} />
 					<AboutBadge label={bytes(rom.fsSizeBytes) ?? ''} badge={<HardDrive {...BADGE_SIZE} />} />
 					<AboutBadge label={releaseDate} badge={<Rocket {...BADGE_SIZE} />} />
-					<BadgeList list={rom.tags.map((tag) => ({label: tag, icon: <Tag {...BADGE_SIZE} />}))} />
+					<BadgeList list={rom.tags.map((tag) => ({label: tag, icon: Tag}))} />
 					<BadgeList
 						list={genres.map((genre) => ({
 							label: genre,
-							icon: GENRE_CONFIG[genre.toLowerCase()] ?? <Ellipsis {...BADGE_SIZE} />
+							icon: GENRE_CONFIG[genre.toLowerCase()] ?? Ellipsis
 						}))}
 					/>
-					<BadgeList list={franchises.map((franchise) => ({label: franchise, icon: <LibraryBig {...BADGE_SIZE} />}))} />
-					<BadgeList list={companies.map((company) => ({label: company, icon: <Castle {...BADGE_SIZE} />}))} />
+					<BadgeList list={franchises.map((franchise) => ({label: franchise, icon: LibraryBig}))} />
+					<BadgeList list={companies.map((company) => ({label: company, icon: Castle}))} />
 				</div>
 			</ContentCard>
 		</div>
 	)
 }
 
-const BadgeList = ({list}: {list: Array<{label: string; icon: React.ReactNode}>}) => {
+const BadgeList = ({list}: {list: Array<{label: string; icon: LucideIconComponent}>}) => {
 	if (list.length === 0) {
 		return null
 	}
+
 	return (
 		<div className='flex gap-3 flex-wrap'>
 			{list.map((item) => (
-				<AboutBadge key={item.label} label={item.label} badge={item.icon} />
+				<AboutBadge key={item.label} label={item.label} badge={<item.icon {...BADGE_SIZE} />} />
 			))}
 		</div>
 	)
