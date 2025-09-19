@@ -25,6 +25,9 @@ export default function RomDetail() {
 	const gameSaves = rom?.userSaves?.filter((save) => save.userId === user?.id)
 	const gameStates = rom?.userStates?.filter((state) => state.userId === user?.id)
 	const isGameSavesEmpty = (!gameSaves || gameSaves.length === 0) && (!gameStates || gameStates.length === 0)
+	const igdbScore = rom?.igdbMetadata?.totalRating
+	const ssScore = rom?.ssMetadata?.ssScore
+	const hideScore = (!igdbScore || igdbScore === '0.0') && !ssScore
 
 	if (!rom) {
 		return null
@@ -47,7 +50,12 @@ export default function RomDetail() {
 				<div className='flex gap-6'>
 					<div className='grid gap-6 grid-cols-2 w-full h-fit'>
 						<MarkdownCard title='Description' markdownData={rom.summary} />
-						<Score igdbScore={Number(rom.igdbMetadata?.totalRating)} />
+						{!hideScore && (
+							<Score
+								igdbScore={igdbScore ? Number(igdbScore) : undefined}
+								ssScore={ssScore ? Number(ssScore) * 10 : undefined}
+							/>
+						)}
 						{notes && <MarkdownCard title='Notes' markdownData={notes} />}
 						{!isGameSavesEmpty && <GameData saves={gameSaves ?? []} states={gameStates ?? []} />}
 					</div>

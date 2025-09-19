@@ -43,7 +43,7 @@ export type Rom = {
 	urlCover: string
 	hasManual: boolean
 	pathManual: string | null
-	urlManual: string
+	urlManual: string | null
 	isUnidentified: boolean
 	isIdentified: boolean
 	revision: string
