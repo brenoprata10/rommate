@@ -3,7 +3,6 @@ import {TauriCommandKey, TauriCommandPayload, tauriInvoke} from '.'
 export const getAsset = async (url: string, type: string): Promise<TauriCommandPayload<string>> => {
 	const asset = await tauriInvoke(TauriCommandKey.GET_ASSET, {url})
 
-	console.log(asset)
 	if (!asset.success) {
 		return asset
 	}

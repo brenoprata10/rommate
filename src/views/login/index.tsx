@@ -21,7 +21,7 @@ export default function Login() {
 			</div>
 			<div className='bg-background relative hidden lg:block'>
 				<img
-					src='/hero-dark.png'
+					src='/hero-dark.webp'
 					alt='Image'
 					className='absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale'
 				/>

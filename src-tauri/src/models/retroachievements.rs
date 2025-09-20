@@ -23,5 +23,5 @@ struct RetroAchievement {
     badge_url: String,
     badge_path: String,
     display_order: i16,
-    r#type: String,
+    r#type: Option<String>,
 }

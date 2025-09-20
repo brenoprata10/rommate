@@ -9,7 +9,7 @@ const IGDB_IMAGE =
 
 export default function Score({igdbScore, ssScore}: {igdbScore?: number; ssScore?: number}) {
 	return (
-		<ContentCard title='Rating' contentClassName='flex flex-col gap-4 justify-center h-full'>
+		<ContentCard title='Rating' contentClassName='flex flex-col gap-6 justify-center h-full'>
 			{igdbScore != null && igdbScore !== 0 && (
 				<ScoreProgressBar
 					value={igdbScore}
@@ -21,7 +21,7 @@ export default function Score({igdbScore, ssScore}: {igdbScore?: number; ssScore
 			{ssScore && (
 				<ScoreProgressBar
 					value={ssScore}
-					providerImageURL={'/screenscrapper_logo.png'}
+					providerImageURL={'/screenscrapper_logo.webp'}
 					indicatorColor={'!bg-[#D5A900]'}
 					progressColor='!bg-[#333333]'
 				/>

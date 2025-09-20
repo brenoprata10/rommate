@@ -12,6 +12,7 @@ import useLoggedInUser from '@/hooks/api/use-logged-in-user'
 import GameData from './components/game-data'
 import About from './components/about'
 import Score from './components/score'
+import Achievements from './components/achievements'
 
 export default function RomDetail() {
 	const params = useParams()
@@ -59,7 +60,12 @@ export default function RomDetail() {
 						{notes && <MarkdownCard title='Notes' markdownData={notes} />}
 						{!isGameSavesEmpty && <GameData saves={gameSaves ?? []} states={gameStates ?? []} />}
 					</div>
-					<About rom={rom} />
+					<div className='flex flex-col gap-6'>
+						<About rom={rom} />
+						{rom.mergedRaMetadata && rom.raId && (
+							<Achievements raId={rom.raId} availableAchievements={rom.mergedRaMetadata} />
+						)}
+					</div>
 				</div>
 			</motion.div>
 		</Background>
