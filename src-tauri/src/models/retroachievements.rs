@@ -22,6 +22,7 @@ struct RetroAchievement {
     badge_url_lock: String,
     badge_url: String,
     badge_path: String,
+    badge_path_lock: String,
     display_order: i16,
     r#type: Option<String>,
 }

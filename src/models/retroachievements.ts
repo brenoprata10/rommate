@@ -16,6 +16,7 @@ export type RetroAchievement = {
 	badgeUrlLock: string
 	badgeUrl: string
 	badgePath: string
+	badgePathLock: string
 	displayOrder: number
 	type: string
 }
