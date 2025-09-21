@@ -9,24 +9,26 @@ const IGDB_IMAGE =
 
 export default function Score({igdbScore, ssScore}: {igdbScore?: number; ssScore?: number}) {
 	return (
-		<ContentCard title='Rating' contentClassName='flex flex-col gap-6 justify-center h-full'>
-			{igdbScore != null && igdbScore !== 0 && (
-				<ScoreProgressBar
-					value={igdbScore}
-					providerImageURL={IGDB_IMAGE}
-					indicatorColor={'!bg-[#9A4EFF]'}
-					progressColor='!bg-[#323A45]'
-				/>
-			)}
-			{ssScore && (
-				<ScoreProgressBar
-					value={ssScore}
-					providerImageURL={'/screenscrapper_logo.webp'}
-					indicatorColor={'!bg-[#D5A900]'}
-					progressColor='!bg-[#333333]'
-				/>
-			)}
-		</ContentCard>
+		<div>
+			<ContentCard title='Rating' contentClassName='flex flex-col gap-6 justify-center'>
+				{igdbScore != null && igdbScore !== 0 && (
+					<ScoreProgressBar
+						value={igdbScore}
+						providerImageURL={IGDB_IMAGE}
+						indicatorColor={'!bg-[#9A4EFF]'}
+						progressColor='!bg-[#323A45]'
+					/>
+				)}
+				{ssScore && (
+					<ScoreProgressBar
+						value={ssScore}
+						providerImageURL={'/screenscrapper_logo.webp'}
+						indicatorColor={'!bg-[#D5A900]'}
+						progressColor='!bg-[#333333]'
+					/>
+				)}
+			</ContentCard>
+		</div>
 	)
 }
 

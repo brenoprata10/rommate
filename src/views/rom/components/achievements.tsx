@@ -1,11 +1,13 @@
-import ContentCard from '@/components/ui/content-card'
+import HeroCard from '@/components/ui/hero-card'
 import {Progress} from '@/components/ui/progress'
-import {Separator} from '@/components/ui/separator'
 import useLoggedInUser from '@/hooks/api/use-logged-in-user'
 import useServerUrl from '@/hooks/use-server-url'
 import {RetroAchievement, RetroAchievementsMetadata} from '@/models/retroachievements'
-import {AnimatePresence, motion} from 'motion/react'
-import {useState} from 'react'
+import {RAResults} from '@/models/user'
+import clsx from 'clsx'
+
+const MAX_ITEMS_COLLAPSED = 3
+const MAX_ITEMS_LOCKED_COLLAPSED = 2
 
 export default function Achievements({
 	raId,
@@ -14,7 +16,6 @@ export default function Achievements({
 	raId: number
 	availableAchievements: RetroAchievementsMetadata
 }) {
-	const [isZoomed, setIsZoomed] = useState(false)
 	const {data: currentUser} = useLoggedInUser()
 
 	const userRomAchievements = currentUser?.raProgression?.results.find((achievement) => achievement.romRaId === raId)
@@ -29,88 +30,64 @@ export default function Achievements({
 	)
 	const value = userRomAchievements ? (userRomAchievements.numAwarded * 100) / userRomAchievements.maxPossible : 0
 
-	const toggleZoom = () => setIsZoomed(!isZoomed)
-
 	return (
-		<>
-			{!isZoomed && (
-				<motion.div layoutId={'zoomed'} onClick={toggleZoom}>
-					<ContentCard title='Achievements'>
-						<div className='flex flex-col gap-2'>
-							<Progress value={value} className={'!bg-[#644F10] h-1'} indicatorClassName={'!bg-[#D97706]'} />
-							<span className='text-sm font-medium text-neutral-400 self-end'>
-								{userRomAchievements?.numAwarded}/{userRomAchievements?.maxPossible} Unlocked
-							</span>
-							<div className='flex flex-col gap-3'>
-								{unlockedAchievements.map((achievement) => (
-									<Achievement key={achievement.ra_id} achievement={achievement} />
-								))}
-								{lockedAchievements.map((achievement, index) => (
-									<Achievement
-										key={achievement.ra_id}
-										isLocked
-										achievement={achievement}
-										hideSeparator={index === lockedAchievements.length - 1}
-									/>
-								))}
-							</div>
-						</div>
-					</ContentCard>
-				</motion.div>
-			)}
-			<AnimatePresence>
-				{isZoomed && (
-					<motion.div
-						initial={{opacity: 0}}
-						animate={{opacity: 1}}
-						exit={{opacity: 0}}
-						className='fixed top-0 left-0 w-screen h-screen z-50'
-						style={{backgroundColor: 'rgba(0, 0, 0, 0.9)'}}
-					>
-						<motion.div
-							className='absolute left-[50vw] top-[20vh] min-w-[40vw] translate-x-[-50%]'
-							exit={{maxWidth: 223}}
-							layoutId={'zoomed'}
-							onClick={toggleZoom}
-						>
-							<ContentCard title='Achievements' className='max-h-[60vh] overflow-scroll'>
-								<div className='flex flex-col gap-2'>
-									<Progress value={value} className={'!bg-[#644F10] h-1'} indicatorClassName={'!bg-[#D97706]'} />
-									<span className='text-sm font-medium text-neutral-400 self-end'>
-										{userRomAchievements?.numAwarded}/{userRomAchievements?.maxPossible} Unlocked
-									</span>
-									<div className='flex flex-col gap-3'>
-										{unlockedAchievements.map((achievement) => (
-											<Achievement key={achievement.ra_id} achievement={achievement} />
-										))}
-										{lockedAchievements.map((achievement, index) => (
-											<Achievement
-												key={achievement.ra_id}
-												isLocked
-												achievement={achievement}
-												hideSeparator={index === lockedAchievements.length - 1}
-											/>
-										))}
-									</div>
-								</div>
-							</ContentCard>
-						</motion.div>
-					</motion.div>
-				)}
-			</AnimatePresence>
-		</>
+		<HeroCard
+			id={'achievements-card'}
+			title='Achievements'
+			component={
+				<AchievementCardWrapper
+					contentClassName='flex flex-col gap-2 max-[1110px]:flex-row'
+					value={value}
+					userRomAchievements={userRomAchievements}
+					unlockedAchievements={unlockedAchievements.slice(0, MAX_ITEMS_COLLAPSED)}
+					lockedAchievements={lockedAchievements.slice(0, MAX_ITEMS_LOCKED_COLLAPSED)}
+				/>
+			}
+			dialogComponent={
+				<AchievementCardWrapper
+					contentClassName='grid grid-cols-3 gap-6'
+					value={value}
+					userRomAchievements={userRomAchievements}
+					unlockedAchievements={unlockedAchievements}
+					lockedAchievements={lockedAchievements}
+				/>
+			}
+		/>
 	)
 }
 
-const Achievement = ({
-	achievement,
-	hideSeparator,
-	isLocked
+const AchievementCardWrapper = ({
+	value,
+	userRomAchievements,
+	lockedAchievements,
+	unlockedAchievements,
+	contentClassName
 }: {
-	achievement: RetroAchievement
-	hideSeparator?: boolean
-	isLocked?: boolean
+	value: number
+	userRomAchievements?: RAResults
+	lockedAchievements: RetroAchievement[]
+	unlockedAchievements: RetroAchievement[]
+	contentClassName?: string
 }) => {
+	return (
+		<div className='flex flex-col gap-2'>
+			<Progress value={value} className={'!bg-[#644F10] h-1'} indicatorClassName={'!bg-[#D97706]'} />
+			<span className='text-sm font-medium text-neutral-400 self-end'>
+				{userRomAchievements?.numAwarded}/{userRomAchievements?.maxPossible} Unlocked
+			</span>
+			<div className={clsx(['gap-3', contentClassName])}>
+				{unlockedAchievements.map((achievement) => (
+					<Achievement key={achievement.ra_id} achievement={achievement} />
+				))}
+				{lockedAchievements.map((achievement) => (
+					<Achievement key={achievement.ra_id} isLocked achievement={achievement} />
+				))}
+			</div>
+		</div>
+	)
+}
+
+const Achievement = ({achievement, isLocked}: {achievement: RetroAchievement; isLocked?: boolean}) => {
 	const serverURL = useServerUrl()
 
 	return (
@@ -125,7 +102,6 @@ const Achievement = ({
 				<span className='text-neutral-300 font-medium text-sm'>{achievement.title}</span>
 			</div>
 			<span className='font-medium text-sm text-neutral-400'>{achievement.description}</span>
-			{!hideSeparator && <Separator className='mt-1' />}
 		</div>
 	)
 }

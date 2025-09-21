@@ -17,7 +17,7 @@ export default function ContentCard({
 }) {
 	return (
 		<Card className={clsx(['gap-3', className])}>
-			<CardHeader className='flex justify-between'>
+			<CardHeader className='flex justify-between items-center'>
 				<CardTitle>
 					<Heading variant={'h3'}>{title}</Heading>
 				</CardTitle>

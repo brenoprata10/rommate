@@ -1,6 +1,7 @@
 import {useCallback, useState} from 'react'
 import {AnimatePresence, motion} from 'motion/react'
 import ContentCard from './content-card'
+import {Minimize2} from 'lucide-react'
 
 export default function HeroCard({
 	id,
@@ -21,7 +22,9 @@ export default function HeroCard({
 		<>
 			{!isZoomed && (
 				<motion.div layoutId={id} onClick={toggleZoom}>
-					<ContentCard title={title}>{component}</ContentCard>
+					<ContentCard title={title} className='cursor-pointer hover:scale-105 transition'>
+						{component}
+					</ContentCard>
 				</motion.div>
 			)}
 			<AnimatePresence>
@@ -33,13 +36,17 @@ export default function HeroCard({
 						className='fixed top-0 left-0 w-screen h-screen z-50'
 						style={{backgroundColor: 'rgba(0, 0, 0, 0.9)'}}
 					>
-						<motion.div
-							className='absolute left-[50vw] top-[20vh] min-w-[40vw] translate-x-[-50%]'
-							exit={{maxWidth: 223}}
-							layoutId={id}
-							onClick={toggleZoom}
-						>
-							<ContentCard title={title} className='max-h-[60vh] overflow-scroll'>
+						<motion.div className='absolute left-[50vw] top-[20vh] min-w-[40vw] translate-x-[-50%]' layoutId={id}>
+							<ContentCard
+								title={title}
+								className='max-h-[60vh] overflow-scroll'
+								headerTrailing={
+									<Minimize2
+										className='cursor-pointer transition-colors text-neutral-400 hover:text-neutral-300'
+										onClick={toggleZoom}
+									/>
+								}
+							>
 								{dialogComponent}
 							</ContentCard>
 						</motion.div>

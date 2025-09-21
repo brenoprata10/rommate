@@ -54,7 +54,7 @@ export default function About({rom}: {rom: Rom}) {
 	)
 
 	return (
-		<div className='max-w-[16.375rem] w-full'>
+		<div className='max-[1110px]:max-w-none max-w-[16.375rem] w-full'>
 			<ContentCard title='About'>
 				<div className='flex flex-col gap-3'>
 					<AboutBadge label={rom.fsName} badge={<File {...BADGE_SIZE} />} />

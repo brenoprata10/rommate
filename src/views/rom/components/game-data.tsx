@@ -12,12 +12,20 @@ enum GameDataType {
 
 const MAX_ITEMS = 2
 
-export default function GameData({saves, states}: {saves: RomUserSave[]; states: RomUserState[]}) {
+export default function GameData({
+	saves,
+	states,
+	className
+}: {
+	saves: RomUserSave[]
+	states: RomUserState[]
+	className?: string
+}) {
 	const displayedSaves = saves.slice(0, MAX_ITEMS)
 	const displayedStates = states.slice(0, MAX_ITEMS)
 
 	return (
-		<Tabs defaultValue={GameDataType.SAVE}>
+		<Tabs defaultValue={GameDataType.SAVE} className={className}>
 			<ContentCard
 				title='Game Data'
 				headerTrailing={

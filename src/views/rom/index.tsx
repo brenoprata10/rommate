@@ -39,7 +39,7 @@ export default function RomDetail() {
 			<motion.div
 				initial={{opacity: 0, translateX: -5}}
 				animate={{opacity: 1, translateX: 0}}
-				className='px-header w-full'
+				className='px-header w-full pb-12'
 			>
 				<div className='flex justify-between items-end'>
 					<div className='z-10 py-12 gap-9 flex flex-col'>
@@ -48,8 +48,8 @@ export default function RomDetail() {
 					</div>
 					<RomCarousel images={screenshots} />
 				</div>
-				<div className='flex gap-6'>
-					<div className='grid gap-6 grid-cols-2 w-full h-fit'>
+				<div className='flex gap-6 max-[1110px]:flex-col'>
+					<div className='grid gap-6 grid-cols-2 max-xl:grid-cols-1 w-full h-fit'>
 						<MarkdownCard title='Description' markdownData={rom.summary} />
 						{!hideScore && (
 							<Score
@@ -57,8 +57,16 @@ export default function RomDetail() {
 								ssScore={ssScore ? Number(ssScore) * 10 : undefined}
 							/>
 						)}
-						{notes && <MarkdownCard title='Notes' markdownData={notes} />}
-						{!isGameSavesEmpty && <GameData saves={gameSaves ?? []} states={gameStates ?? []} />}
+						{!isGameSavesEmpty && (
+							<GameData
+								saves={gameSaves ?? []}
+								states={gameStates ?? []}
+								className='max-xl:col-span-1 max-[1650px]:col-span-2'
+							/>
+						)}
+						{notes && (
+							<MarkdownCard className='max-xl:col-span-1 max-[1650px]:col-span-2' title='Notes' markdownData={notes} />
+						)}
 					</div>
 					<div className='flex flex-col gap-6'>
 						<About rom={rom} />
