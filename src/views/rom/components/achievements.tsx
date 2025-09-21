@@ -61,32 +61,40 @@ export default function Achievements({
 			<AnimatePresence>
 				{isZoomed && (
 					<motion.div
-						className='absolute left-[33%] min-w-[40vw] overflow-hidden'
-						exit={{maxWidth: 223}}
-						layoutId={'zoomed'}
-						onClick={toggleZoom}
+						initial={{opacity: 0}}
+						animate={{opacity: 1}}
+						exit={{opacity: 0}}
+						className='fixed top-0 left-0 w-screen h-screen z-50'
+						style={{backgroundColor: 'rgba(0, 0, 0, 0.9)'}}
 					>
-						<ContentCard title='Achievements'>
-							<div className='flex flex-col gap-2'>
-								<Progress value={value} className={'!bg-[#644F10] h-1'} indicatorClassName={'!bg-[#D97706]'} />
-								<span className='text-sm font-medium text-neutral-400 self-end'>
-									{userRomAchievements?.numAwarded}/{userRomAchievements?.maxPossible} Unlocked
-								</span>
-								<div className='flex flex-col gap-3'>
-									{unlockedAchievements.map((achievement) => (
-										<Achievement key={achievement.ra_id} achievement={achievement} />
-									))}
-									{lockedAchievements.map((achievement, index) => (
-										<Achievement
-											key={achievement.ra_id}
-											isLocked
-											achievement={achievement}
-											hideSeparator={index === lockedAchievements.length - 1}
-										/>
-									))}
+						<motion.div
+							className='absolute left-[50vw] top-[20vh] min-w-[40vw] translate-x-[-50%]'
+							exit={{maxWidth: 223}}
+							layoutId={'zoomed'}
+							onClick={toggleZoom}
+						>
+							<ContentCard title='Achievements' className='max-h-[60vh] overflow-scroll'>
+								<div className='flex flex-col gap-2'>
+									<Progress value={value} className={'!bg-[#644F10] h-1'} indicatorClassName={'!bg-[#D97706]'} />
+									<span className='text-sm font-medium text-neutral-400 self-end'>
+										{userRomAchievements?.numAwarded}/{userRomAchievements?.maxPossible} Unlocked
+									</span>
+									<div className='flex flex-col gap-3'>
+										{unlockedAchievements.map((achievement) => (
+											<Achievement key={achievement.ra_id} achievement={achievement} />
+										))}
+										{lockedAchievements.map((achievement, index) => (
+											<Achievement
+												key={achievement.ra_id}
+												isLocked
+												achievement={achievement}
+												hideSeparator={index === lockedAchievements.length - 1}
+											/>
+										))}
+									</div>
 								</div>
-							</div>
-						</ContentCard>
+							</ContentCard>
+						</motion.div>
 					</motion.div>
 				)}
 			</AnimatePresence>
