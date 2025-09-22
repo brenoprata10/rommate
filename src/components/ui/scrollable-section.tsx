@@ -2,18 +2,23 @@ import {useCallback, useRef} from 'react'
 import Heading from './heading'
 import Navigation from './navigation'
 import ScrollContainer from './scroll-container'
+import clsx from 'clsx'
 
 export default function ScrollableSection({
 	title,
+	className,
 	itemsLength,
-	itemGap,
+	itemGap = '18px',
+	padding = 'px-header',
 	isScrollButtonDisabled,
 	children
 }: {
 	title: string
+	className?: string
 	itemsLength: number
 	itemGap?: string
 	isScrollButtonDisabled?: boolean
+	padding?: string
 	children: React.ReactNode
 }) {
 	const scrollRef = useRef<HTMLDivElement>(null)
@@ -42,15 +47,13 @@ export default function ScrollableSection({
 	}, [getScrollOffset])
 
 	return (
-		<div className='flex flex-col gap-5'>
-			<div className='flex justify-between'>
-				<Heading variant={'h3'} className='px-header'>
-					{title}
-				</Heading>
-				<Navigation className={'px-header'} disabled={isScrollButtonDisabled} onNext={onNext} onPrevious={onPrevious} />
+		<div className={clsx(['flex flex-col gap-5', className])}>
+			<div className={clsx(['flex justify-between', padding])}>
+				<Heading variant={'h3'}>{title}</Heading>
+				<Navigation disabled={isScrollButtonDisabled} onNext={onNext} onPrevious={onPrevious} />
 			</div>
 
-			<ScrollContainer scrollRef={scrollRef} itemGap={itemGap}>
+			<ScrollContainer scrollRef={scrollRef} padding={padding} itemGap={itemGap}>
 				{children}
 			</ScrollContainer>
 		</div>

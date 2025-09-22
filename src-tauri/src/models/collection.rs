@@ -1,6 +1,14 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "lowercase")]
+pub enum RomCollection {
+    Virtual(),
+    Smart(),
+    Default(),
+}
+
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all(serialize = "camelCase"))]
 pub struct UserCollection {

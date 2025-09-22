@@ -74,7 +74,6 @@ const AchievementCardWrapper = ({
 	contentClassName?: string
 	totalAchievementsCount?: number
 }) => {
-	console.log(userRomAchievements)
 	return (
 		<div className='flex flex-col gap-2'>
 			<Progress value={value} className={'!bg-[#644F10] h-1'} indicatorClassName={'!bg-[#D97706]'} />

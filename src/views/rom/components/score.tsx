@@ -16,11 +16,6 @@ export default function Score({
 	ssScore?: number
 	launchboxScore?: number
 }) {
-	console.log({
-		igdbScore,
-		ssScore,
-		launchboxScore
-	})
 	return (
 		<div>
 			<ContentCard title='Rating' contentClassName='flex flex-col gap-6 justify-center'>

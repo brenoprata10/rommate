@@ -13,23 +13,33 @@ import GameData from './components/game-data'
 import About from './components/about'
 import Score from './components/score'
 import Achievements from './components/achievements'
+import useCollections from '@/hooks/api/use-collections'
+import RomCollections from './components/collections'
 
 export default function RomDetail() {
 	const params = useParams()
 	const {data: user} = useLoggedInUser()
+	const {data: collections} = useCollections()
 	const serverURL = useServerUrl()
 	const romId = Number(params.id)
 	const {data: rom} = useRom({id: romId})
 	const backgroundImageURL = useBackgroundImage({romId})
 	const screenshots = [...(rom?.mergedScreenshots ?? [])].map((screenshot) => `${serverURL}/${screenshot}`).reverse()
 	const notes = rom?.userNotes?.find((note) => note.userId === user?.id)?.noteRawMarkdown
+
+	// Game Save/State
 	const gameSaves = rom?.userSaves?.filter((save) => save.userId === user?.id)
 	const gameStates = rom?.userStates?.filter((state) => state.userId === user?.id)
 	const isGameSavesEmpty = (!gameSaves || gameSaves.length === 0) && (!gameStates || gameStates.length === 0)
+
+	// Score
 	const igdbScore = rom?.igdbMetadata?.totalRating
 	const ssScore = rom?.ssMetadata?.ssScore
 	const launchboxScore = rom?.launchboxMetadata?.communityRating
 	const hideScore = (!igdbScore || igdbScore === '0.0') && !ssScore
+
+	// Collections
+	const romCollections = collections?.filter((collection) => collection.romIds.includes(romId))
 
 	if (!rom) {
 		return null
@@ -76,6 +86,7 @@ export default function RomDetail() {
 								className='max-xl:col-span-1 max-[1650px]:col-span-2'
 							/>
 						)}
+						{romCollections && romCollections.length > 0 && <RomCollections romCollections={romCollections} />}
 					</div>
 					<div className='flex flex-col gap-6'>
 						<About rom={rom} />

@@ -1,7 +1,11 @@
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 
-use crate::{enums::error::Error, models::rom::Rom, romm::romm_http::RommHttp};
+use crate::{
+    enums::error::Error,
+    models::{collection::RomCollection, rom::Rom},
+    romm::romm_http::RommHttp,
+};
 
 #[derive(Serialize, Deserialize)]
 pub struct RomPayload {
@@ -50,4 +54,27 @@ pub async fn get_rom_by_id(app_handle: &AppHandle, id: i32) -> Result<Rom, Error
     let rom = response.json::<Rom>().await?;
 
     Ok(rom)
+}
+
+pub async fn get_roms_by_collection_id(
+    app_handle: &AppHandle,
+    id: i32,
+    collection_type: RomCollection,
+) -> Result<RomPayload, Error> {
+    let collection_param = match collection_type {
+        RomCollection::Smart() => "smart_collection_id",
+        RomCollection::Virtual() => "virtual_collection_id",
+        RomCollection::Default() => "collection_id",
+    };
+
+    let response = RommHttp::get(
+        app_handle,
+        &format!("/api/roms?{}={}", collection_param, id),
+    )?
+    .send()
+    .await?;
+
+    let roms = response.json::<RomPayload>().await?;
+
+    Ok(roms)
 }

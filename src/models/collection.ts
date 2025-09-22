@@ -17,3 +17,9 @@ export type Collection = {
 	urlCover: string
 	userId: number
 }
+
+export enum RomCollection {
+	SMART = 'smart',
+	VIRTUAL = 'virtual',
+	DEFAULT = 'default'
+}

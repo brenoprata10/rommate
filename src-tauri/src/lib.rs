@@ -4,7 +4,7 @@ use commands::login::login;
 use commands::platform::command_get_platforms;
 use commands::rom::{
     command_get_recently_added, command_get_recently_played, command_get_rom_by_id,
-    command_get_roms,
+    command_get_roms, command_get_roms_by_collection_id,
 };
 use commands::user::{command_get_logged_in_user, command_get_users};
 
@@ -30,7 +30,8 @@ pub fn run() {
             command_get_platforms,
             command_get_rom_by_id,
             command_get_collections,
-            command_get_asset
+            command_get_asset,
+            command_get_roms_by_collection_id
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

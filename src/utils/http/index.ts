@@ -10,6 +10,7 @@ export type TauriCommandPayload<T> =
 export enum TauriCommandKey {
 	GET_ROMS = 'command_get_roms',
 	GET_ROMS_BY_ID = 'command_get_rom_by_id',
+	GET_ROMS_BY_COLLECTION_ID = 'command_get_roms_by_collection_id',
 	GET_RECENTLY_PLAYED = 'command_get_recently_played',
 	GET_RECENTLY_ADDED = 'command_get_recently_added',
 	GET_LOGGED_IN_USER = 'command_get_logged_in_user',
