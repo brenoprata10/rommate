@@ -8,12 +8,12 @@ export default function useRomsByCollectionId({
 	collectionType
 }: {
 	id?: number | string
-	collectionType: RomCollection
+	collectionType?: RomCollection
 }) {
 	return useQuery({
 		queryKey: [QueryKey.ROM_BY_COLLECTION_ID, id, collectionType],
 		queryFn: async () => {
-			if (!id) {
+			if (!id || !collectionType) {
 				return null
 			}
 			const response = await getRomsByCollectionId(id, collectionType)

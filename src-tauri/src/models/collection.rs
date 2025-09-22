@@ -13,7 +13,7 @@ pub enum RomCollection {
 #[serde(rename_all(serialize = "camelCase"))]
 pub struct UserCollection {
     name: String,
-    description: String,
+    description: Option<String>,
     rom_ids: Vec<i32>,
     rom_count: i32,
     path_cover_small: Option<String>,
@@ -35,7 +35,7 @@ pub struct UserCollection {
 #[serde(rename_all(serialize = "camelCase"))]
 pub struct VirtualCollection {
     pub name: String,
-    description: String,
+    description: Option<String>,
     rom_ids: Vec<i32>,
     rom_count: i32,
     path_cover_small: Option<String>,

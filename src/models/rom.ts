@@ -78,22 +78,22 @@ type RomUserNote = {
 
 type RomUserCollection = {
 	name: string
-	description: string
-	romIds: number[]
-	romCount: number
-	pathCoverSmall: string
-	pathCoverLarge: string
-	pathCoversSmall: string[]
-	pathCoversLarge: string[]
-	isPublic: boolean
-	isFavorite: boolean
-	isVirtual: boolean
-	isSmart: boolean
-	createdAt: string
-	updatedAt: string
+	description?: string
+	romIds?: number[]
+	romCount?: number
+	pathCoverSmall?: string
+	pathCoverLarge?: string
+	pathCoversSmall?: string[]
+	pathCoversLarge?: string[]
+	isPublic?: boolean
+	isFavorite?: boolean
+	isVirtual?: boolean
+	isSmart?: boolean
+	createdAt?: string
+	updatedAt?: string
 	id: number
-	urlCover: string
-	userId: number
+	urlCover?: string
+	userId?: number
 }
 
 export type RomUserSave = {

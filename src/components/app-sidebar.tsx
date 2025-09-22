@@ -129,7 +129,7 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
 					? platforms
 							?.map((platform) => ({
 								title: platform.name,
-								url: platform.url ?? '#',
+								url: `/platform/${platform.id}`,
 								badge: platform.romCount.toString()
 							}))
 							.reduce(
@@ -154,7 +154,7 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
 				collections && !collectionsError
 					? collections?.map((collection) => ({
 							title: collection.name,
-							url: '#',
+							url: `/collection/${collection.id}`,
 							badge: collection.romCount.toString()
 						}))
 					: []

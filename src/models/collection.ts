@@ -1,6 +1,6 @@
 export type Collection = {
 	name: string
-	description: string
+	description?: string
 	romIds: number[]
 	romCount: number
 	pathCoverSmall: string
