@@ -1,12 +1,9 @@
+import useBackgroundImage from '@/hooks/use-background-image'
 import {motion} from 'motion/react'
 
-export default function Background({
-	children,
-	backgroundImageUrl
-}: {
-	children: React.ReactNode
-	backgroundImageUrl: string | null
-}) {
+export default function Background({children, romId}: {children: React.ReactNode; romId?: number}) {
+	const backgroundImageUrl = useBackgroundImage({romId})
+
 	return (
 		<div
 			className='

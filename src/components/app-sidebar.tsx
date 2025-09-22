@@ -139,7 +139,7 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
 									)
 									return isPlatformDuplicated ? result : [...result, platform]
 								},
-								[] as Array<{title: string; url: string}>
+								[] as Array<{title: string; url: string; badge: string}>
 							)
 					: []
 		}),

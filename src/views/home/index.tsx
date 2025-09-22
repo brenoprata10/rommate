@@ -1,23 +1,21 @@
 import Heading from '@/components/ui/heading'
 import useLoggedInUser from '@/hooks/api/use-logged-in-user'
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect} from 'react'
 import {useNavigate} from 'react-router'
 import ContinuePlaying from './components/continue-playing'
 import useRommSession from '@/hooks/use-romm-session'
-import useBackgroundImage from '@/hooks/use-background-image'
 import RecentlyAdded from './components/recently-added'
 import Background from '@/components/ui/background'
 import {Skeleton} from '@/components/ui/skeleton'
 import SkeletonWrapper from '@/components/ui/skeleton-wrapper'
 import {motion} from 'motion/react'
 import useRecentlyPlayed from '@/hooks/api/use-recently-played'
-import {debounce} from 'lodash'
+import useFocusedGame from '@/hooks/use-focused-game'
 
 export default function Home() {
-	const [featuredRomId, setFeaturedRomId] = useState<number | null>(null)
+	const {focusedRomId, setFocusedGame} = useFocusedGame()
 	const {isAuthenticated} = useRommSession()
 	const {data: roms} = useRecentlyPlayed()
-	const backgroundImageUrl = useBackgroundImage({romId: featuredRomId ?? roms?.[0].id})
 	const {data: currentUser} = useLoggedInUser()
 	const navigate = useNavigate()
 
@@ -33,18 +31,14 @@ export default function Home() {
 	}, [navigate, isAuthenticated])
 
 	const onHoverRom = useCallback(
-		debounce(
-			(romId: number) => {
-				setFeaturedRomId(romId)
-			},
-			500,
-			{trailing: true}
-		),
-		[]
+		(romId: number) => {
+			setFocusedGame(romId)
+		},
+		[setFocusedGame]
 	)
 
 	return (
-		<Background backgroundImageUrl={backgroundImageUrl}>
+		<Background romId={focusedRomId ?? roms?.[0].id}>
 			<div className='z-10 py-12 gap-9 flex flex-col'>
 				<Heading variant={'h1'} className='px-header flex gap-2'>
 					<span>Welcome</span>

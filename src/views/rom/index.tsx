@@ -1,7 +1,6 @@
 import Background from '@/components/ui/background'
 import Heading from '@/components/ui/heading'
 import useRom from '@/hooks/api/use-rom'
-import useBackgroundImage from '@/hooks/use-background-image'
 import {useParams} from 'react-router'
 import {motion} from 'motion/react'
 import ContinuePlayingRom from '../home/components/continue-playing-rom'
@@ -23,7 +22,6 @@ export default function RomDetail() {
 	const serverURL = useServerUrl()
 	const romId = Number(params.id)
 	const {data: rom} = useRom({id: romId})
-	const backgroundImageURL = useBackgroundImage({romId})
 	const screenshots = [...(rom?.mergedScreenshots ?? [])].map((screenshot) => `${serverURL}/${screenshot}`).reverse()
 	const notes = rom?.userNotes?.find((note) => note.userId === user?.id)?.noteRawMarkdown
 
@@ -46,7 +44,7 @@ export default function RomDetail() {
 	}
 
 	return (
-		<Background backgroundImageUrl={backgroundImageURL}>
+		<Background romId={rom.id}>
 			<motion.div
 				initial={{opacity: 0, translateX: -5}}
 				animate={{opacity: 1, translateX: 0}}
