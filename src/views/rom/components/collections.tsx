@@ -2,30 +2,41 @@ import GameCover from '@/components/ui/game-cover'
 import ScrollableSection from '@/components/ui/scrollable-section'
 import useRomsByCollectionId from '@/hooks/api/use-roms-by-collection-id'
 import {Collection, RomCollection} from '@/models/collection'
+import {motion} from 'motion/react'
+import {useCallback} from 'react'
 
 export default function RomCollections({romCollections}: {romCollections: Collection[]}) {
-	console.log(romCollections)
-	const {data: collection} = useRomsByCollectionId({id: romCollections[0].id, collectionType: RomCollection.VIRTUAL})
-	console.log({collection})
+	return romCollections.map((collection) => <RomRelatedCollection key={collection.id} collection={collection} />)
+}
 
-	return romCollections.map((collection) => (
-		<ScrollableSection
-			key={collection.id}
-			className={'col-span-2'}
-			title={collection.name}
-			padding='px-0'
-			itemsLength={collection.romCount}
-		>
-			{collection.romIds.map((romId) => (
-				<GameCover
-					key={romId}
-					id={romId}
-					src={`/assets/romm/resources/roms/${romId}/cover/small.png`}
-					width='145px'
-					height='193px'
-					onHover={() => {}}
-				/>
-			))}
-		</ScrollableSection>
-	))
+const RomRelatedCollection = ({collection}: {collection: Collection}) => {
+	const getCollectionType = useCallback(() => {
+		if (collection.isSmart) {
+			return RomCollection.SMART
+		}
+		return collection.isVirtual ? RomCollection.VIRTUAL : RomCollection.DEFAULT
+	}, [collection])
+
+	const {data, isLoading, error} = useRomsByCollectionId({id: collection.id, collectionType: getCollectionType()})
+
+	if (isLoading || error) {
+		return null
+	}
+
+	return (
+		<motion.div className={'col-span-2'} initial={{opacity: 0}} animate={{opacity: 1}}>
+			<ScrollableSection title={collection.name} padding='px-0' itemsLength={data?.items.length ?? collection.romCount}>
+				{data?.items.map((rom) => (
+					<GameCover
+						key={rom.id}
+						id={rom.id}
+						src={rom.pathCoverSmall}
+						width='145px'
+						height='193px'
+						onHover={() => {}}
+					/>
+				))}
+			</ScrollableSection>
+		</motion.div>
+	)
 }

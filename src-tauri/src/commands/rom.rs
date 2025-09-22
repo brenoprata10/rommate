@@ -32,12 +32,8 @@ pub async fn command_get_rom_by_id(app_handle: AppHandle, id: i32) -> Result<Rom
 #[tauri::command]
 pub async fn command_get_roms_by_collection_id(
     app_handle: AppHandle,
-    id: i32,
+    id: String,
     collection_type: RomCollection,
 ) -> Result<RomPayload, Error> {
-    println!("asd");
-    println!("{id}");
-    let asd = format!("{:?}", collection_type);
-    println!("{asd}");
     get_roms_by_collection_id(&app_handle, id, collection_type).await
 }

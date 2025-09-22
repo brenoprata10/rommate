@@ -11,6 +11,7 @@ import {
 	SidebarMenuSubButton,
 	SidebarMenuSubItem
 } from '@/components/ui/sidebar'
+import {Badge} from './ui/badge'
 
 export function NavMain({
 	items
@@ -23,6 +24,7 @@ export function NavMain({
 		items?: {
 			title: string
 			url: string
+			badge: string
 		}[]
 	}[]
 }) {
@@ -45,8 +47,13 @@ export function NavMain({
 									{item.items?.map((subItem) => (
 										<SidebarMenuSubItem key={subItem.title}>
 											<SidebarMenuSubButton asChild>
-												<a href={subItem.url}>
-													<span>{subItem.title}</span>
+												<a href={subItem.url} className='flex justify-between'>
+													<span className='max-w-[8.75rem] overflow-hidden text-ellipsis whitespace-nowrap'>
+														{subItem.title}
+													</span>
+													<Badge className='text-xs' variant={'secondary'}>
+														{subItem.badge}
+													</Badge>
 												</a>
 											</SidebarMenuSubButton>
 										</SidebarMenuSubItem>

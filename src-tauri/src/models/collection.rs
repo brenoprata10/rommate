@@ -4,9 +4,9 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum RomCollection {
-    Virtual(),
-    Smart(),
-    Default(),
+    Virtual,
+    Smart,
+    Default,
 }
 
 #[derive(Serialize, Deserialize)]

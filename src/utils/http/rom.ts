@@ -22,6 +22,5 @@ export const getRomsByCollectionId = async (
 	id: number | string,
 	collectionType: RomCollection
 ): Promise<TauriCommandPayload<{items: Rom[]}>> => {
-	console.log({id, collectionType})
-	return tauriInvoke(TauriCommandKey.GET_ROMS_BY_COLLECTION_ID, {id, collectionType})
+	return tauriInvoke(TauriCommandKey.GET_ROMS_BY_COLLECTION_ID, {id: id.toString(), collectionType})
 }

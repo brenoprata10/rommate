@@ -58,13 +58,13 @@ pub async fn get_rom_by_id(app_handle: &AppHandle, id: i32) -> Result<Rom, Error
 
 pub async fn get_roms_by_collection_id(
     app_handle: &AppHandle,
-    id: i32,
+    id: String,
     collection_type: RomCollection,
 ) -> Result<RomPayload, Error> {
     let collection_param = match collection_type {
-        RomCollection::Smart() => "smart_collection_id",
-        RomCollection::Virtual() => "virtual_collection_id",
-        RomCollection::Default() => "collection_id",
+        RomCollection::Smart => "smart_collection_id",
+        RomCollection::Virtual => "virtual_collection_id",
+        RomCollection::Default => "collection_id",
     };
 
     let response = RommHttp::get(

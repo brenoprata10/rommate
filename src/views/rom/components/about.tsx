@@ -8,6 +8,7 @@ import {
 	File,
 	HardDrive,
 	Joystick,
+	JoystickIcon,
 	LibraryBig,
 	LucideProps,
 	Map,
@@ -59,6 +60,7 @@ export default function About({rom}: {rom: Rom}) {
 				<div className='flex flex-col gap-3'>
 					<AboutBadge label={rom.fsName} badge={<File {...BADGE_SIZE} />} />
 					<AboutBadge label={bytes(rom.fsSizeBytes) ?? ''} badge={<HardDrive {...BADGE_SIZE} />} />
+					<AboutBadge label={rom.platformName} badge={<JoystickIcon {...BADGE_SIZE} />} />
 					<AboutBadge label={releaseDate} badge={<Rocket {...BADGE_SIZE} />} />
 					<BadgeList list={rom.tags.map((tag) => ({label: tag, icon: Tag}))} />
 					<BadgeList
