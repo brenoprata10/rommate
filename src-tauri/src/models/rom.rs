@@ -33,7 +33,7 @@ pub struct Rom {
     fs_size_bytes: i64,
     name: String,
     slug: Option<String>,
-    summary: String,
+    summary: Option<String>,
     alternative_names: Vec<String>,
     youtube_video_id: Option<String>,
     metadatum: RomMetadatum,

@@ -1,14 +1,19 @@
 import {useEffect, useState} from 'react'
-import ContentCard from './content-card'
 import {marked} from 'marked'
+import HeroCard from './hero-card'
+import clsx from 'clsx'
 
 export default function MarkdownCard({
+	id,
 	title,
 	markdownData,
+	disableDialog,
 	className
 }: {
+	id: string
 	title: string
 	markdownData: string
+	disableDialog?: boolean
 	className?: string
 }) {
 	const [content, setContent] = useState<string | null>(null)
@@ -20,7 +25,7 @@ export default function MarkdownCard({
 				const titleAttr = title ? ` title="${title}"` : ''
 				return `<a 
 					href="${href}"
-					style="color:#3B82F6;text-decoration:underline;"
+					style="color:#3B82F6;text-decoration:underline"
 					target="_blank" 
 					rel="noopener noreferrer"${titleAttr}
 				>${text}</a>`
@@ -37,8 +42,13 @@ export default function MarkdownCard({
 	}
 
 	return (
-		<ContentCard title={title} className={className}>
-			<div dangerouslySetInnerHTML={{__html: content}} />
-		</ContentCard>
+		<HeroCard
+			id={id}
+			title={title}
+			className={clsx(['break-words', className])}
+			disableDialog={disableDialog}
+			component={<div dangerouslySetInnerHTML={{__html: content}} />}
+			dialogComponent={<div dangerouslySetInnerHTML={{__html: content}} />}
+		/>
 	)
 }

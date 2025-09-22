@@ -8,7 +8,7 @@ pub struct LaunchBoxMetadata {
     release_type: Option<String>,
     cooperative: Option<bool>,
     youtube_video_id: Option<String>,
-    community_rating: Option<i8>,
+    community_rating: Option<f32>,
     wikipedia_url: Option<String>,
     esrb: Option<String>,
     genres: Option<Vec<String>>,

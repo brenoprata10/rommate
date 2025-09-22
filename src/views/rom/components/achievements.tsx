@@ -7,7 +7,7 @@ import {RAResults} from '@/models/user'
 import clsx from 'clsx'
 
 const MAX_ITEMS_COLLAPSED = 3
-const MAX_ITEMS_LOCKED_COLLAPSED = 2
+const MAX_ITEMS_LOCKED_COLLAPSED = 3
 
 export default function Achievements({
 	raId,
@@ -29,6 +29,7 @@ export default function Achievements({
 		(achievement) => !userUnlockedAchievementsIds?.includes(achievement.badgeId)
 	)
 	const value = userRomAchievements ? (userRomAchievements.numAwarded * 100) / userRomAchievements.maxPossible : 0
+	const totalAchievementsCount = availableAchievements.achievements.length
 
 	return (
 		<HeroCard
@@ -41,6 +42,7 @@ export default function Achievements({
 					userRomAchievements={userRomAchievements}
 					unlockedAchievements={unlockedAchievements.slice(0, MAX_ITEMS_COLLAPSED)}
 					lockedAchievements={lockedAchievements.slice(0, MAX_ITEMS_LOCKED_COLLAPSED)}
+					totalAchievementsCount={totalAchievementsCount}
 				/>
 			}
 			dialogComponent={
@@ -50,6 +52,7 @@ export default function Achievements({
 					userRomAchievements={userRomAchievements}
 					unlockedAchievements={unlockedAchievements}
 					lockedAchievements={lockedAchievements}
+					totalAchievementsCount={totalAchievementsCount}
 				/>
 			}
 		/>
@@ -61,19 +64,22 @@ const AchievementCardWrapper = ({
 	userRomAchievements,
 	lockedAchievements,
 	unlockedAchievements,
-	contentClassName
+	contentClassName,
+	totalAchievementsCount
 }: {
 	value: number
 	userRomAchievements?: RAResults
 	lockedAchievements: RetroAchievement[]
 	unlockedAchievements: RetroAchievement[]
 	contentClassName?: string
+	totalAchievementsCount?: number
 }) => {
+	console.log(userRomAchievements)
 	return (
 		<div className='flex flex-col gap-2'>
 			<Progress value={value} className={'!bg-[#644F10] h-1'} indicatorClassName={'!bg-[#D97706]'} />
 			<span className='text-sm font-medium text-neutral-400 self-end'>
-				{userRomAchievements?.numAwarded}/{userRomAchievements?.maxPossible} Unlocked
+				{userRomAchievements?.numAwarded ?? 0}/{totalAchievementsCount} Unlocked
 			</span>
 			<div className={clsx(['gap-3', contentClassName])}>
 				{unlockedAchievements.map((achievement) => (

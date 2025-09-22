@@ -29,7 +29,7 @@ export type Rom = {
 	fsSizeBytes: number
 	name: string
 	slug?: string
-	summary: string
+	summary: string | null
 	alternativeNames: string[]
 	youtubeVideoId: string | null
 	metadatum: RomMetadatum

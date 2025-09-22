@@ -28,6 +28,7 @@ export default function RomDetail() {
 	const isGameSavesEmpty = (!gameSaves || gameSaves.length === 0) && (!gameStates || gameStates.length === 0)
 	const igdbScore = rom?.igdbMetadata?.totalRating
 	const ssScore = rom?.ssMetadata?.ssScore
+	const launchboxScore = rom?.launchboxMetadata?.communityRating
 	const hideScore = (!igdbScore || igdbScore === '0.0') && !ssScore
 
 	if (!rom) {
@@ -46,15 +47,26 @@ export default function RomDetail() {
 						<Heading variant={'h1'}>{rom?.name}</Heading>
 						<ContinuePlayingRom rom={rom} hideTitle />
 					</div>
-					<RomCarousel images={screenshots} />
+					<RomCarousel className='max-xl:hidden' images={screenshots} />
 				</div>
 				<div className='flex gap-6 max-[1110px]:flex-col'>
 					<div className='grid gap-6 grid-cols-2 max-xl:grid-cols-1 w-full h-fit'>
-						<MarkdownCard title='Description' markdownData={rom.summary} />
+						{rom.summary && (
+							<MarkdownCard id={'description'} disableDialog title='Description' markdownData={rom.summary} />
+						)}
 						{!hideScore && (
 							<Score
 								igdbScore={igdbScore ? Number(igdbScore) : undefined}
 								ssScore={ssScore ? Number(ssScore) * 10 : undefined}
+								launchboxScore={launchboxScore}
+							/>
+						)}
+						{notes && (
+							<MarkdownCard
+								id={'notes'}
+								className='max-xl:col-span-1 max-[1650px]:col-span-2'
+								title='Notes'
+								markdownData={notes}
 							/>
 						)}
 						{!isGameSavesEmpty && (
@@ -63,9 +75,6 @@ export default function RomDetail() {
 								states={gameStates ?? []}
 								className='max-xl:col-span-1 max-[1650px]:col-span-2'
 							/>
-						)}
-						{notes && (
-							<MarkdownCard className='max-xl:col-span-1 max-[1650px]:col-span-2' title='Notes' markdownData={notes} />
 						)}
 					</div>
 					<div className='flex flex-col gap-6'>

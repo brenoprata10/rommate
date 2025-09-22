@@ -1,8 +1,9 @@
+import clsx from 'clsx'
 import {Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious} from './carousel'
 
-export default function RomCarousel({images}: {images: string[]}) {
+export default function RomCarousel({images, className}: {images: string[]; className?: string}) {
 	return (
-		<Carousel className='max-w-[30.312rem] mb-12 flex flex-col gap-3'>
+		<Carousel className={clsx(['max-w-[30.312rem] mb-12 flex flex-col gap-3', className])}>
 			<div className='flex gap-3 justify-end'>
 				<CarouselPrevious />
 				<CarouselNext />
