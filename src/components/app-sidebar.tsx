@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {BookOpen, Bot, ComponentIcon, Gamepad2, Settings, Settings2, SquaresUnite, SquareTerminal} from 'lucide-react'
 
-import {NavMain} from '@/components/nav-main'
+import {NavItem, NavMain} from '@/components/nav-main'
 import {NavProjects} from '@/components/nav-projects'
 import {NavUser} from '@/components/nav-user'
 import {
@@ -119,7 +119,7 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
 	const {data: currentUser, error: userError} = useLoggedInUser()
 	const {data: platforms, error: platformsError} = usePlatforms()
 	const {data: collections, error: collectionsError} = useCollections()
-	const platformMenuItem = React.useMemo(
+	const platformMenuItem: NavItem = React.useMemo(
 		() => ({
 			title: 'Platfoms',
 			icon: Gamepad2,
@@ -145,7 +145,7 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
 		}),
 		[platforms, platformsError]
 	)
-	const collectionMenuItem = React.useMemo(
+	const collectionMenuItem: NavItem = React.useMemo(
 		() => ({
 			title: 'Collections',
 			icon: SquaresUnite,

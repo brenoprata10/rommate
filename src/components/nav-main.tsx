@@ -9,61 +9,100 @@ import {
 	SidebarMenuItem,
 	SidebarMenuSub,
 	SidebarMenuSubButton,
-	SidebarMenuSubItem
+	SidebarMenuSubItem,
+	useSidebar
 } from '@/components/ui/sidebar'
 import {Badge} from './ui/badge'
+import {useLocation, useNavigate} from 'react-router'
+import {useCallback, useState} from 'react'
 
-export function NavMain({
-	items
-}: {
-	items: {
+export type NavItem = {
+	title: string
+	url: string
+	icon?: LucideIcon
+	isActive?: boolean
+	items?: {
 		title: string
 		url: string
-		icon?: LucideIcon
-		isActive?: boolean
-		items?: {
-			title: string
-			url: string
-			badge: string
-		}[]
+		badge: string
 	}[]
-}) {
+}
+
+export function NavMain({items}: {items: NavItem[]}) {
 	return (
 		<SidebarGroup>
 			<SidebarGroupLabel>Romm</SidebarGroupLabel>
 			<SidebarMenu>
 				{items.map((item) => (
-					<Collapsible key={item.title} asChild defaultOpen={item.isActive} className='group/collapsible'>
-						<SidebarMenuItem>
-							<CollapsibleTrigger asChild>
-								<SidebarMenuButton tooltip={item.title}>
-									{item.icon && <item.icon />}
-									<span>{item.title}</span>
-									<ChevronRight className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
-								</SidebarMenuButton>
-							</CollapsibleTrigger>
-							<CollapsibleContent>
-								<SidebarMenuSub>
-									{item.items?.map((subItem) => (
-										<SidebarMenuSubItem key={subItem.title}>
-											<SidebarMenuSubButton asChild>
-												<a href={subItem.url} className='flex justify-between'>
-													<span className='max-w-[8.75rem] overflow-hidden text-ellipsis whitespace-nowrap'>
-														{subItem.title}
-													</span>
-													<Badge className='text-xs' variant={'secondary'}>
-														{subItem.badge}
-													</Badge>
-												</a>
-											</SidebarMenuSubButton>
-										</SidebarMenuSubItem>
-									))}
-								</SidebarMenuSub>
-							</CollapsibleContent>
-						</SidebarMenuItem>
-					</Collapsible>
+					<CollapsibleItem key={item.title} item={item} />
 				))}
 			</SidebarMenu>
 		</SidebarGroup>
+	)
+}
+
+const CollapsibleItem = ({item}: {item: NavItem}) => {
+	const location = useLocation()
+	const navigate = useNavigate()
+	const {state, setOpen} = useSidebar()
+	const [isOpened, setIsOpened] = useState(location.state?.navItems?.[item.title] ?? false)
+
+	const onClickCollapsible = useCallback(() => {
+		if (state === 'collapsed') {
+			setIsOpened(true)
+			setOpen(true)
+			return
+		}
+		setIsOpened(!isOpened)
+	}, [isOpened, state, setOpen])
+
+	const onClickItem = useCallback(
+		(event: React.MouseEvent<HTMLDivElement, MouseEvent>, url: string) => {
+			event.stopPropagation()
+			navigate(url, {state: {navItems: {[item.title]: isOpened}}})
+		},
+		[isOpened, item.title, navigate]
+	)
+
+	return (
+		<Collapsible
+			key={item.title}
+			asChild
+			defaultOpen={isOpened}
+			onClick={onClickCollapsible}
+			open={isOpened}
+			className='group/collapsible'
+		>
+			<SidebarMenuItem>
+				<CollapsibleTrigger asChild>
+					<SidebarMenuButton tooltip={item.title}>
+						{item.icon && <item.icon />}
+						<span>{item.title}</span>
+						<ChevronRight className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
+					</SidebarMenuButton>
+				</CollapsibleTrigger>
+				<CollapsibleContent>
+					<SidebarMenuSub>
+						{item.items?.map((subItem) => (
+							<SidebarMenuSubItem key={subItem.title}>
+								<SidebarMenuSubButton asChild>
+									<div
+										onClick={(event) => onClickItem(event, subItem.url)}
+										className='flex justify-between cursor-pointer'
+									>
+										<span className='max-w-[8.75rem] overflow-hidden text-ellipsis whitespace-nowrap'>
+											{subItem.title}
+										</span>
+										<Badge className='text-xs' variant={'secondary'}>
+											{subItem.badge}
+										</Badge>
+									</div>
+								</SidebarMenuSubButton>
+							</SidebarMenuSubItem>
+						))}
+					</SidebarMenuSub>
+				</CollapsibleContent>
+			</SidebarMenuItem>
+		</Collapsible>
 	)
 }

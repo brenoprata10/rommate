@@ -18,5 +18,9 @@ export default function useFocusedGame() {
 		[]
 	)
 
-	return {focusedRomId, setFocusedGame}
+	const clearFocusedGame = useCallback(() => {
+		dispatch({type: ActionEnum.SET_FOCUSED_ROM, payload: {romId: null}})
+	}, [dispatch])
+
+	return {focusedRomId, setFocusedGame, clearFocusedGame}
 }

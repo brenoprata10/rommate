@@ -1,5 +1,5 @@
 export type TCommonState = {
-	focusedRomId?: number
+	focusedRomId?: number | null
 }
 
 export const INITIAL_STATE: TCommonState = {}
@@ -10,7 +10,7 @@ export enum ActionEnum {
 
 export type Action = {
 	type: ActionEnum.SET_FOCUSED_ROM
-	payload: {romId: number}
+	payload: {romId: number | null}
 }
 
 export const reducer = (state: TCommonState, action: Action): TCommonState => {

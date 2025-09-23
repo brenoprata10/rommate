@@ -69,7 +69,7 @@ pub async fn get_roms_by_collection_id(
 
     let response = RommHttp::get(
         app_handle,
-        &format!("/api/roms?{}={}", collection_param, id),
+        &format!("/api/roms?limit=10000&{}={}", collection_param, id),
     )?
     .send()
     .await?;
