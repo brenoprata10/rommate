@@ -50,6 +50,7 @@ export default function GameCover({
 
 	return (
 		<motion.img
+			loading='lazy'
 			className={clsx([className, onHover && 'hover:border-neutral-200 cursor-pointer'])}
 			width={width}
 			height={height}

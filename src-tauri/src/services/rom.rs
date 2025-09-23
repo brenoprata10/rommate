@@ -13,7 +13,9 @@ pub struct RomPayload {
 }
 
 pub async fn get_roms(app_handle: &AppHandle) -> Result<RomPayload, Error> {
-    let response = RommHttp::get(app_handle, "/api/roms")?.send().await?;
+    let response = RommHttp::get(app_handle, "/api/roms?limit=10000")?
+        .send()
+        .await?;
 
     let roms = response.json::<RomPayload>().await?;
 

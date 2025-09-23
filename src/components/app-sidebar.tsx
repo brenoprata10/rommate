@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {BookOpen, Bot, ComponentIcon, Gamepad2, Settings, Settings2, SquaresUnite, SquareTerminal} from 'lucide-react'
+import {ComponentIcon, Gamepad2, Home, SearchIcon, Settings, SquaresUnite} from 'lucide-react'
 
 import {NavItem, NavMain} from '@/components/nav-main'
 import {NavProjects} from '@/components/nav-projects'
@@ -8,104 +8,19 @@ import {
 	Sidebar,
 	SidebarContent,
 	SidebarFooter,
+	SidebarGroup,
 	SidebarHeader,
+	SidebarMenuButton,
 	SidebarRail,
 	SidebarTrigger
 } from '@/components/ui/sidebar'
 import useLoggedInUser from '@/hooks/api/use-logged-in-user'
 import usePlatforms from '@/hooks/api/use-platforms'
 import useCollections from '@/hooks/api/use-collections'
-import {NavLink} from 'react-router'
+import {Link, NavLink} from 'react-router'
+import useSearchDialog from '@/hooks/use-search-dialog'
 
-// This is sample data.
 const data = {
-	navMain: [
-		{
-			title: 'Playground',
-			url: '#',
-			icon: SquareTerminal,
-			isActive: true,
-			items: [
-				{
-					title: 'History',
-					url: '#'
-				},
-				{
-					title: 'Starred',
-					url: '#'
-				},
-				{
-					title: 'Settings',
-					url: '#'
-				}
-			]
-		},
-		{
-			title: 'Models',
-			url: '#',
-			icon: Bot,
-			items: [
-				{
-					title: 'Genesis',
-					url: '#'
-				},
-				{
-					title: 'Explorer',
-					url: '#'
-				},
-				{
-					title: 'Quantum',
-					url: '#'
-				}
-			]
-		},
-		{
-			title: 'Documentation',
-			url: '#',
-			icon: BookOpen,
-			items: [
-				{
-					title: 'Introduction',
-					url: '#'
-				},
-				{
-					title: 'Get Started',
-					url: '#'
-				},
-				{
-					title: 'Tutorials',
-					url: '#'
-				},
-				{
-					title: 'Changelog',
-					url: '#'
-				}
-			]
-		},
-		{
-			title: 'Settings',
-			url: '#',
-			icon: Settings2,
-			items: [
-				{
-					title: 'General',
-					url: '#'
-				},
-				{
-					title: 'Team',
-					url: '#'
-				},
-				{
-					title: 'Billing',
-					url: '#'
-				},
-				{
-					title: 'Limits',
-					url: '#'
-				}
-			]
-		}
-	],
 	settings: [
 		{
 			name: 'General',
@@ -116,6 +31,7 @@ const data = {
 }
 
 export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
+	const {toggleSearchDialog} = useSearchDialog()
 	const {data: currentUser, error: userError} = useLoggedInUser()
 	const {data: platforms, error: platformsError} = usePlatforms()
 	const {data: collections, error: collectionsError} = useCollections()
@@ -174,6 +90,18 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
 				</NavLink>
 			</SidebarHeader>
 			<SidebarContent>
+				<SidebarGroup>
+					<Link to='/'>
+						<SidebarMenuButton tooltip={'Home'}>
+							{<Home />}
+							<span>Home</span>
+						</SidebarMenuButton>
+					</Link>
+					<SidebarMenuButton tooltip={'Search'} onClick={toggleSearchDialog}>
+						{<SearchIcon />}
+						<span>Search</span>
+					</SidebarMenuButton>
+				</SidebarGroup>
 				<NavMain items={[platformMenuItem, collectionMenuItem]} />
 				<NavProjects projects={data.settings} />
 			</SidebarContent>

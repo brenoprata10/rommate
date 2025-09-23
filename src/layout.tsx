@@ -4,6 +4,7 @@ import {SidebarProvider} from '@/components/ui/sidebar'
 import {CommonContext, CommonDispatchContext} from '@/context'
 import {useReducer} from 'react'
 import {INITIAL_STATE, reducer} from '@/reducer'
+import SearchMenu from './components/search-menu'
 
 export default function Layout() {
 	const [state, dispatch] = useReducer(reducer, INITIAL_STATE)
@@ -14,6 +15,7 @@ export default function Layout() {
 				<SidebarProvider>
 					<AppSidebar />
 					<Outlet />
+					<SearchMenu />
 				</SidebarProvider>
 			</CommonContext.Provider>
 		</CommonDispatchContext.Provider>
