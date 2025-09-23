@@ -4,6 +4,7 @@ import Home from '@/views/home'
 import Layout from '@/layout'
 import RomDetail from '@/views/rom'
 import Collection from '@/views/collection'
+import Platform from '@/views/platform'
 
 const router = createBrowserRouter([
 	{
@@ -12,7 +13,8 @@ const router = createBrowserRouter([
 		children: [
 			{index: true, Component: Home},
 			{path: '/rom/:id', Component: RomDetail},
-			{path: '/collection/:id', Component: Collection}
+			{path: '/collection/:id', Component: Collection},
+			{path: '/platform/:id', Component: Platform}
 		]
 	},
 	{

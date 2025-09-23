@@ -65,17 +65,10 @@ const CollapsibleItem = ({item}: {item: NavItem}) => {
 	)
 
 	return (
-		<Collapsible
-			key={item.title}
-			asChild
-			defaultOpen={isOpened}
-			onClick={onClickCollapsible}
-			open={isOpened}
-			className='group/collapsible'
-		>
+		<Collapsible key={item.title} asChild defaultOpen={isOpened} open={isOpened} className='group/collapsible'>
 			<SidebarMenuItem>
 				<CollapsibleTrigger asChild>
-					<SidebarMenuButton tooltip={item.title}>
+					<SidebarMenuButton tooltip={item.title} onClick={onClickCollapsible}>
 						{item.icon && <item.icon />}
 						<span>{item.title}</span>
 						<ChevronRight className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />

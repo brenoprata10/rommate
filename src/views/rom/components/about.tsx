@@ -12,6 +12,7 @@ import {
 	LibraryBig,
 	LucideProps,
 	Map,
+	Music,
 	Puzzle,
 	Rocket,
 	Sword,
@@ -44,7 +45,8 @@ const GENRE_CONFIG: Record<string, LucideIconComponent> = {
 	indie: TrendingUpDownIcon,
 	strategy: Puzzle,
 	sport: Volleyball,
-	'turn-based strategy (tbs)': Dices
+	'turn-based strategy (tbs)': Dices,
+	music: Music
 }
 
 export default function About({rom}: {rom: Rom}) {

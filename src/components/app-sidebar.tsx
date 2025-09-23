@@ -127,6 +127,7 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
 			items:
 				platforms && !platformsError
 					? platforms
+							.filter((platform) => platform.romCount !== 0)
 							?.map((platform) => ({
 								title: platform.name,
 								url: `/platform/${platform.id}`,

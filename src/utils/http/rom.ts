@@ -24,3 +24,7 @@ export const getRomsByCollectionId = async (
 ): Promise<TauriCommandPayload<{items: Rom[]}>> => {
 	return tauriInvoke(TauriCommandKey.GET_ROMS_BY_COLLECTION_ID, {id: id.toString(), collectionType})
 }
+
+export const getRomsByPlatformId = async (id: number | string): Promise<TauriCommandPayload<{items: Rom[]}>> => {
+	return tauriInvoke(TauriCommandKey.GET_ROMS_BY_PLATFORM_ID, {id: id.toString()})
+}
