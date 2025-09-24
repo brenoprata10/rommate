@@ -5,6 +5,7 @@ import {CommonContext, CommonDispatchContext} from '@/context'
 import {useReducer} from 'react'
 import {INITIAL_STATE, reducer} from '@/reducer'
 import SearchMenu from './components/search-menu'
+import DownloadManager from './components/download-manager'
 
 export default function Layout() {
 	const [state, dispatch] = useReducer(reducer, INITIAL_STATE)
@@ -16,6 +17,7 @@ export default function Layout() {
 					<AppSidebar />
 					<Outlet />
 					<SearchMenu />
+					<DownloadManager />
 				</SidebarProvider>
 			</CommonContext.Provider>
 		</CommonDispatchContext.Provider>

@@ -1,5 +1,6 @@
 use commands::asset::command_get_asset;
 use commands::collection::command_get_collections;
+use commands::downloader::download;
 use commands::login::login;
 use commands::platform::command_get_platforms;
 use commands::rom::{
@@ -32,7 +33,8 @@ pub fn run() {
             command_get_collections,
             command_get_asset,
             command_get_roms_by_collection_id,
-            command_get_roms_by_platform_id
+            command_get_roms_by_platform_id,
+            download
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

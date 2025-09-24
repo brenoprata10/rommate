@@ -1,11 +1,14 @@
 import {Button} from '@/components/ui/button'
 import GameCover from '@/components/ui/game-cover'
 import Heading from '@/components/ui/heading'
+import {CommonDispatchContext} from '@/context'
+import useServerUrl from '@/hooks/use-server-url'
 import {Rom} from '@/models/rom'
+import {ActionEnum} from '@/reducer'
 import clsx from 'clsx'
 import {PlayIcon} from 'lucide-react'
 import {motion} from 'motion/react'
-import {useCallback} from 'react'
+import {useCallback, useContext} from 'react'
 
 export default function ContinuePlayingRom({
 	rom,
@@ -19,10 +22,19 @@ export default function ContinuePlayingRom({
 	onHover?: (romId: number) => void
 }) {
 	const romURL = `/rom/${rom.id}`
+	const serverURL = useServerUrl()
+	const dispatch = useContext(CommonDispatchContext)
 
 	const handleHover = useCallback(() => {
 		onHover?.(rom.id)
 	}, [onHover, rom.id])
+
+	const downloadRom = useCallback(() => {
+		dispatch({
+			type: ActionEnum.ADD_DOWNLOAD_TO_QUEUE,
+			payload: {url: `${serverURL}/api/${romURL}/content/${rom.fsName}`, title: rom.name}
+		})
+	}, [dispatch, rom.fsName, romURL, serverURL, rom.name])
 
 	return (
 		<motion.div
@@ -48,6 +60,7 @@ export default function ContinuePlayingRom({
 					</a>
 				)}
 				<Button
+					onClick={downloadRom}
 					className={`
 						bg-neutral-900
 						text-white 
