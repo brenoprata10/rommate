@@ -10,7 +10,7 @@ use super::{
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all(serialize = "camelCase"))]
 pub struct Rom {
-    id: i32,
+    pub id: i32,
     igdb_id: Option<i64>,
     sgdb_id: Option<i64>,
     moby_id: Option<i64>,
@@ -25,12 +25,12 @@ pub struct Rom {
     platform_name: String,
     platform_custom_name: String,
     platform_display_name: String,
-    fs_name: String,
+    pub fs_name: String,
     fs_name_no_tags: String,
     fs_name_no_ext: String,
     fs_extension: String,
     fs_path: String,
-    fs_size_bytes: i64,
+    pub fs_size_bytes: i64,
     name: String,
     slug: Option<String>,
     summary: Option<String>,

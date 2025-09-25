@@ -1,10 +1,10 @@
-import {DownloadEvent} from '@/utils/downloader'
+import {DownloadEvent, DownloadStartPayload} from '@/utils/downloader'
 
 export type TCommonState = {
 	focusedRomId?: number | null
 	isSearchDialogOpened: boolean
 	ongoingDownloads: DownloadEvent[]
-	pendingDownloads: {url: string; title: string}[]
+	pendingDownloads: DownloadStartPayload[]
 	finishedDownloads: DownloadEvent[]
 }
 
@@ -30,7 +30,7 @@ export type Action =
 			payload: {romId: number | null}
 	  }
 	| {type: ActionEnum.TOGGLE_SEARCH_DIALOG}
-	| {type: ActionEnum.ADD_DOWNLOAD_TO_QUEUE; payload: {url: string; title: string}}
+	| {type: ActionEnum.ADD_DOWNLOAD_TO_QUEUE; payload: DownloadStartPayload}
 	| {type: ActionEnum.START_DOWNLOAD; payload: {event: DownloadEvent}}
 	| {type: ActionEnum.UPDATE_DOWNLOAD; payload: {event: DownloadEvent}}
 	| {type: ActionEnum.FINISH_DOWNLOAD; payload: {event: DownloadEvent}}
@@ -45,28 +45,27 @@ export const reducer = (state: TCommonState, action: Action): TCommonState => {
 			return {...state, pendingDownloads: [...state.pendingDownloads, action.payload]}
 		case ActionEnum.START_DOWNLOAD: {
 			const {event} = action.payload
-			const downloadURL = event.event === 'started' ? event.data.url : null
-
-			if (!downloadURL) {
-				return state
-			}
 
 			return {
 				...state,
 				ongoingDownloads: [...state.ongoingDownloads, event],
-				pendingDownloads: state.pendingDownloads.filter((download) => download.url !== downloadURL)
+				pendingDownloads: state.pendingDownloads.filter((download) => download.romId !== event.data.romId)
 			}
 		}
 		case ActionEnum.UPDATE_DOWNLOAD: {
 			const otherDownloads = state.ongoingDownloads.filter(
-				(download) => download.data.downloadId !== action.payload.event.data.downloadId
+				(download) => download.data.romId !== action.payload.event.data.romId
 			)
 			return {...state, ongoingDownloads: [...otherDownloads, action.payload.event]}
 		}
 		case ActionEnum.FINISH_DOWNLOAD: {
 			const {event} = action.payload
 
-			return state
+			return {
+				...state,
+				ongoingDownloads: state.ongoingDownloads.filter((download) => download.data.romId !== event.data.romId),
+				finishedDownloads: [...state.finishedDownloads, event]
+			}
 		}
 		default:
 			throw new Error('Action not defined.')
