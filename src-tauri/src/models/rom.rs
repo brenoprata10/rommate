@@ -11,15 +11,15 @@ use super::{
 #[serde(rename_all(serialize = "camelCase"))]
 pub struct Rom {
     pub id: i32,
-    igdb_id: Option<i64>,
-    sgdb_id: Option<i64>,
-    moby_id: Option<i64>,
-    ss_id: Option<i64>,
-    ra_id: Option<i64>,
-    launchbox_id: Option<i64>,
-    hasheous_id: Option<i64>,
-    tgdb_id: Option<i64>,
-    platform_id: i16,
+    igdb_id: Option<u64>,
+    sgdb_id: Option<u64>,
+    moby_id: Option<u64>,
+    ss_id: Option<u64>,
+    ra_id: Option<u64>,
+    launchbox_id: Option<u64>,
+    hasheous_id: Option<u64>,
+    tgdb_id: Option<u64>,
+    platform_id: u16,
     platform_slug: String,
     platform_fs_slug: String,
     platform_name: String,
@@ -30,7 +30,7 @@ pub struct Rom {
     fs_name_no_ext: String,
     fs_extension: String,
     fs_path: String,
-    pub fs_size_bytes: i64,
+    pub fs_size_bytes: u64,
     name: String,
     slug: Option<String>,
     summary: Option<String>,
@@ -87,8 +87,8 @@ struct RomUserNote {
 struct RomUserCollection {
     name: String,
     description: Option<String>,
-    rom_ids: Option<Vec<i32>>,
-    rom_count: Option<i32>,
+    rom_ids: Option<Vec<u32>>,
+    rom_count: Option<u32>,
     path_cover_small: Option<String>,
     path_cover_large: Option<String>,
     path_covers_small: Option<Vec<String>>,
@@ -99,7 +99,7 @@ struct RomUserCollection {
     is_smart: Option<bool>,
     created_at: Option<DateTime<Utc>>,
     updated_at: Option<DateTime<Utc>>,
-    id: i16,
+    id: u16,
     url_cover: Option<String>,
     user_id: Option<i32>,
 }
@@ -107,15 +107,15 @@ struct RomUserCollection {
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all(serialize = "camelCase"))]
 struct RomUserSave {
-    id: i32,
-    rom_id: i32,
-    user_id: i32,
+    id: u32,
+    rom_id: u32,
+    user_id: u32,
     file_name: String,
     file_name_no_tags: String,
     file_name_no_ext: String,
     file_extension: String,
     file_path: String,
-    file_size_bytes: i64,
+    file_size_bytes: u64,
     full_path: String,
     download_path: String,
     missing_from_fs: bool,
@@ -128,15 +128,15 @@ struct RomUserSave {
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all(serialize = "camelCase"))]
 struct RomUserScreenshot {
-    id: i32,
-    rom_id: i32,
-    user_id: i32,
+    id: u32,
+    rom_id: u32,
+    user_id: u32,
     file_name: String,
     file_name_no_tags: String,
     file_name_no_ext: String,
     file_extension: String,
     file_path: String,
-    file_size_bytes: i64,
+    file_size_bytes: u64,
     full_path: String,
     download_path: String,
     missing_from_fs: bool,
@@ -147,15 +147,15 @@ struct RomUserScreenshot {
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all(serialize = "camelCase"))]
 struct RomUserState {
-    id: i64,
-    rom_id: i64,
-    user_id: i64,
+    id: u64,
+    rom_id: u64,
+    user_id: u64,
     file_name: String,
     file_name_no_tags: String,
     file_name_no_ext: String,
     file_extension: String,
     file_path: String,
-    file_size_bytes: i64,
+    file_size_bytes: u64,
     full_path: String,
     download_path: String,
     missing_from_fs: bool,
@@ -181,8 +181,8 @@ struct RomUser {
     now_playing: bool,
     hidden: bool,
     rating: i8,
-    difficulty: i8,
-    completion: i8,
+    difficulty: u8,
+    completion: u8,
     status: Option<RomUserStatus>,
 }
 
@@ -201,7 +201,7 @@ enum RomUserStatus {
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all(serialize = "camelCase"))]
 struct RomSiblings {
-    id: i64,
+    id: u64,
     name: String,
     fs_name_no_tags: String,
     fs_name_no_ext: String,
@@ -225,11 +225,11 @@ enum RomFileCategory {
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all(serialize = "camelCase"))]
 struct RomFile {
-    id: i32,
-    rom_id: i32,
+    id: u32,
+    rom_id: u32,
     file_name: String,
     file_path: String,
-    file_size_bytes: i64,
+    file_size_bytes: u64,
     full_path: String,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
@@ -243,24 +243,24 @@ struct RomFile {
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all(serialize = "camelCase"))]
 struct RomMetadatum {
-    rom_id: i64,
+    rom_id: u64,
     genres: Vec<String>,
     franchises: Vec<String>,
     collections: Vec<String>,
     companies: Vec<String>,
     game_modes: Vec<String>,
     age_ratings: Vec<String>,
-    first_release_date: Option<i64>,
+    first_release_date: Option<u64>,
     average_rating: Option<f32>,
 }
 
 #[derive(Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "UPPERCASE")]
 pub struct RomStats {
-    platforms: i32,
-    roms: i64,
-    saves: i32,
-    states: i32,
-    screenshots: i32,
-    total_filesize_bytes: i64,
+    platforms: u32,
+    roms: u64,
+    saves: u32,
+    states: u32,
+    screenshots: u32,
+    total_filesize_bytes: u64,
 }

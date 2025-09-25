@@ -8,11 +8,11 @@ export default function DownloadManager() {
 	const dispatch = useContext(CommonDispatchContext)
 	const {ongoingDownloads, pendingDownloads, finishedDownloads} = useContext(CommonContext)
 
-	console.log({ongoingDownloads, pendingDownloads, finishedDownloads})
+	//console.log({ongoingDownloads, pendingDownloads, finishedDownloads})
 
 	const handleChannelMessage = useCallback(
 		(message: DownloadEvent) => {
-			console.log({message})
+			//console.log({message})
 			if (message.event === 'started') {
 				dispatch({type: ActionEnum.START_DOWNLOAD, payload: {event: message}})
 				return
@@ -45,7 +45,7 @@ export default function DownloadManager() {
 				})
 			})
 
-			await Promise.all(promises)
+			await Promise.all(promises).catch((error) => console.error(error))
 		}
 
 		startPendingDownloads()

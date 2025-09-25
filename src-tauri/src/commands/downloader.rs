@@ -1,5 +1,6 @@
+use futures_util::StreamExt;
 use std::{fs::create_dir_all, time::Instant};
-use tokio::fs::File;
+use tokio::{fs::File, io::AsyncWriteExt};
 
 use serde::Serialize;
 use tauri::{ipc::Channel, AppHandle};
@@ -30,16 +31,7 @@ pub async fn download(
 ) -> Result<(), Error> {
     let rom = get_rom_by_id(&app_handle, rom_id).await?;
     let content_length = rom.fs_size_bytes;
-    let server_url = match get_store_value(&app_handle, "romm_url") {
-        Ok(Some(stored_url)) => Ok(stored_url),
-        Ok(None) | Err(_) => Err(Error::RommUrlNotSet()),
-    }?;
-    let file_url = format!(
-        "{}/api/roms/{}/content/{}",
-        server_url.as_str().expect("server_url must be a string"),
-        rom.id,
-        rom.fs_name
-    );
+    let file_url = format!("/api/roms/{}/content/{}", rom.id, rom.fs_name);
     let home_dir_path = match dirs::home_dir() {
         Some(path) => Ok(path),
         None => Err(Error::InternalServer(
@@ -67,22 +59,31 @@ pub async fn download(
     let response = RommHttp::get(&app_handle, &file_url)?.send().await?;
     let mut stream = response.bytes_stream();
     let mut downloaded = 0u64;
+
     let start_time = Instant::now();
+    let mut last_reported_mb: usize = 0;
+    let mb_size = 1024usize * 1024;
 
     on_event.send(DownloadEvent::Started { rom_id }).unwrap();
 
-    /*while let Some(chunk) = stream.next().await {
+    while let Some(chunk) = stream.next().await {
         let chunk = chunk?;
         file.write_all(&chunk).await?;
 
-        downloaded += chunk.len() as u64;
+        downloaded += chunk.len() as usize; // Assuming downloaded is usize
 
-        // Print progress every 1MB
-        if downloaded % (1024 * 1024) == 0 || downloaded == total_size {
+        let current_mb = downloaded / mb_size;
+        if current_mb > last_reported_mb || downloaded == content_length as usize {
+            last_reported_mb = current_mb;
+
             let elapsed = start_time.elapsed().as_secs_f64();
-            let speed = downloaded as f64 / elapsed / 1024.0 / 1024.0; // MB/s
-            let progress = if total_size > 0 {
-                (downloaded as f64 / total_size as f64 * 100.0) as u32
+            let speed = if elapsed > 0.0 {
+                downloaded as f64 / elapsed / 1024.0 / 1024.0 // MB/s (avoid div-by-zero at t=0)
+            } else {
+                0.0
+            };
+            let progress = if content_length > 0 {
+                (downloaded as f64 / content_length as f64 * 100.0) as u32
             } else {
                 0
             };
@@ -94,16 +95,7 @@ pub async fn download(
                 speed
             );
         }
-    }*/
-
-    /*for chunk_length in [15, 150, 35, 500, 300] {
-        on_event
-            .send(DownloadEvent::Progress {
-                rom_id,
-                chunk_length,
-            })
-            .unwrap();
-    }*/
+    }
 
     on_event.send(DownloadEvent::Finished { rom_id }).unwrap();
 

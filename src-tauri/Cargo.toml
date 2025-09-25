@@ -28,3 +28,4 @@ reqwest = {version = "0.12.23", features = ["cookies", "json", "stream"] }
 chrono = {version = "0.4.41", features = ["serde"] }
 tokio = "1.47.1"
 dirs = "6.0.0"
+futures-util = "0.3.31"
