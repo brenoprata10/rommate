@@ -3,7 +3,7 @@ import {motion} from 'motion/react'
 
 export default function Background({children, romId}: {children: React.ReactNode; romId?: number}) {
 	const romBackgroundImage = useBackgroundImage({romId})
-	const backgroundImageUrl = romBackgroundImage ?? '../default_bg.webp'
+	const backgroundImageUrl = romBackgroundImage ?? 'backgroundImageUrl '
 
 	return (
 		<div
@@ -21,7 +21,7 @@ export default function Background({children, romId}: {children: React.ReactNode
 		>
 			<motion.div
 				key={backgroundImageUrl}
-				initial={{opacity: 0, filter: 'blur(10px)', translateX: 10}}
+				initial={{opacity: 0.5, filter: 'blur(10px)', translateX: 10}}
 				animate={{opacity: 1, filter: 'blur(0)', translateX: 0}}
 				className='fixed w-screen h-screen top-0 left-0 bg-no-repeat bg-center bg-cover z-[-1]'
 				style={{
