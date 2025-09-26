@@ -5,10 +5,7 @@ use tokio::{fs::File, io::AsyncWriteExt};
 use serde::Serialize;
 use tauri::{ipc::Channel, AppHandle};
 
-use crate::{
-    enums::error::Error, romm::romm_http::RommHttp, services::rom::get_rom_by_id,
-    store::get_store_value,
-};
+use crate::{enums::error::Error, romm::romm_http::RommHttp, services::rom::get_rom_by_id};
 
 #[derive(Clone, Serialize)]
 #[serde(
@@ -39,9 +36,6 @@ pub async fn download(
         )),
     }?;
 
-    println!("{file_url}");
-    println!("{content_length}");
-
     let file_directory = format!(
         "{}/Rommate/Downloads",
         home_dir_path
@@ -50,15 +44,13 @@ pub async fn download(
     );
     let file_path = format!("{}/{}", file_directory, rom.fs_name);
 
-    println!("{file_path}");
-
     // Create directory path if it does not exist
     create_dir_all(&file_directory)?;
     let mut file = File::create(file_path).await?;
 
     let response = RommHttp::get(&app_handle, &file_url)?.send().await?;
     let mut stream = response.bytes_stream();
-    let mut downloaded = 0u64;
+    let mut downloaded: usize = 0;
 
     let start_time = Instant::now();
     let mut last_reported_mb: usize = 0;
@@ -70,7 +62,7 @@ pub async fn download(
         let chunk = chunk?;
         file.write_all(&chunk).await?;
 
-        downloaded += chunk.len() as usize; // Assuming downloaded is usize
+        downloaded += chunk.len();
 
         let current_mb = downloaded / mb_size;
         if current_mb > last_reported_mb || downloaded == content_length as usize {
@@ -78,7 +70,7 @@ pub async fn download(
 
             let elapsed = start_time.elapsed().as_secs_f64();
             let speed = if elapsed > 0.0 {
-                downloaded as f64 / elapsed / 1024.0 / 1024.0 // MB/s (avoid div-by-zero at t=0)
+                downloaded as f64 / elapsed / 1024.0 / 1024.0 // MB/s
             } else {
                 0.0
             };
@@ -101,40 +93,3 @@ pub async fn download(
 
     Ok(())
 }
-
-/* Start the actual download
-let response = client.get(url).send().await?;
-
-if !response.status().is_success() {
-    return Err(format!("HTTP error: {}", response.status()).into());
-}
-
-let mut file = File::create("largefile.zip").await?;
-let mut stream = response.bytes_stream();
-let mut downloaded = 0u64;
-let start_time = Instant::now();
-
-while let Some(chunk) = stream.next().await {
-    let chunk = chunk?;
-    file.write_all(&chunk).await?;
-
-    downloaded += chunk.len() as u64;
-
-    // Print progress every 1MB
-    if downloaded % (1024 * 1024) == 0 || downloaded == total_size {
-        let elapsed = start_time.elapsed().as_secs_f64();
-        let speed = downloaded as f64 / elapsed / 1024.0 / 1024.0; // MB/s
-        let progress = if total_size > 0 {
-            (downloaded as f64 / total_size as f64 * 100.0) as u32
-        } else {
-            0
-        };
-
-        println!(
-            "Downloaded: {:.1} MB | Progress: {}% | Speed: {:.1} MB/s",
-            downloaded as f64 / 1024.0 / 1024.0,
-            progress,
-            speed
-        );
-    }
-}*/

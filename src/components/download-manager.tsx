@@ -10,24 +10,6 @@ export default function DownloadManager() {
 
 	//console.log({ongoingDownloads, pendingDownloads, finishedDownloads})
 
-	const handleChannelMessage = useCallback(
-		(message: DownloadEvent) => {
-			//console.log({message})
-			if (message.event === 'started') {
-				dispatch({type: ActionEnum.START_DOWNLOAD, payload: {event: message}})
-				return
-			}
-
-			if (message.event === 'finished') {
-				dispatch({type: ActionEnum.FINISH_DOWNLOAD, payload: {event: message}})
-				return
-			}
-
-			dispatch({type: ActionEnum.UPDATE_DOWNLOAD, payload: {event: message}})
-		},
-		[dispatch]
-	)
-
 	useEffect(() => {
 		const startPendingDownloads = async () => {
 			console.log('start pending downloads')
@@ -38,18 +20,31 @@ export default function DownloadManager() {
 			const promises = pendingDownloads.map((pendingDownload) => {
 				console.log('useeffect pending', pendingDownload.romId)
 				const onEvent = new Channel<DownloadEvent>()
-				onEvent.onmessage = handleChannelMessage
+				onEvent.onmessage = (message: DownloadEvent) => {
+					console.log({message})
+					if (message.event === 'started') {
+						dispatch({type: ActionEnum.START_DOWNLOAD, payload: {event: message}})
+						return
+					}
+
+					if (message.event === 'finished') {
+						dispatch({type: ActionEnum.FINISH_DOWNLOAD, payload: {event: message}})
+						return
+					}
+
+					dispatch({type: ActionEnum.UPDATE_DOWNLOAD, payload: {event: message}})
+				}
 				return invoke('download', {
 					romId: pendingDownload.romId,
 					onEvent
 				})
 			})
 
-			await Promise.all(promises).catch((error) => console.error(error))
+			Promise.all(promises).catch((error) => console.error(error))
 		}
 
 		startPendingDownloads()
-	}, [pendingDownloads, handleChannelMessage])
+	}, [pendingDownloads, dispatch])
 
 	return null
 }
