@@ -19,6 +19,7 @@ import usePlatforms from '@/hooks/api/use-platforms'
 import useCollections from '@/hooks/api/use-collections'
 import {Link, NavLink} from 'react-router'
 import useSearchDialog from '@/hooks/use-search-dialog'
+import DownloadManager from './download-manager'
 
 const data = {
 	settings: [
@@ -107,6 +108,7 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
 			</SidebarContent>
 			<SidebarFooter>
 				<SidebarTrigger />
+				<DownloadManager />
 				{currentUser && !userError && <NavUser user={currentUser} />}
 			</SidebarFooter>
 			<SidebarRail />

@@ -1,12 +1,12 @@
-import {DownloadEvent} from '@/utils/downloader'
+import {DownloadEvent, DownloadRomEvent} from '@/utils/downloader'
 import {v4 as uuidv4} from 'uuid'
 
 export type TCommonState = {
 	focusedRomId?: number | null
 	isSearchDialogOpened: boolean
-	ongoingDownloads: DownloadEvent[]
+	ongoingDownloads: Array<DownloadEvent & {type: 'rom'; romId: number}>
 	pendingDownloads: Array<{id: string} & {type: 'rom'; romId: number}>
-	finishedDownloads: DownloadEvent[]
+	finishedDownloads: Array<DownloadEvent & {type: 'rom'; romId: number}>
 }
 
 export const INITIAL_STATE: TCommonState = {
@@ -20,9 +20,9 @@ export enum ActionEnum {
 	SET_FOCUSED_ROM = 'SET_FOCUSED_ROM',
 	TOGGLE_SEARCH_DIALOG = 'TOGGLE_SEARCH_DIALOG',
 	ADD_ROM_DOWNLOAD_TO_QUEUE = 'ADD_ROM_DOWNLOAD_TO_QUEUE',
-	START_DOWNLOAD = 'START_DOWNLOAD',
-	UPDATE_DOWNLOAD = 'UPDATE_DOWNLOAD',
-	FINISH_DOWNLOAD = 'FINISH_DOWNLOAD'
+	START_ROM_DOWNLOAD = 'START_DOWNLOAD',
+	UPDATE_ROM_DOWNLOAD = 'UPDATE_DOWNLOAD',
+	FINISH_ROM_DOWNLOAD = 'FINISH_DOWNLOAD'
 }
 
 export type Action =
@@ -32,9 +32,9 @@ export type Action =
 	  }
 	| {type: ActionEnum.TOGGLE_SEARCH_DIALOG}
 	| {type: ActionEnum.ADD_ROM_DOWNLOAD_TO_QUEUE; payload: {romId: number}}
-	| {type: ActionEnum.START_DOWNLOAD; payload: {event: DownloadEvent}}
-	| {type: ActionEnum.UPDATE_DOWNLOAD; payload: {event: DownloadEvent}}
-	| {type: ActionEnum.FINISH_DOWNLOAD; payload: {event: DownloadEvent}}
+	| {type: ActionEnum.START_ROM_DOWNLOAD; payload: {event: DownloadRomEvent}}
+	| {type: ActionEnum.UPDATE_ROM_DOWNLOAD; payload: {event: DownloadRomEvent}}
+	| {type: ActionEnum.FINISH_ROM_DOWNLOAD; payload: {event: DownloadRomEvent}}
 
 export const reducer = (state: TCommonState, action: Action): TCommonState => {
 	switch (action.type) {
@@ -47,26 +47,27 @@ export const reducer = (state: TCommonState, action: Action): TCommonState => {
 				...state,
 				pendingDownloads: [...state.pendingDownloads, {id: uuidv4(), romId: action.payload.romId, type: 'rom'}]
 			}
-		case ActionEnum.START_DOWNLOAD: {
+		case ActionEnum.START_ROM_DOWNLOAD: {
 			const {event} = action.payload
 
 			return {
 				...state,
-				ongoingDownloads: [...state.ongoingDownloads, event],
+				ongoingDownloads: [...state.ongoingDownloads, {...event, type: 'rom'}],
 				pendingDownloads: state.pendingDownloads.filter((download) => download.id !== event.id)
 			}
 		}
-		case ActionEnum.UPDATE_DOWNLOAD: {
+		case ActionEnum.UPDATE_ROM_DOWNLOAD: {
+			const {event} = action.payload
 			const otherDownloads = state.ongoingDownloads.filter((download) => download.id !== action.payload.event.id)
-			return {...state, ongoingDownloads: [...otherDownloads, action.payload.event]}
+			return {...state, ongoingDownloads: [...otherDownloads, {...event, type: 'rom'}]}
 		}
-		case ActionEnum.FINISH_DOWNLOAD: {
+		case ActionEnum.FINISH_ROM_DOWNLOAD: {
 			const {event} = action.payload
 
 			return {
 				...state,
 				ongoingDownloads: state.ongoingDownloads.filter((download) => download.id !== event.id),
-				finishedDownloads: [...state.finishedDownloads, event]
+				finishedDownloads: [...state.finishedDownloads, {...event, type: 'rom'}]
 			}
 		}
 		default:

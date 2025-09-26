@@ -4,6 +4,7 @@ import {DownloadEvent} from '@/utils/downloader'
 import {downloadRom} from '@/utils/http/rom'
 import {Channel} from '@tauri-apps/api/core'
 import {useContext, useEffect} from 'react'
+import {Card} from './ui/card'
 
 export default function DownloadManager() {
 	const dispatch = useContext(CommonDispatchContext)
@@ -21,17 +22,24 @@ export default function DownloadManager() {
 				const channel = new Channel<DownloadEvent>()
 				channel.onmessage = (message: DownloadEvent) => {
 					console.log(message)
+					const romId = pendingDownload.romId
 					if (message.event === 'started') {
-						dispatch({type: ActionEnum.START_DOWNLOAD, payload: {event: message}})
+						dispatch({
+							type: ActionEnum.START_ROM_DOWNLOAD,
+							payload: {event: {...message, romId}}
+						})
 						return
 					}
 
 					if (message.event === 'finished') {
-						dispatch({type: ActionEnum.FINISH_DOWNLOAD, payload: {event: message}})
+						dispatch({
+							type: ActionEnum.FINISH_ROM_DOWNLOAD,
+							payload: {event: {...message, romId}}
+						})
 						return
 					}
 
-					dispatch({type: ActionEnum.UPDATE_DOWNLOAD, payload: {event: message}})
+					dispatch({type: ActionEnum.UPDATE_ROM_DOWNLOAD, payload: {event: {...message, romId}}})
 				}
 				return downloadRom(pendingDownload.id, pendingDownload.romId, channel)
 			})
