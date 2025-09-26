@@ -1,8 +1,9 @@
 import {CommonContext, CommonDispatchContext} from '@/context'
 import {ActionEnum} from '@/reducer'
 import {DownloadEvent} from '@/utils/downloader'
-import {Channel, invoke} from '@tauri-apps/api/core'
-import {useCallback, useContext, useEffect} from 'react'
+import {downloadRom} from '@/utils/http/rom'
+import {Channel} from '@tauri-apps/api/core'
+import {useContext, useEffect} from 'react'
 
 export default function DownloadManager() {
 	const dispatch = useContext(CommonDispatchContext)
@@ -12,16 +13,14 @@ export default function DownloadManager() {
 
 	useEffect(() => {
 		const startPendingDownloads = async () => {
-			console.log('start pending downloads')
 			if (pendingDownloads.length === 0) {
 				return
 			}
 
 			const promises = pendingDownloads.map((pendingDownload) => {
-				console.log('useeffect pending', pendingDownload.romId)
-				const onEvent = new Channel<DownloadEvent>()
-				onEvent.onmessage = (message: DownloadEvent) => {
-					console.log({message})
+				const channel = new Channel<DownloadEvent>()
+				channel.onmessage = (message: DownloadEvent) => {
+					console.log(message)
 					if (message.event === 'started') {
 						dispatch({type: ActionEnum.START_DOWNLOAD, payload: {event: message}})
 						return
@@ -34,10 +33,7 @@ export default function DownloadManager() {
 
 					dispatch({type: ActionEnum.UPDATE_DOWNLOAD, payload: {event: message}})
 				}
-				return invoke('download', {
-					romId: pendingDownload.romId,
-					onEvent
-				})
+				return downloadRom(pendingDownload.romId, channel)
 			})
 
 			Promise.all(promises).catch((error) => console.error(error))

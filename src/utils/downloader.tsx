@@ -3,7 +3,9 @@ export type DownloadStartPayload = {
 }
 export type DownloadInProgressPayload = {
 	romId: number
-	chunkLength: number
+	downloaded: number
+	progress: number
+	speed: number
 }
 export type DownloadFinishedPayload = {
 	romId: number
