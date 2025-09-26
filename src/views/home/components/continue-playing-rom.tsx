@@ -29,7 +29,7 @@ export default function ContinuePlayingRom({
 
 	const downloadRom = useCallback(() => {
 		dispatch({
-			type: ActionEnum.ADD_DOWNLOAD_TO_QUEUE,
+			type: ActionEnum.ADD_ROM_DOWNLOAD_TO_QUEUE,
 			payload: {romId: rom.id}
 		})
 	}, [dispatch, rom])

@@ -9,15 +9,15 @@ use serde::Serialize;
 )]
 pub enum DownloadEvent {
     Started {
-        rom_id: i32,
+        id: String,
     },
     Progress {
-        rom_id: i32,
+        id: String,
         downloaded: f64,
         progress: u32,
         speed: f64,
     },
     Finished {
-        rom_id: i32,
+        id: String,
     },
 }

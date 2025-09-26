@@ -31,6 +31,6 @@ export const getRomsByPlatformId = async (id: number | string): Promise<TauriCom
 	return tauriInvoke(TauriCommandKey.GET_ROMS_BY_PLATFORM_ID, {id: id.toString()})
 }
 
-export const downloadRom = async (romId: number, channel: Channel<DownloadEvent>) => {
-	return tauriInvoke(TauriCommandKey.DOWNLOAD_ROM, {romId, onEvent: channel})
+export const downloadRom = async (id: string, romId: number, channel: Channel<DownloadEvent>) => {
+	return tauriInvoke(TauriCommandKey.DOWNLOAD_ROM, {id, romId, onEvent: channel})
 }

@@ -1,8 +1,7 @@
-use futures_util::StreamExt;
 use serde::{Deserialize, Serialize};
-use std::{fs::create_dir_all, time::Instant};
+use std::fs::create_dir_all;
 use tauri::{ipc::Channel, AppHandle};
-use tokio::{fs::File, io::AsyncWriteExt};
+use tokio::fs::File;
 
 use crate::{
     enums::{download_event::DownloadEvent, error::Error},
@@ -104,6 +103,7 @@ pub async fn get_roms_by_platform_id(
 
 pub async fn download_rom(
     app_handle: &AppHandle,
+    id: String,
     rom_id: i32,
     on_event: Channel<DownloadEvent>,
 ) -> Result<(), Error> {
@@ -130,40 +130,8 @@ pub async fn download_rom(
     let mut file = File::create(file_path).await?;
 
     let response = RommHttp::get(app_handle, &file_url)?.send().await?;
-    let mut stream = response.bytes_stream();
-    let mut downloaded: usize = 0;
 
-    let start_time = Instant::now();
-    let mut last_reported_mb: usize = 0;
-    let mb_size = 1024usize * 1024;
-
-    on_event.send(DownloadEvent::Started { rom_id }).unwrap();
-
-    while let Some(chunk) = stream.next().await {
-        let chunk = chunk?;
-        file.write_all(&chunk).await?;
-
-        downloaded += chunk.len();
-
-        let current_mb = downloaded / mb_size;
-        if current_mb > last_reported_mb || downloaded == content_length as usize {
-            last_reported_mb = current_mb;
-
-            let speed = Downloader::get_speed(downloaded as f64, start_time);
-            let progress = Downloader::get_progress(downloaded as f64, content_length as f64);
-
-            on_event
-                .send(DownloadEvent::Progress {
-                    rom_id,
-                    downloaded: Downloader::get_downloaded(downloaded as f64),
-                    progress,
-                    speed,
-                })
-                .unwrap();
-        }
-    }
-
-    on_event.send(DownloadEvent::Finished { rom_id }).unwrap();
+    Downloader::track_progress(id, response, &mut file, content_length, &on_event).await?;
 
     Ok(())
 }

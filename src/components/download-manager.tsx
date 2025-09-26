@@ -33,7 +33,7 @@ export default function DownloadManager() {
 
 					dispatch({type: ActionEnum.UPDATE_DOWNLOAD, payload: {event: message}})
 				}
-				return downloadRom(pendingDownload.romId, channel)
+				return downloadRom(pendingDownload.id, pendingDownload.romId, channel)
 			})
 
 			Promise.all(promises).catch((error) => console.error(error))

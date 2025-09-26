@@ -1,20 +1,12 @@
-export type DownloadStartPayload = {
-	romId: number
-}
 export type DownloadInProgressPayload = {
-	romId: number
 	downloaded: number
 	progress: number
 	speed: number
 }
-export type DownloadFinishedPayload = {
-	romId: number
-}
 
-export type DownloadEvent =
+export type DownloadEvent = {id: string} & (
 	| {
 			event: 'started'
-			data: DownloadStartPayload
 	  }
 	| {
 			event: 'progress'
@@ -22,5 +14,5 @@ export type DownloadEvent =
 	  }
 	| {
 			event: 'finished'
-			data: DownloadFinishedPayload
 	  }
+)
