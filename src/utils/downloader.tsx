@@ -8,10 +8,9 @@ export type DownloadEvent = {id: string} & (
 	| {
 			event: 'started'
 	  }
-	| {
+	| (DownloadInProgressPayload & {
 			event: 'progress'
-			data: DownloadInProgressPayload
-	  }
+	  })
 	| {
 			event: 'finished'
 	  }

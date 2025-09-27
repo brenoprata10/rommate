@@ -43,7 +43,7 @@ impl Downloader {
                 on_event
                     .send(DownloadEvent::Progress {
                         id: id.clone(),
-                        downloaded: Downloader::get_downloaded(downloaded as f64),
+                        downloaded: downloaded as f64,
                         progress,
                         speed,
                     })
@@ -73,9 +73,5 @@ impl Downloader {
         } else {
             0
         }
-    }
-
-    pub fn get_downloaded(downloaded: f64) -> f64 {
-        downloaded / 1024.0 / 1024.0
     }
 }

@@ -4,8 +4,7 @@ use serde::Serialize;
 #[serde(
     rename_all = "camelCase",
     rename_all_fields = "camelCase",
-    tag = "event",
-    content = "data"
+    tag = "event"
 )]
 pub enum DownloadEvent {
     Started {
