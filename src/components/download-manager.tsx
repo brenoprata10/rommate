@@ -1,5 +1,5 @@
 import {CommonContext, CommonDispatchContext} from '@/context'
-import {motion} from 'motion/react'
+import {AnimatePresence, motion} from 'motion/react'
 import {ActionEnum} from '@/reducer'
 import {DownloadEvent, DownloadRomEvent} from '@/utils/downloader'
 import {downloadRom} from '@/utils/http/rom'
@@ -12,13 +12,15 @@ import {Progress} from './ui/progress'
 import {useSidebar} from './ui/sidebar'
 import clsx from 'clsx'
 import bytes from 'bytes'
+import {Button} from './ui/button'
+
+const ONE_GB_IN_BYTES = 1073741824
 
 export default function DownloadManager() {
 	const dispatch = useContext(CommonDispatchContext)
 	const {state} = useSidebar()
 	const {ongoingDownloads, pendingDownloads, finishedDownloads} = useContext(CommonContext)
-
-	//console.log({ongoingDownloads, pendingDownloads, finishedDownloads})
+	const reversedFinishedDownloads = [...finishedDownloads].reverse()
 
 	useEffect(() => {
 		const startPendingDownloads = async () => {
@@ -29,7 +31,6 @@ export default function DownloadManager() {
 			const promises = pendingDownloads.map((pendingDownload) => {
 				const channel = new Channel<DownloadEvent>()
 				channel.onmessage = (message: DownloadEvent) => {
-					//console.log(message)
 					if (message.event === 'started') {
 						dispatch({
 							type: ActionEnum.START_ROM_DOWNLOAD,
@@ -57,27 +58,28 @@ export default function DownloadManager() {
 		startPendingDownloads()
 	}, [pendingDownloads, dispatch])
 
+	const clearFinishedDownloads = useCallback(() => {
+		dispatch({type: ActionEnum.CLEAR_FINISHED_DOWNLOADS})
+	}, [dispatch])
+
 	return (
-		<div>
-			{[...ongoingDownloads, ...finishedDownloads].map((download) => (
-				<DownloadCard key={download.id} event={download} collapsed={state === 'collapsed'} />
-			))}
-			{/*<DownloadCard
-				collapsed={state === 'collapsed'}
-				event={{
-					downloaded: 7.00369930267334,
-
-					event: 'progress',
-
-					id: '0c5d6209-deb5-4f86-ae46-a5b0e309de00',
-
-					progress: 50,
-
-					romId: 1479,
-
-					speed: 46.423689922261765
-				}}
-			/>*/}
+		<div className='max-h-[30vh] scrollbar-hidden overflow-hidden overflow-y-auto gap-2 flex flex-col'>
+			{finishedDownloads.length > 0 && state === 'expanded' && (
+				<motion.div
+					initial={{opacity: 0, height: 0}}
+					animate={{opacity: 1, height: 'auto'}}
+					className='flex justify-end'
+				>
+					<Button className='text-xs py-1 px-2 cursor-pointer' variant={'outline'} onClick={clearFinishedDownloads}>
+						Clear Finished
+					</Button>
+				</motion.div>
+			)}
+			<AnimatePresence>
+				{[...ongoingDownloads, ...reversedFinishedDownloads].map((download) => (
+					<DownloadCard key={download.id} event={download} collapsed={state === 'collapsed'} />
+				))}
+			</AnimatePresence>
 		</div>
 	)
 }
@@ -97,48 +99,70 @@ const DownloadCard = ({event, collapsed}: {event: DownloadRomEvent; collapsed?: 
 		return null
 	}
 
-	console.log({event})
+	if (event.event === 'progress') {
+		console.log(bytes(Math.trunc(event.downloaded)))
+	}
+
+	const progressBar = <Progress className={clsx(['flex w-full max-h-[0.25rem]'])} value={getProgress()} />
+	const gameCover = <GameCover id={event.romId} src={rom.pathCoverSmall} width={'60'} height={'80'} />
+	const wrapperAnimations = {
+		initial: {opacity: 0, height: 0},
+		animate: {opacity: 1, height: 'auto'},
+		exit: {opacity: 0, height: 0}
+	}
+	const romURL = `/rom/${event.romId}`
+
+	if (collapsed) {
+		return (
+			<motion.div {...wrapperAnimations}>
+				<Link className='flex gap-2 w-full flex-col py-3' to={romURL}>
+					<div className='max-w-[1.938rem]'>{gameCover}</div>
+					<div className='flex flex-col gap-2 grow'>{progressBar}</div>
+				</Link>
+			</motion.div>
+		)
+	}
 
 	return (
-		<motion.div initial={{opacity: 0, translateX: -20}} animate={{opacity: 1, translateX: 0}}>
-			<Link
-				className={clsx(['flex gap-2 items-center w-full', collapsed ? 'flex-col py-3' : 'p-2'])}
-				to={`/rom/${event.romId}`}
-			>
-				<GameCover
-					id={event.romId}
-					src={rom.pathCoverSmall}
-					width={collapsed ? '60' : '42'}
-					height={collapsed ? '80' : '56'}
-				/>
-				<div className='flex flex-col gap-1 grow'>
-					{!collapsed && <span className='font-medium text-sm'>{rom.name}</span>}
+		<motion.div {...wrapperAnimations} className='transition-colors hover:bg-neutral-800 rounded-md'>
+			<Link className='flex gap-2 w-full p-2 item-start' to={romURL}>
+				<div className='max-w-[2.925rem] min-w-[2.938rem]'>{gameCover}</div>
+				<div className='flex flex-col gap-2 grow'>
+					<motion.span
+						initial={{opacity: 0, translateY: 10}}
+						animate={{opacity: 1, translateY: 0}}
+						className='font-medium text-sm max-w-[8.75rem] overflow-hidden text-ellipsis whitespace-nowrap'
+					>
+						{rom.name}
+					</motion.span>
 
 					<>
-						{!collapsed && (
-							<div
-								className={clsx([
-									'w-full flex gap-1 text-xs text-neutral-400',
-									event.event === 'progress' ? 'justify-between' : 'justify-end'
-								])}
-							>
-								{event.event === 'progress' ? (
-									<>
-										<span>{bytes(event.downloaded, {unit: 'GB'})}</span>
-										<span>{Math.trunc(event.speed)} MB/s</span>
-									</>
-								) : (
-									<motion.span
-										initial={{opacity: 0, translateY: 10}}
-										animate={{opacity: 1, translateY: 0}}
-										className='justify-self-end'
-									>
-										Finished
-									</motion.span>
-								)}
-							</div>
-						)}
-						<Progress className={clsx(['flex w-full min-w-[2.2rem] max-h-[0.25rem]'])} value={getProgress()} />
+						<div
+							className={clsx([
+								'w-full flex gap-1 text-xs text-neutral-400',
+								event.event === 'progress' ? 'justify-between' : 'justify-end'
+							])}
+						>
+							{event.event === 'progress' ? (
+								<>
+									<span>
+										{event.downloaded >= ONE_GB_IN_BYTES
+											? bytes(event.downloaded, {unit: 'GB'})
+											: bytes(Math.trunc(event.downloaded), {decimalPlaces: 0})}
+									</span>
+									<span>{Math.trunc(event.speed)}MB/s</span>
+								</>
+							) : (
+								<motion.span
+									initial={{opacity: 0, translateY: 10}}
+									animate={{opacity: 1, translateY: 0}}
+									className='justify-self-end'
+								>
+									Finished
+								</motion.span>
+							)}
+						</div>
+						{progressBar}
 					</>
 				</div>
 			</Link>

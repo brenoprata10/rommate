@@ -3,12 +3,14 @@ import useAsset from '@/hooks/api/use-asset'
 import {RomUserSave} from '@/models/rom'
 import bytes from 'bytes'
 import {motion} from 'motion/react'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {formatDistanceToNow} from 'date-fns'
 
 const BADGE_CLASSNAME = 'bg-neutral-700 text-neutral-200 text-xs font-medium'
 
-export default function UserSave({data}: {data: RomUserSave}) {
+const DEFAULT_ROMM_LOGO = '/romm_logo.jpg'
+
+function UserSave({data}: {data: RomUserSave}) {
 	const {data: screenshotUrl} = useAsset(data.screenshot?.downloadPath)
 	const [imageURL, setImageURL] = useState<string | null>(null)
 	const lastPlayedDate = useMemo(
@@ -22,12 +24,12 @@ export default function UserSave({data}: {data: RomUserSave}) {
 			return
 		}
 		if (!data.screenshot?.downloadPath) {
-			setImageURL('/romm_logo.webp')
+			setImageURL(DEFAULT_ROMM_LOGO)
 		}
 	}, [screenshotUrl, data.screenshot?.downloadPath])
 
 	const handleError = useCallback(() => {
-		setImageURL('/romm_logo.webp')
+		setImageURL(DEFAULT_ROMM_LOGO)
 	}, [])
 
 	return (
@@ -41,7 +43,7 @@ export default function UserSave({data}: {data: RomUserSave}) {
 				width={256}
 				height={144}
 				onError={handleError}
-				src={imageURL ?? '/romm_logo.webp'}
+				src={imageURL ?? DEFAULT_ROMM_LOGO}
 			/>
 			<div className='font-medium text-neutral-200 px-3 py-5 flex flex-col gap-3'>
 				{data.fileName}
@@ -53,3 +55,5 @@ export default function UserSave({data}: {data: RomUserSave}) {
 		</motion.div>
 	)
 }
+
+export default React.memo(UserSave)

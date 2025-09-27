@@ -22,7 +22,8 @@ export enum ActionEnum {
 	ADD_ROM_DOWNLOAD_TO_QUEUE = 'ADD_ROM_DOWNLOAD_TO_QUEUE',
 	START_ROM_DOWNLOAD = 'START_DOWNLOAD',
 	UPDATE_ROM_DOWNLOAD = 'UPDATE_DOWNLOAD',
-	FINISH_ROM_DOWNLOAD = 'FINISH_DOWNLOAD'
+	FINISH_ROM_DOWNLOAD = 'FINISH_DOWNLOAD',
+	CLEAR_FINISHED_DOWNLOADS = 'CLEAR_FINISHED_DOWNLOADS'
 }
 
 export type Action =
@@ -35,6 +36,7 @@ export type Action =
 	| {type: ActionEnum.START_ROM_DOWNLOAD; payload: {event: DownloadRomEvent}}
 	| {type: ActionEnum.UPDATE_ROM_DOWNLOAD; payload: {event: DownloadRomEvent}}
 	| {type: ActionEnum.FINISH_ROM_DOWNLOAD; payload: {event: DownloadRomEvent}}
+	| {type: ActionEnum.CLEAR_FINISHED_DOWNLOADS}
 
 export const reducer = (state: TCommonState, action: Action): TCommonState => {
 	switch (action.type) {
@@ -58,8 +60,14 @@ export const reducer = (state: TCommonState, action: Action): TCommonState => {
 		}
 		case ActionEnum.UPDATE_ROM_DOWNLOAD: {
 			const {event} = action.payload
-			const otherDownloads = state.ongoingDownloads.filter((download) => download.id !== action.payload.event.id)
-			return {...state, ongoingDownloads: [...otherDownloads, {...event, type: 'rom'}]}
+			const updatedEventIndex = state.ongoingDownloads.findIndex((download) => download.id === event.id)
+			if (updatedEventIndex === -1) {
+				return state
+			}
+			const updatedOngoingDownloads = [...state.ongoingDownloads]
+			updatedOngoingDownloads[updatedEventIndex] = {...event, type: 'rom'}
+
+			return {...state, ongoingDownloads: updatedOngoingDownloads}
 		}
 		case ActionEnum.FINISH_ROM_DOWNLOAD: {
 			const {event} = action.payload
@@ -69,6 +77,9 @@ export const reducer = (state: TCommonState, action: Action): TCommonState => {
 				ongoingDownloads: state.ongoingDownloads.filter((download) => download.id !== event.id),
 				finishedDownloads: [...state.finishedDownloads, {...event, type: 'rom'}]
 			}
+		}
+		case ActionEnum.CLEAR_FINISHED_DOWNLOADS: {
+			return {...state, finishedDownloads: []}
 		}
 		default:
 			throw new Error('Action not defined.')

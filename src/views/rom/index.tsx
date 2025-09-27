@@ -58,9 +58,15 @@ export default function RomDetail() {
 					<RomCarousel className='max-xl:hidden' images={screenshots} />
 				</div>
 				<div className='flex gap-6 max-[1110px]:flex-col'>
-					<div className='grid gap-6 grid-cols-2 max-xl:grid-cols-1 w-full h-fit'>
+					<div className='grid gap-6 grid-cols-2 w-full h-fit'>
 						{rom.summary && (
-							<MarkdownCard id={'description'} disableDialog title='Description' markdownData={rom.summary} />
+							<MarkdownCard
+								id={'description'}
+								disableDialog
+								className='max-xl:col-span-2'
+								title='Description'
+								markdownData={rom.summary}
+							/>
 						)}
 						{!hideScore && (
 							<Score
@@ -70,19 +76,10 @@ export default function RomDetail() {
 							/>
 						)}
 						{notes && (
-							<MarkdownCard
-								id={'notes'}
-								className='max-xl:col-span-1 max-[1650px]:col-span-2'
-								title='Notes'
-								markdownData={notes}
-							/>
+							<MarkdownCard className='max-[1450px]:col-span-2' id={'notes'} title='Notes' markdownData={notes} />
 						)}
 						{!isGameSavesEmpty && (
-							<GameData
-								saves={gameSaves ?? []}
-								states={gameStates ?? []}
-								className='max-xl:col-span-1 max-[1650px]:col-span-2'
-							/>
+							<GameData className='max-[1450px]:col-span-2' saves={gameSaves ?? []} states={gameStates ?? []} />
 						)}
 						{romCollections && romCollections.length > 0 && <RomCollections romCollections={romCollections} />}
 					</div>

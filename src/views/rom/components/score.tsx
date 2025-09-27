@@ -17,7 +17,7 @@ export default function Score({
 	launchboxScore?: number
 }) {
 	return (
-		<div>
+		<div className='max-xl:col-span-2'>
 			<ContentCard title='Rating' contentClassName='flex flex-col gap-6 justify-center'>
 				{igdbScore != null && igdbScore !== 0 && (
 					<ScoreProgressBar

@@ -3,7 +3,7 @@ import {motion} from 'motion/react'
 
 export default function Background({children, romId}: {children: React.ReactNode; romId?: number}) {
 	const romBackgroundImage = useBackgroundImage({romId})
-	const backgroundImageUrl = romBackgroundImage ?? 'backgroundImageUrl '
+	const backgroundImageUrl = romBackgroundImage ?? '../default_bg.webp'
 
 	return (
 		<div

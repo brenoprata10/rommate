@@ -13,7 +13,7 @@ export default function Layout() {
 		<CommonDispatchContext.Provider value={dispatch}>
 			<CommonContext.Provider value={state}>
 				<SidebarProvider>
-					<AppSidebar />
+					<AppSidebar className='overflow-hidden' />
 					<Outlet />
 					<SearchMenu />
 				</SidebarProvider>
