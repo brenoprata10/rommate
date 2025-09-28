@@ -37,7 +37,6 @@ export default function DownloadManager() {
 				channel.onmessage = (message: DownloadEvent) => {
 					dispatch({type: ActionEnum.UPDATE_ROM_DOWNLOAD, payload: {event: {...message, romId: pendingDownload.romId}}})
 				}
-				console.log(`Starting: ${pendingDownload.romId}`)
 				return downloadRom(pendingDownload.id, pendingDownload.romId, channel)
 			})
 

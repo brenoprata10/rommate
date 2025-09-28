@@ -1,13 +1,12 @@
 import {Button} from '@/components/ui/button'
 import GameCover from '@/components/ui/game-cover'
 import Heading from '@/components/ui/heading'
-import {CommonDispatchContext} from '@/context'
+import useDownloader from '@/hooks/use-downloader'
 import {Rom} from '@/models/rom'
-import {ActionEnum} from '@/reducer'
 import clsx from 'clsx'
 import {PlayIcon} from 'lucide-react'
 import {motion} from 'motion/react'
-import {useCallback, useContext} from 'react'
+import {useCallback} from 'react'
 
 export default function ContinuePlayingRom({
 	rom,
@@ -21,18 +20,15 @@ export default function ContinuePlayingRom({
 	onHover?: (romId: number) => void
 }) {
 	const romURL = `/rom/${rom.id}`
-	const dispatch = useContext(CommonDispatchContext)
+	const {downloadRom} = useDownloader()
 
 	const handleHover = useCallback(() => {
 		onHover?.(rom.id)
 	}, [onHover, rom.id])
 
-	const downloadRom = useCallback(() => {
-		dispatch({
-			type: ActionEnum.ADD_ROM_DOWNLOAD_TO_QUEUE,
-			payload: {romId: rom.id}
-		})
-	}, [dispatch, rom])
+	const startRomDownload = useCallback(() => {
+		downloadRom(rom.id)
+	}, [rom, downloadRom])
 
 	return (
 		<motion.div
@@ -58,7 +54,7 @@ export default function ContinuePlayingRom({
 					</a>
 				)}
 				<Button
-					onClick={downloadRom}
+					onClick={startRomDownload}
 					className={`
 						bg-neutral-900
 						text-white 
