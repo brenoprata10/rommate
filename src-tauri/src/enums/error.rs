@@ -18,6 +18,8 @@ pub enum Error {
     NotFound(String),
     #[error("Cannot parse: {0}")]
     Serde(#[from] serde_json::Error),
+    #[error("Download cancelled: {0}")]
+    DownloadCancelled(String),
 }
 
 #[derive(serde::Serialize)]
@@ -32,6 +34,7 @@ enum ErrorKind {
     InternalServer(String),
     NotFound(String),
     Serde(String),
+    DownloadCancelled(String),
 }
 
 /// Helper to build a detailed error message by chaining sources.
@@ -60,6 +63,7 @@ impl serde::Serialize for Error {
             Self::NotFound(_) => ErrorKind::NotFound(error_message),
             Self::InternalServer(_) => ErrorKind::InternalServer(error_message),
             Self::Serde(_) => ErrorKind::Serde(error_message),
+            Self::DownloadCancelled(_) => ErrorKind::DownloadCancelled(error_message),
         };
         error_kind.serialize(serializer)
     }

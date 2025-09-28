@@ -19,4 +19,7 @@ pub enum DownloadEvent {
     Finished {
         id: String,
     },
+    Cancelled {
+        id: String,
+    },
 }

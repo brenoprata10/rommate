@@ -1,12 +1,14 @@
 use serde::{Deserialize, Serialize};
-use std::fs::create_dir_all;
-use tauri::{ipc::Channel, AppHandle};
+use std::{fs::create_dir_all, sync::Mutex};
+use tauri::{ipc::Channel, AppHandle, State};
 use tokio::fs::File;
+use tokio_util::sync::CancellationToken;
 
 use crate::{
     enums::{download_event::DownloadEvent, error::Error},
     models::{collection::RomCollection, rom::Rom},
     romm::romm_http::RommHttp,
+    AppState,
 };
 
 use super::downloader::Downloader;
@@ -103,6 +105,7 @@ pub async fn get_roms_by_platform_id(
 
 pub async fn download_rom(
     app_handle: &AppHandle,
+    state: State<'_, Mutex<AppState>>,
     id: String,
     rom_id: i32,
     on_event: Channel<DownloadEvent>,
@@ -127,11 +130,23 @@ pub async fn download_rom(
 
     // Create directory path if it does not exist
     create_dir_all(&file_directory)?;
-    let mut file = File::create(file_path).await?;
 
     let response = RommHttp::get(app_handle, &file_url)?.send().await?;
 
-    Downloader::track_progress(id, response, &mut file, content_length, &on_event).await?;
+    let mut app_state = state.lock().unwrap();
+    let cancellation_token = CancellationToken::new();
+    app_state
+        .downloads
+        .insert(id.clone(), cancellation_token.clone());
+
+    tauri::async_runtime::spawn(Downloader::track_progress(
+        id,
+        response,
+        file_path,
+        content_length,
+        on_event,
+        cancellation_token,
+    ));
 
     Ok(())
 }

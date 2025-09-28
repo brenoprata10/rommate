@@ -1,6 +1,9 @@
+use std::collections::HashMap;
+use std::sync::Mutex;
+
 use commands::asset::command_get_asset;
 use commands::collection::command_get_collections;
-use commands::downloader::command_download_rom;
+use commands::downloader::{command_cancel_download, command_download_rom};
 use commands::login::login;
 use commands::platform::command_get_platforms;
 use commands::rom::{
@@ -8,6 +11,7 @@ use commands::rom::{
     command_get_roms, command_get_roms_by_collection_id, command_get_roms_by_platform_id,
 };
 use commands::user::{command_get_logged_in_user, command_get_users};
+use tokio_util::sync::CancellationToken;
 
 mod commands;
 mod enums;
@@ -16,9 +20,16 @@ mod romm;
 mod services;
 mod store;
 
+pub struct AppState {
+    pub downloads: HashMap<String, CancellationToken>,
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .manage(Mutex::new(AppState {
+            downloads: HashMap::<String, CancellationToken>::new(),
+        }))
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
@@ -35,6 +46,7 @@ pub fn run() {
             command_get_roms_by_collection_id,
             command_get_roms_by_platform_id,
             command_download_rom,
+            command_cancel_download
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

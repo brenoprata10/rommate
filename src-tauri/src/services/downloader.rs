@@ -1,10 +1,14 @@
 use futures_util::StreamExt;
 use reqwest::Response;
-use std::time::Instant;
-use tauri::ipc::Channel;
+use std::{fs::remove_file, sync::Mutex, time::Instant};
+use tauri::{ipc::Channel, State};
 use tokio::{fs::File, io::AsyncWriteExt};
+use tokio_util::sync::CancellationToken;
 
-use crate::enums::{download_event::DownloadEvent, error::Error};
+use crate::{
+    enums::{download_event::DownloadEvent, error::Error},
+    AppState,
+};
 
 pub struct Downloader {}
 
@@ -12,9 +16,10 @@ impl Downloader {
     pub async fn track_progress(
         id: String,
         response: Response,
-        file: &mut File,
+        file_path: String,
         content_length: u64,
-        on_event: &Channel<DownloadEvent>,
+        on_event: Channel<DownloadEvent>,
+        cancellation_token: CancellationToken,
     ) -> Result<(), Error> {
         let mut stream = response.bytes_stream();
         let mut downloaded: usize = 0;
@@ -23,11 +28,27 @@ impl Downloader {
         let mut last_reported_mb: usize = 0;
         let mb_size = 1024usize * 1024;
 
+        let mut file = File::create(&file_path).await?;
+
+        if cancellation_token.is_cancelled() {
+            on_event
+                .send(DownloadEvent::Cancelled { id: id.clone() })
+                .unwrap();
+            return Err(Error::DownloadCancelled(id));
+        }
+
         on_event
             .send(DownloadEvent::Started { id: id.clone() })
             .unwrap();
 
         while let Some(chunk) = stream.next().await {
+            if cancellation_token.is_cancelled() {
+                println!("cancelled! {}", id);
+                remove_file(&file_path)?;
+                on_event
+                    .send(DownloadEvent::Cancelled { id: id.clone() })
+                    .unwrap();
+            }
             let chunk = chunk?;
             file.write_all(&chunk).await?;
 
@@ -73,5 +94,17 @@ impl Downloader {
         } else {
             0
         }
+    }
+}
+
+pub async fn cancel_download(state: State<'_, Mutex<AppState>>, id: String) -> Result<(), Error> {
+    let mut state = state.lock().unwrap();
+
+    if let Some(token) = state.downloads.get(&id) {
+        token.cancel();
+        state.downloads.remove(&id);
+        Ok(())
+    } else {
+        Err(Error::NotFound("Download ID not found.".to_string()))
     }
 }

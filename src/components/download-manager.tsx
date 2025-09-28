@@ -1,4 +1,5 @@
 import {CommonContext, CommonDispatchContext} from '@/context'
+import {invoke} from '@tauri-apps/api/core'
 import {AnimatePresence, motion} from 'motion/react'
 import {ActionEnum} from '@/reducer'
 import {DownloadEvent, DownloadRomEvent} from '@/utils/downloader'
@@ -99,10 +100,6 @@ const DownloadCard = ({event, collapsed}: {event: DownloadRomEvent; collapsed?: 
 		return null
 	}
 
-	if (event.event === 'progress') {
-		console.log(bytes(Math.trunc(event.downloaded)))
-	}
-
 	const progressBar = <Progress className={clsx(['flex w-full max-h-[0.25rem]'])} value={getProgress()} />
 	const gameCover = <GameCover id={event.romId} src={rom.pathCoverSmall} width={'60'} height={'80'} />
 	const wrapperAnimations = {
@@ -165,6 +162,14 @@ const DownloadCard = ({event, collapsed}: {event: DownloadRomEvent; collapsed?: 
 						{progressBar}
 					</>
 				</div>
+				<Button
+					onClick={() => {
+						console.log(`${event.id}-pause`)
+						invoke(`command_cancel_download`, {id: event.id})
+					}}
+				>
+					pause
+				</Button>
 			</Link>
 		</motion.div>
 	)
