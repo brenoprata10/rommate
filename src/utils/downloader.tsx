@@ -6,6 +6,12 @@ export type DownloadInProgressPayload = {
 
 export type DownloadEvent = {id: string} & (
 	| {
+			event: 'pending'
+	  }
+	| {
+			event: 'waiting'
+	  }
+	| {
 			event: 'started'
 	  }
 	| (DownloadInProgressPayload & {

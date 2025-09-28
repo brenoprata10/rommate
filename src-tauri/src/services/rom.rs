@@ -109,6 +109,9 @@ pub async fn download_rom(
     rom_id: i32,
     on_event: Channel<DownloadEvent>,
 ) -> Result<(), Error> {
+    on_event
+        .send(DownloadEvent::Waiting { id: id.clone() })
+        .unwrap();
     let rom = get_rom_by_id(app_handle, rom_id).await?;
     let content_length = rom.fs_size_bytes;
     let file_url = format!("/api/roms/{}/content/{}", rom.id, rom.fs_name);

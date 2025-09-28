@@ -4,7 +4,7 @@ import {ActionEnum} from '@/reducer'
 import {DownloadEvent, DownloadRomEvent} from '@/utils/downloader'
 import {downloadRom} from '@/utils/http/rom'
 import {Channel} from '@tauri-apps/api/core'
-import {useCallback, useContext, useEffect} from 'react'
+import {useCallback, useContext, useEffect, useMemo} from 'react'
 import {Link} from 'react-router'
 import GameCover from './ui/game-cover'
 import useRom from '@/hooks/api/use-rom'
@@ -19,8 +19,12 @@ const ONE_GB_IN_BYTES = 1073741824
 export default function DownloadManager() {
 	const dispatch = useContext(CommonDispatchContext)
 	const {state} = useSidebar()
-	const {ongoingDownloads, pendingDownloads, finishedDownloads, cancelledDownloads} = useContext(CommonContext)
-	const reversedFinishedDownloads = [...finishedDownloads].reverse()
+	const {downloads} = useContext(CommonContext)
+	const completedDownloads = downloads
+		.filter((download) => ['finished', 'cancelled'].includes(download.event))
+		.reverse()
+	const ongoingDownloads = downloads.filter((download) => ['progress', 'started'].includes(download.event))
+	const pendingDownloads = useMemo(() => downloads.filter((download) => download.event === 'pending'), [downloads])
 
 	useEffect(() => {
 		const startPendingDownloads = async () => {
@@ -31,24 +35,9 @@ export default function DownloadManager() {
 			const promises = pendingDownloads.map((pendingDownload) => {
 				const channel = new Channel<DownloadEvent>()
 				channel.onmessage = (message: DownloadEvent) => {
-					if (message.event === 'started') {
-						dispatch({
-							type: ActionEnum.START_ROM_DOWNLOAD,
-							payload: {event: {...message, romId: pendingDownload.romId}}
-						})
-						return
-					}
-
-					if (message.event === 'finished') {
-						dispatch({
-							type: ActionEnum.FINISH_ROM_DOWNLOAD,
-							payload: {event: {...message, romId: pendingDownload.romId}}
-						})
-						return
-					}
-
 					dispatch({type: ActionEnum.UPDATE_ROM_DOWNLOAD, payload: {event: {...message, romId: pendingDownload.romId}}})
 				}
+				console.log(`Starting: ${pendingDownload.romId}`)
 				return downloadRom(pendingDownload.id, pendingDownload.romId, channel)
 			})
 
@@ -64,7 +53,7 @@ export default function DownloadManager() {
 
 	return (
 		<div className='max-h-[30vh] scrollbar-hidden overflow-hidden overflow-y-auto gap-2 flex flex-col'>
-			{[...finishedDownloads, ...cancelledDownloads].length > 0 && state === 'expanded' && (
+			{completedDownloads.length > 0 && state === 'expanded' && (
 				<motion.div
 					initial={{opacity: 0, height: 0}}
 					animate={{opacity: 1, height: 'auto'}}
@@ -76,7 +65,7 @@ export default function DownloadManager() {
 				</motion.div>
 			)}
 			<AnimatePresence>
-				{[...ongoingDownloads, ...reversedFinishedDownloads].map((download) => (
+				{[...ongoingDownloads, ...completedDownloads].map((download) => (
 					<DownloadCard key={download.id} event={download} collapsed={state === 'collapsed'} />
 				))}
 			</AnimatePresence>

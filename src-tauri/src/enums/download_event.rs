@@ -7,6 +7,9 @@ use serde::Serialize;
     tag = "event"
 )]
 pub enum DownloadEvent {
+    Waiting {
+        id: String,
+    },
     Started {
         id: String,
     },
