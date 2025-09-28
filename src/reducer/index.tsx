@@ -7,13 +7,15 @@ export type TCommonState = {
 	ongoingDownloads: Array<DownloadEvent & {type: 'rom'; romId: number}>
 	pendingDownloads: Array<{id: string} & {type: 'rom'; romId: number}>
 	finishedDownloads: Array<DownloadEvent & {type: 'rom'; romId: number}>
+	cancelledDownloads: Array<DownloadEvent & {type: 'rom'; romId: number}>
 }
 
 export const INITIAL_STATE: TCommonState = {
 	isSearchDialogOpened: false,
 	ongoingDownloads: [],
 	pendingDownloads: [],
-	finishedDownloads: []
+	finishedDownloads: [],
+	cancelledDownloads: []
 }
 
 export enum ActionEnum {
@@ -23,6 +25,7 @@ export enum ActionEnum {
 	START_ROM_DOWNLOAD = 'START_DOWNLOAD',
 	UPDATE_ROM_DOWNLOAD = 'UPDATE_DOWNLOAD',
 	FINISH_ROM_DOWNLOAD = 'FINISH_DOWNLOAD',
+	CANCEL_ROM_DOWNLOAD = 'CANCEL_ROM_DOWNLOAD',
 	CLEAR_FINISHED_DOWNLOADS = 'CLEAR_FINISHED_DOWNLOADS'
 }
 
@@ -36,6 +39,7 @@ export type Action =
 	| {type: ActionEnum.START_ROM_DOWNLOAD; payload: {event: DownloadRomEvent}}
 	| {type: ActionEnum.UPDATE_ROM_DOWNLOAD; payload: {event: DownloadRomEvent}}
 	| {type: ActionEnum.FINISH_ROM_DOWNLOAD; payload: {event: DownloadRomEvent}}
+	| {type: ActionEnum.CANCEL_ROM_DOWNLOAD; payload: {event: DownloadRomEvent}}
 	| {type: ActionEnum.CLEAR_FINISHED_DOWNLOADS}
 
 export const reducer = (state: TCommonState, action: Action): TCommonState => {
@@ -80,6 +84,12 @@ export const reducer = (state: TCommonState, action: Action): TCommonState => {
 		}
 		case ActionEnum.CLEAR_FINISHED_DOWNLOADS: {
 			return {...state, finishedDownloads: []}
+		}
+
+		case ActionEnum.CANCEL_ROM_DOWNLOAD: {
+			const {event} = action.payload
+
+			return {...state, cancelledDownloads: [...state.cancelledDownloads, {...event, type: 'rom'}]}
 		}
 		default:
 			throw new Error('Action not defined.')

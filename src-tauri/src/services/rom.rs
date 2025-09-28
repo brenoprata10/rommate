@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::{fs::create_dir_all, sync::Mutex};
 use tauri::{ipc::Channel, AppHandle, State};
-use tokio::fs::File;
 use tokio_util::sync::CancellationToken;
 
 use crate::{

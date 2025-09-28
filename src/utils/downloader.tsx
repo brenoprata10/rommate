@@ -14,6 +14,9 @@ export type DownloadEvent = {id: string} & (
 	| {
 			event: 'finished'
 	  }
+	| {
+			event: 'cancelled'
+	  }
 )
 
 export type DownloadRomEvent = DownloadEvent & {romId: number}

@@ -1,5 +1,4 @@
 import {CommonContext, CommonDispatchContext} from '@/context'
-import {invoke} from '@tauri-apps/api/core'
 import {AnimatePresence, motion} from 'motion/react'
 import {ActionEnum} from '@/reducer'
 import {DownloadEvent, DownloadRomEvent} from '@/utils/downloader'
@@ -20,7 +19,7 @@ const ONE_GB_IN_BYTES = 1073741824
 export default function DownloadManager() {
 	const dispatch = useContext(CommonDispatchContext)
 	const {state} = useSidebar()
-	const {ongoingDownloads, pendingDownloads, finishedDownloads} = useContext(CommonContext)
+	const {ongoingDownloads, pendingDownloads, finishedDownloads, cancelledDownloads} = useContext(CommonContext)
 	const reversedFinishedDownloads = [...finishedDownloads].reverse()
 
 	useEffect(() => {
@@ -65,7 +64,7 @@ export default function DownloadManager() {
 
 	return (
 		<div className='max-h-[30vh] scrollbar-hidden overflow-hidden overflow-y-auto gap-2 flex flex-col'>
-			{finishedDownloads.length > 0 && state === 'expanded' && (
+			{[...finishedDownloads, ...cancelledDownloads].length > 0 && state === 'expanded' && (
 				<motion.div
 					initial={{opacity: 0, height: 0}}
 					animate={{opacity: 1, height: 'auto'}}
@@ -87,14 +86,46 @@ export default function DownloadManager() {
 
 const DownloadCard = ({event, collapsed}: {event: DownloadRomEvent; collapsed?: boolean}) => {
 	const {data: rom, isLoading, error} = useRom({id: event.romId})
+	const isStarted = event.event === 'started'
+	const isProgress = event.event === 'progress'
+	const isFinished = event.event === 'finished'
+	const isCancelled = event.event === 'cancelled'
 
 	const getProgress = useCallback(() => {
-		if (event.event === 'finished') {
+		if (isFinished) {
 			return 100
 		}
 
-		return event.event === 'progress' ? event.progress : 0
-	}, [event])
+		return isProgress ? event.progress : 0
+	}, [isFinished, event, isProgress])
+
+	const getStatusLabel = useCallback(() => {
+		if (isProgress) {
+			return (
+				<>
+					<span>
+						{event.downloaded >= ONE_GB_IN_BYTES
+							? bytes(event.downloaded, {unit: 'GB'})
+							: bytes(Math.trunc(event.downloaded), {decimalPlaces: 0})}
+						/{rom?.fsSizeBytes && bytes(rom?.fsSizeBytes)}
+					</span>
+
+					<span>{Math.trunc(event.speed)}MB/s</span>
+				</>
+			)
+		}
+		return (
+			<motion.span
+				initial={{opacity: 0, translateY: 10}}
+				animate={{opacity: 1, translateY: 0}}
+				className='justify-self-end'
+			>
+				{isFinished && 'Finished'}
+				{isStarted && 'Waiting'}
+				{isCancelled && 'Cancelled'}
+			</motion.span>
+		)
+	}, [event, isFinished, isStarted, isProgress, isCancelled, rom?.fsSizeBytes])
 
 	if (!rom || isLoading || error) {
 		return null
@@ -140,36 +171,11 @@ const DownloadCard = ({event, collapsed}: {event: DownloadRomEvent; collapsed?: 
 								event.event === 'progress' ? 'justify-between' : 'justify-end'
 							])}
 						>
-							{event.event === 'progress' ? (
-								<>
-									<span>
-										{event.downloaded >= ONE_GB_IN_BYTES
-											? bytes(event.downloaded, {unit: 'GB'})
-											: bytes(Math.trunc(event.downloaded), {decimalPlaces: 0})}
-									</span>
-									<span>{Math.trunc(event.speed)}MB/s</span>
-								</>
-							) : (
-								<motion.span
-									initial={{opacity: 0, translateY: 10}}
-									animate={{opacity: 1, translateY: 0}}
-									className='justify-self-end'
-								>
-									Finished
-								</motion.span>
-							)}
+							{getStatusLabel()}
 						</div>
 						{progressBar}
 					</>
 				</div>
-				<Button
-					onClick={() => {
-						console.log(`${event.id}-pause`)
-						invoke(`command_cancel_download`, {id: event.id})
-					}}
-				>
-					pause
-				</Button>
 			</Link>
 		</motion.div>
 	)

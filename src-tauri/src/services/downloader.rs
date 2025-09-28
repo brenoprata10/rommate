@@ -48,6 +48,7 @@ impl Downloader {
                 on_event
                     .send(DownloadEvent::Cancelled { id: id.clone() })
                     .unwrap();
+                return Err(Error::DownloadCancelled(id));
             }
             let chunk = chunk?;
             file.write_all(&chunk).await?;
