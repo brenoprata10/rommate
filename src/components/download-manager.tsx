@@ -1,10 +1,10 @@
-import {CommonContext, CommonDispatchContext} from '@/context'
+import {CommonDispatchContext} from '@/context'
 import {AnimatePresence, motion} from 'motion/react'
 import {ActionEnum} from '@/reducer'
 import {DownloadEvent, DownloadRomEvent} from '@/utils/downloader'
 import {downloadRom} from '@/utils/http/rom'
 import {Channel} from '@tauri-apps/api/core'
-import {useCallback, useContext, useEffect, useMemo} from 'react'
+import {useCallback, useContext, useEffect} from 'react'
 import {Link} from 'react-router'
 import GameCover from './ui/game-cover'
 import useRom from '@/hooks/api/use-rom'
@@ -13,18 +13,14 @@ import {useSidebar} from './ui/sidebar'
 import clsx from 'clsx'
 import bytes from 'bytes'
 import {Button} from './ui/button'
+import useDownloader from '@/hooks/use-downloader'
 
 const ONE_GB_IN_BYTES = 1073741824
 
 export default function DownloadManager() {
 	const dispatch = useContext(CommonDispatchContext)
 	const {state} = useSidebar()
-	const {downloads} = useContext(CommonContext)
-	const completedDownloads = downloads
-		.filter((download) => ['finished', 'cancelled'].includes(download.event))
-		.reverse()
-	const ongoingDownloads = downloads.filter((download) => ['progress', 'started'].includes(download.event))
-	const pendingDownloads = useMemo(() => downloads.filter((download) => download.event === 'pending'), [downloads])
+	const {pendingDownloads, ongoingDownloads, completedDownloads} = useDownloader()
 
 	useEffect(() => {
 		const startPendingDownloads = async () => {
@@ -74,10 +70,8 @@ export default function DownloadManager() {
 
 const DownloadCard = ({event, collapsed}: {event: DownloadRomEvent; collapsed?: boolean}) => {
 	const {data: rom, isLoading, error} = useRom({id: event.romId})
-	const isStarted = event.event === 'started'
 	const isProgress = event.event === 'progress'
 	const isFinished = event.event === 'finished'
-	const isCancelled = event.event === 'cancelled'
 
 	const getProgress = useCallback(() => {
 		if (isFinished) {
@@ -87,39 +81,11 @@ const DownloadCard = ({event, collapsed}: {event: DownloadRomEvent; collapsed?: 
 		return isProgress ? event.progress : 0
 	}, [isFinished, event, isProgress])
 
-	const getStatusLabel = useCallback(() => {
-		if (isProgress) {
-			return (
-				<>
-					<span>
-						{event.downloaded >= ONE_GB_IN_BYTES
-							? bytes(event.downloaded, {unit: 'GB'})
-							: bytes(Math.trunc(event.downloaded), {decimalPlaces: 0})}
-						/{rom?.fsSizeBytes && bytes(rom?.fsSizeBytes)}
-					</span>
-
-					<span>{Math.trunc(event.speed)}MB/s</span>
-				</>
-			)
-		}
-		return (
-			<motion.span
-				initial={{opacity: 0, translateY: 10}}
-				animate={{opacity: 1, translateY: 0}}
-				className='justify-self-end'
-			>
-				{isFinished && 'Finished'}
-				{isStarted && 'Waiting'}
-				{isCancelled && 'Cancelled'}
-			</motion.span>
-		)
-	}, [event, isFinished, isStarted, isProgress, isCancelled, rom?.fsSizeBytes])
-
 	if (!rom || isLoading || error) {
 		return null
 	}
 
-	const progressBar = <Progress className={clsx(['flex w-full max-h-[0.25rem]'])} value={getProgress()} />
+	const progressBar = <Progress className={clsx(['w-full h-[0.25rem]'])} value={getProgress()} />
 	const gameCover = <GameCover id={event.romId} src={rom.pathCoverSmall} width={'60'} height={'80'} />
 	const wrapperAnimations = {
 		initial: {opacity: 0, height: 0},
@@ -159,12 +125,40 @@ const DownloadCard = ({event, collapsed}: {event: DownloadRomEvent; collapsed?: 
 								event.event === 'progress' ? 'justify-between' : 'justify-end'
 							])}
 						>
-							{getStatusLabel()}
+							<DownloadStatus download={event} romSizeBytes={rom.fsSizeBytes} />
 						</div>
 						{progressBar}
 					</>
 				</div>
 			</Link>
 		</motion.div>
+	)
+}
+
+export const DownloadStatus = ({download, romSizeBytes}: {download: DownloadRomEvent; romSizeBytes: number}) => {
+	const isProgress = download.event === 'progress'
+
+	if (isProgress) {
+		return (
+			<>
+				<span>
+					{download.downloaded >= ONE_GB_IN_BYTES
+						? bytes(download.downloaded, {unit: 'GB'})
+						: bytes(Math.trunc(download.downloaded), {decimalPlaces: 0})}
+					/{bytes(romSizeBytes)}
+				</span>
+
+				<span>{Math.trunc(download.speed)}MB/s</span>
+			</>
+		)
+	}
+	return (
+		<motion.span
+			initial={{opacity: 0, translateY: 10}}
+			animate={{opacity: 1, translateY: 0}}
+			className='justify-self-end capitalize'
+		>
+			{download.event}
+		</motion.span>
 	)
 }

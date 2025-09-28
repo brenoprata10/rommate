@@ -1,12 +1,14 @@
+import {DownloadStatus} from '@/components/download-manager'
 import {Button} from '@/components/ui/button'
 import GameCover from '@/components/ui/game-cover'
 import Heading from '@/components/ui/heading'
+import {Progress} from '@/components/ui/progress'
 import useDownloader from '@/hooks/use-downloader'
 import {Rom} from '@/models/rom'
 import clsx from 'clsx'
 import {PlayIcon} from 'lucide-react'
 import {motion} from 'motion/react'
-import {useCallback} from 'react'
+import {useCallback, useMemo} from 'react'
 
 export default function ContinuePlayingRom({
 	rom,
@@ -20,7 +22,8 @@ export default function ContinuePlayingRom({
 	onHover?: (romId: number) => void
 }) {
 	const romURL = `/rom/${rom.id}`
-	const {downloadRom} = useDownloader()
+	const {downloadRom, getRomDownload} = useDownloader()
+	const romDownload = useMemo(() => getRomDownload(rom.id), [rom.id, getRomDownload])
 
 	const handleHover = useCallback(() => {
 		onHover?.(rom.id)
@@ -29,6 +32,14 @@ export default function ContinuePlayingRom({
 	const startRomDownload = useCallback(() => {
 		downloadRom(rom.id)
 	}, [rom, downloadRom])
+
+	const getProgress = useCallback(() => {
+		if (romDownload?.event === 'finished') {
+			return 100
+		}
+
+		return romDownload?.event === 'progress' ? romDownload.progress : 0
+	}, [romDownload])
 
 	return (
 		<motion.div
@@ -53,9 +64,27 @@ export default function ContinuePlayingRom({
 						</Heading>
 					</a>
 				)}
-				<Button
-					onClick={startRomDownload}
-					className={`
+				{romDownload ? (
+					<motion.div
+						className='flex flex-col gap-1 mb-2'
+						initial={{opacity: 0, height: 0}}
+						animate={{opacity: 1, height: 'auto'}}
+					>
+						<Heading variant={'h5'}>Downloading...</Heading>
+						<div
+							className={clsx([
+								'w-full flex gap-1 text-sm text-neutral-400',
+								romDownload.event === 'progress' ? 'justify-between' : 'justify-end'
+							])}
+						>
+							<DownloadStatus download={romDownload} romSizeBytes={rom.fsSizeBytes} />
+						</div>
+						<Progress className={clsx(['flex w-full max-h-[0.25rem]'])} value={getProgress()} />
+					</motion.div>
+				) : (
+					<Button
+						onClick={startRomDownload}
+						className={`
 						bg-neutral-900
 						text-white 
 						border 
@@ -63,9 +92,10 @@ export default function ContinuePlayingRom({
 						hover:bg-neutral-800
 						cursor-pointer
 					`}
-				>
-					<PlayIcon /> Install
-				</Button>
+					>
+						<PlayIcon /> Install
+					</Button>
+				)}
 			</div>
 		</motion.div>
 	)
