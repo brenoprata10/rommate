@@ -86,8 +86,8 @@ const BadgeList = ({list}: {list: Array<{label: string; icon: LucideIconComponen
 
 	return (
 		<div className='flex gap-3 flex-wrap'>
-			{list.map((item) => (
-				<AboutBadge key={item.label} label={item.label} badge={<item.icon {...BADGE_SIZE} />} />
+			{list.map((item, index) => (
+				<AboutBadge key={`${item.label}-${index}`} label={item.label} badge={<item.icon {...BADGE_SIZE} />} />
 			))}
 		</div>
 	)

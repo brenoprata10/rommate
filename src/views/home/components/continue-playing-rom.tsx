@@ -8,9 +8,9 @@ import {Rom} from '@/models/rom'
 import clsx from 'clsx'
 import {PlayIcon} from 'lucide-react'
 import {motion} from 'motion/react'
-import {useCallback, useMemo} from 'react'
+import React, {useCallback, useMemo} from 'react'
 
-export default function ContinuePlayingRom({
+function ContinuePlayingRom({
 	rom,
 	className,
 	hideTitle,
@@ -42,18 +42,8 @@ export default function ContinuePlayingRom({
 	}, [romDownload])
 
 	return (
-		<motion.div
-			initial={{opacity: 0}}
-			animate={{opacity: 1}}
-			className={clsx(['grid grid-cols-[14.8rem_16.812rem] max-w-[31.688rem] w-full', className])}
-		>
-			<GameCover
-				src={rom.pathCoverLarge}
-				id={rom.id}
-				width='237'
-				height='316'
-				onHover={onHover ? handleHover : undefined}
-			/>
+		<div className={clsx(['grid grid-cols-[14.8rem_16.812rem] max-w-[31.688rem] w-full', className])}>
+			<GameCover src={rom.pathCoverLarge} id={rom.id} width='237' height='316' onHover={handleHover} />
 			<div className='flex flex-col pt-[1.375rem] px-[1.375rem] justify-between'>
 				{hideTitle ? (
 					<div>&nbsp;</div>
@@ -97,6 +87,8 @@ export default function ContinuePlayingRom({
 					</Button>
 				)}
 			</div>
-		</motion.div>
+		</div>
 	)
 }
+
+export default React.memo(ContinuePlayingRom)

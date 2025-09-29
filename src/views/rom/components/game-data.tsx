@@ -4,6 +4,7 @@ import {RomUserSave, RomUserState} from '@/models/rom'
 import UserSave from './user-save'
 import Heading from '@/components/ui/heading'
 import {motion} from 'motion/react'
+import React from 'react'
 
 enum GameDataType {
 	STATE = 'STATE',
@@ -12,15 +13,25 @@ enum GameDataType {
 
 const MAX_ITEMS = 2
 
-export default function GameData({
-	saves,
-	states,
+function GameData({
+	userSaves,
+	userStates,
+	userId,
 	className
 }: {
-	saves: RomUserSave[]
-	states: RomUserState[]
+	userSaves: RomUserSave[] | null
+	userStates: RomUserState[] | null
+	userId?: number
 	className?: string
 }) {
+	const saves = userSaves?.filter((save) => save.userId === userId) ?? []
+	const states = userStates?.filter((state) => state.userId === userId) ?? []
+	const isGameSavesEmpty = (!saves || saves.length === 0) && (!states || states.length === 0)
+
+	if (isGameSavesEmpty || !userId) {
+		return null
+	}
+
 	const displayedSaves = saves.slice(0, MAX_ITEMS)
 	const displayedStates = states.slice(0, MAX_ITEMS)
 
@@ -63,3 +74,5 @@ const EmptyListMessage = () => {
 		</motion.div>
 	)
 }
+
+export default React.memo(GameData)

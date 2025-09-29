@@ -38,7 +38,7 @@ export default function MarkdownCard({
 	}, [markdownData])
 
 	if (!content) {
-		return null
+		return <div>&nbsp;</div>
 	}
 
 	return (

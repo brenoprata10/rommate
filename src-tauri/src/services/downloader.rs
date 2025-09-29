@@ -62,6 +62,8 @@ impl Downloader {
                 let speed = Downloader::get_speed(downloaded as f64, start_time);
                 let progress = Downloader::get_progress(downloaded as f64, content_length as f64);
 
+                println!("{progress} - {id}");
+
                 on_event
                     .send(DownloadEvent::Progress {
                         id: id.clone(),

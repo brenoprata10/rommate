@@ -1,21 +1,8 @@
-import {useEffect, useState} from 'react'
-import useStore from './use-store'
+import {useContext} from 'react'
+import {CommonContext} from '@/context'
 
 export default function useServerUrl() {
-	const {get} = useStore()
-	const [serverUrl, setServerUrl] = useState<string | null>(null)
+	const {serverURL} = useContext(CommonContext)
 
-	useEffect(() => {
-		const loadServerUrl = async () => {
-			const url = await get<string>('romm_url')
-			if (!url) {
-				return
-			}
-			setServerUrl(url)
-		}
-
-		loadServerUrl()
-	}, [get])
-
-	return serverUrl
+	return serverURL
 }

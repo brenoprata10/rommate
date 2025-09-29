@@ -38,7 +38,7 @@ export default function Home() {
 	)
 
 	return (
-		<Background romId={focusedRomId ?? roms?.[0].id}>
+		<>
 			<div className='z-10 py-12 gap-9 flex flex-col'>
 				<Heading variant={'h1'} className='px-header flex gap-2'>
 					<span>Welcome</span>
@@ -57,6 +57,7 @@ export default function Home() {
 					<RecentlyAdded onHover={onHoverRom} />
 				</div>
 			</div>
-		</Background>
+			<Background romId={focusedRomId ?? roms?.[0].id}>&nbsp;</Background>
+		</>
 	)
 }

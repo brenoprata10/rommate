@@ -10,7 +10,7 @@ export default function useDownloader() {
 		[downloads]
 	)
 	const ongoingDownloads = useMemo(
-		() => downloads.filter((download) => ['progress', 'started'].includes(download.event)),
+		() => downloads.filter((download) => ['progress', 'started', 'waiting'].includes(download.event)),
 		[downloads]
 	)
 	const pendingDownloads = useMemo(() => downloads.filter((download) => download.event === 'pending'), [downloads])

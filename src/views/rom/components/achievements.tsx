@@ -81,11 +81,11 @@ const AchievementCardWrapper = ({
 				{userRomAchievements?.numAwarded ?? 0}/{totalAchievementsCount} Unlocked
 			</span>
 			<div className={clsx(['gap-3', contentClassName])}>
-				{unlockedAchievements.map((achievement) => (
-					<Achievement key={achievement.ra_id} achievement={achievement} />
+				{unlockedAchievements.map((achievement, index) => (
+					<Achievement key={`${achievement.ra_id}-${index}`} achievement={achievement} />
 				))}
-				{lockedAchievements.map((achievement) => (
-					<Achievement key={achievement.ra_id} isLocked achievement={achievement} />
+				{lockedAchievements.map((achievement, index) => (
+					<Achievement key={`${achievement.ra_id}-${index}`} isLocked achievement={achievement} />
 				))}
 			</div>
 		</div>

@@ -28,7 +28,7 @@ export default function Background({children, romId}: {children: React.ReactNode
 					backgroundImage: `url("${backgroundImageUrl}")`
 				}}
 			/>
-			{children}
+			<div className='z-[1]'>{children}</div>
 		</div>
 	)
 }

@@ -2,6 +2,7 @@ import {DownloadEvent, DownloadRomEvent} from '@/utils/downloader'
 import {v4 as uuidv4} from 'uuid'
 
 export type TCommonState = {
+	serverURL?: string
 	focusedRomId?: number | null
 	isSearchDialogOpened: boolean
 	downloads: Array<DownloadEvent & {type: 'rom'; romId: number}>
@@ -17,7 +18,8 @@ export enum ActionEnum {
 	TOGGLE_SEARCH_DIALOG = 'TOGGLE_SEARCH_DIALOG',
 	ADD_ROM_DOWNLOAD_TO_QUEUE = 'ADD_ROM_DOWNLOAD_TO_QUEUE',
 	UPDATE_ROM_DOWNLOAD = 'UPDATE_ROM_DOWNLOAD',
-	CLEAR_FINISHED_DOWNLOADS = 'CLEAR_FINISHED_DOWNLOADS'
+	CLEAR_FINISHED_DOWNLOADS = 'CLEAR_FINISHED_DOWNLOADS',
+	SET_SERVER_URL = 'SET_SERVER_URL'
 }
 
 export type Action =
@@ -29,9 +31,12 @@ export type Action =
 	| {type: ActionEnum.ADD_ROM_DOWNLOAD_TO_QUEUE; payload: {romId: number}}
 	| {type: ActionEnum.UPDATE_ROM_DOWNLOAD; payload: {event: DownloadRomEvent}}
 	| {type: ActionEnum.CLEAR_FINISHED_DOWNLOADS}
+	| {type: ActionEnum.SET_SERVER_URL; payload: string}
 
 export const reducer = (state: TCommonState, action: Action): TCommonState => {
 	switch (action.type) {
+		case ActionEnum.SET_SERVER_URL:
+			return {...state, serverURL: action.payload}
 		case ActionEnum.SET_FOCUSED_ROM:
 			return {...state, focusedRomId: action.payload.romId}
 		case ActionEnum.TOGGLE_SEARCH_DIALOG:

@@ -1,14 +1,12 @@
 import useServerUrl from '@/hooks/use-server-url'
 import clsx from 'clsx'
 import {motion} from 'motion/react'
-import {useCallback, useEffect, useState} from 'react'
+import React, {useCallback, useState} from 'react'
 import {useNavigate} from 'react-router'
-import SkeletonWrapper from './skeleton-wrapper'
-import {Skeleton} from './skeleton'
 
 const className = 'border border-neutral-700 rounded-md aspect-[3/4] transition'
 
-export default function GameCover({
+function GameCover({
 	src,
 	id,
 	width,
@@ -23,14 +21,7 @@ export default function GameCover({
 }) {
 	const serverURL = useServerUrl()
 	const navigate = useNavigate()
-	const [imageURL, setImageURL] = useState<string | null>(null)
-
-	useEffect(() => {
-		if (src && serverURL) {
-			setImageURL(`${serverURL}/${src}`)
-			return
-		}
-	}, [src, serverURL])
+	const [imageURL, setImageURL] = useState<string>(`${serverURL}/${src}`)
 
 	const redirectToRomPage = useCallback(() => {
 		navigate(`/rom/${id}`)
@@ -40,18 +31,10 @@ export default function GameCover({
 		setImageURL('/unmatched_cover.webp')
 	}, [])
 
-	if (!imageURL) {
-		return (
-			<SkeletonWrapper>
-				<Skeleton className={className} />
-			</SkeletonWrapper>
-		)
-	}
-
 	return (
 		<motion.img
 			loading='lazy'
-			className={clsx([className, onHover && 'hover:border-neutral-200 cursor-pointer'])}
+			className={clsx([className, 'hover:border-neutral-200 cursor-pointer'])}
 			width={width}
 			height={height}
 			src={imageURL}
@@ -61,3 +44,5 @@ export default function GameCover({
 		/>
 	)
 }
+
+export default React.memo(GameCover)
