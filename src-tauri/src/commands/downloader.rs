@@ -24,6 +24,5 @@ pub async fn command_cancel_download(
     state: State<'_, Mutex<AppState>>,
     id: String,
 ) -> Result<(), Error> {
-    println!("cancel!");
     cancel_download(state, id).await
 }

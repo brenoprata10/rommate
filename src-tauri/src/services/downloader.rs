@@ -43,7 +43,6 @@ impl Downloader {
 
         while let Some(chunk) = stream.next().await {
             if cancellation_token.is_cancelled() {
-                println!("cancelled! {}", id);
                 remove_file(&file_path)?;
                 on_event
                     .send(DownloadEvent::Cancelled { id: id.clone() })
@@ -61,8 +60,6 @@ impl Downloader {
 
                 let speed = Downloader::get_speed(downloaded as f64, start_time);
                 let progress = Downloader::get_progress(downloaded as f64, content_length as f64);
-
-                println!("{progress} - {id}");
 
                 on_event
                     .send(DownloadEvent::Progress {
