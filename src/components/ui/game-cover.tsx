@@ -1,7 +1,7 @@
 import useServerUrl from '@/hooks/use-server-url'
 import clsx from 'clsx'
 import {motion} from 'motion/react'
-import React, {useCallback, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {useNavigate} from 'react-router'
 
 const className = 'border border-neutral-700 rounded-md aspect-[3/4] transition'
@@ -22,6 +22,10 @@ function GameCover({
 	const serverURL = useServerUrl()
 	const navigate = useNavigate()
 	const [imageURL, setImageURL] = useState<string>(`${serverURL}/${src}`)
+
+	useEffect(() => {
+		setImageURL(`${serverURL}/${src}`)
+	}, [serverURL, src])
 
 	const redirectToRomPage = useCallback(() => {
 		navigate(`/rom/${id}`)
@@ -45,4 +49,4 @@ function GameCover({
 	)
 }
 
-export default React.memo(GameCover)
+export default GameCover

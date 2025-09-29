@@ -1,9 +1,9 @@
-import {useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {marked} from 'marked'
 import HeroCard from './hero-card'
 import clsx from 'clsx'
 
-export default function MarkdownCard({
+function MarkdownCard({
 	id,
 	title,
 	markdownData,
@@ -52,3 +52,5 @@ export default function MarkdownCard({
 		/>
 	)
 }
+
+export default React.memo(MarkdownCard)
