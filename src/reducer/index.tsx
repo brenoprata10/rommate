@@ -41,11 +41,16 @@ export const reducer = (state: TCommonState, action: Action): TCommonState => {
 			return {...state, focusedRomId: action.payload.romId}
 		case ActionEnum.TOGGLE_SEARCH_DIALOG:
 			return {...state, isSearchDialogOpened: !state.isSearchDialogOpened}
-		case ActionEnum.ADD_ROM_DOWNLOAD_TO_QUEUE:
+		case ActionEnum.ADD_ROM_DOWNLOAD_TO_QUEUE: {
+			const romId = action.payload.romId
 			return {
 				...state,
-				downloads: [...state.downloads, {id: uuidv4(), romId: action.payload.romId, type: 'rom', event: 'pending'}]
+				downloads: [
+					...state.downloads.filter((download) => download.romId !== romId),
+					{id: uuidv4(), romId, type: 'rom', event: 'pending'}
+				]
 			}
+		}
 		case ActionEnum.UPDATE_ROM_DOWNLOAD: {
 			const {event} = action.payload
 

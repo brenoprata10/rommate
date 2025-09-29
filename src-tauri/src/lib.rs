@@ -4,6 +4,7 @@ use std::sync::Mutex;
 use commands::asset::command_get_asset;
 use commands::collection::command_get_collections;
 use commands::downloader::{command_cancel_download, command_download_rom};
+use commands::file::{command_is_file_downloaded, command_open_download_directory};
 use commands::login::login;
 use commands::platform::command_get_platforms;
 use commands::rom::{
@@ -46,7 +47,9 @@ pub fn run() {
             command_get_roms_by_collection_id,
             command_get_roms_by_platform_id,
             command_download_rom,
-            command_cancel_download
+            command_cancel_download,
+            command_is_file_downloaded,
+            command_open_download_directory
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -7,9 +7,10 @@ import useDownloader from '@/hooks/use-downloader'
 import {Rom} from '@/models/rom'
 import {cancelDownload} from '@/utils/http/downloader'
 import clsx from 'clsx'
-import {Ban, PlayIcon} from 'lucide-react'
+import {Ban, FolderOpen, PlayIcon} from 'lucide-react'
 import {motion} from 'motion/react'
-import React, {useCallback, useMemo} from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import {isFileDownloaded, openDownloadDirectory} from '@/utils/http/file'
 
 function ContinuePlayingRom({
 	rom,
@@ -23,9 +24,25 @@ function ContinuePlayingRom({
 	onHover?: (romId: number) => void
 }) {
 	const romURL = `/rom/${rom.id}`
+	const [isDownloaded, setIsDownloaded] = useState(false)
 	const {downloadRom, getRomDownload} = useDownloader()
 	const romDownload = useMemo(() => getRomDownload(rom.id), [rom.id, getRomDownload])
 	const isDownloadFinished = romDownload?.event === 'cancelled' || romDownload?.event === 'finished'
+
+	const checkFileDownloaded = useCallback(async () => {
+		const downloaded = await isFileDownloaded(rom.fsName)
+		if (!downloaded.success) {
+			return
+		}
+		setIsDownloaded(downloaded.data)
+	}, [rom.fsName])
+
+	useEffect(() => {
+		if (romDownload?.event === 'finished') {
+			setIsDownloaded(true)
+		}
+		checkFileDownloaded()
+	}, [checkFileDownloaded, romDownload?.event])
 
 	const handleHover = useCallback(() => {
 		onHover?.(rom.id)
@@ -35,12 +52,17 @@ function ContinuePlayingRom({
 		downloadRom(rom.id)
 	}, [rom, downloadRom])
 
-	const cancelRomDownload = useCallback(() => {
+	const cancelRomDownload = useCallback(async () => {
 		if (!romDownload?.id) {
 			return
 		}
-		cancelDownload(romDownload.id)
+		await cancelDownload(romDownload.id)
+		setIsDownloaded(false)
 	}, [romDownload])
+
+	const openFolderPath = useCallback(async () => {
+		openDownloadDirectory()
+	}, [])
 
 	const getProgress = useCallback(() => {
 		if (romDownload?.event === 'finished') {
@@ -89,7 +111,7 @@ function ContinuePlayingRom({
 					</motion.div>
 				) : (
 					<Button
-						onClick={startRomDownload}
+						onClick={isDownloaded ? openFolderPath : startRomDownload}
 						className={`
 						bg-neutral-900
 						text-white 
@@ -99,7 +121,15 @@ function ContinuePlayingRom({
 						cursor-pointer
 					`}
 					>
-						<PlayIcon /> Install
+						{isDownloaded ? (
+							<>
+								<FolderOpen /> Open file path
+							</>
+						) : (
+							<>
+								<PlayIcon /> Install
+							</>
+						)}
 					</Button>
 				)}
 			</div>

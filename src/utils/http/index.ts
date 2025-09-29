@@ -19,7 +19,9 @@ export enum TauriCommandKey {
 	GET_COLLECTIONS = 'command_get_collections',
 	GET_ASSET = 'command_get_asset',
 	DOWNLOAD_ROM = 'command_download_rom',
-	CANCEL_DOWNLOAD = 'command_cancel_download'
+	CANCEL_DOWNLOAD = 'command_cancel_download',
+	OPEN_DOWNLOAD_DIRECTORY = 'command_open_download_directory',
+	IS_FILE_DOWNLOADED = 'command_is_file_downloaded'
 }
 
 export const tauriInvoke = async <T>(

@@ -95,6 +95,22 @@ impl Downloader {
             0
         }
     }
+
+    pub fn get_download_path() -> Result<String, Error> {
+        let home_dir_path = match dirs::home_dir() {
+            Some(path) => Ok(path),
+            None => Err(Error::InternalServer(
+                "Could not retrieve home folder.".to_string(),
+            )),
+        }?;
+
+        Ok(format!(
+            "{}/Rommate/Downloads",
+            home_dir_path
+                .to_str()
+                .expect("Failed to parse home dir to string.")
+        ))
+    }
 }
 
 pub async fn cancel_download(state: State<'_, Mutex<AppState>>, id: String) -> Result<(), Error> {
