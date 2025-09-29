@@ -4,7 +4,7 @@ import {ActionEnum} from '@/reducer'
 import {DownloadEvent, DownloadRomEvent} from '@/utils/downloader'
 import {downloadRom, getRomById} from '@/utils/http/rom'
 import {Channel} from '@tauri-apps/api/core'
-import {useCallback, useContext, useEffect} from 'react'
+import {useCallback, useContext, useEffect, useState} from 'react'
 import {Link} from 'react-router'
 import GameCover from './ui/game-cover'
 import useRom from '@/hooks/api/use-rom'
@@ -20,6 +20,7 @@ const ONE_GB_IN_BYTES = 1073741824
 
 export default function DownloadManager() {
 	const dispatch = useContext(CommonDispatchContext)
+	const [notifiedDownloads, setNofifiedDownloads] = useState<string[]>([])
 	const {notify} = useNotification()
 	const {state} = useSidebar()
 	const {pendingDownloads, ongoingDownloads, completedDownloads} = useDownloader()
@@ -46,11 +47,13 @@ export default function DownloadManager() {
 
 	useEffect(() => {
 		const notifyCompletedDownloads = async () => {
-			if (completedDownloads.length === 0) {
+			const isNotified = completedDownloads.every((download) => notifiedDownloads.includes(download.id))
+			if (completedDownloads.length === 0 || isNotified) {
 				return
 			}
 			const lastCompletedDownload = completedDownloads[completedDownloads.length - 1]
 			const rom = await getRomById(lastCompletedDownload.romId)
+			setNofifiedDownloads([...notifiedDownloads, ...completedDownloads.map((download) => download.id)])
 			if (!rom.success) {
 				notify({title: `Download Completed.`, body: 'Your game has finished downloading.'})
 				return
@@ -63,7 +66,7 @@ export default function DownloadManager() {
 		}
 
 		notifyCompletedDownloads()
-	}, [completedDownloads, notify])
+	}, [completedDownloads, notify, notifiedDownloads])
 
 	const clearFinishedDownloads = useCallback(() => {
 		dispatch({type: ActionEnum.CLEAR_FINISHED_DOWNLOADS})
