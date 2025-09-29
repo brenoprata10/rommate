@@ -9,6 +9,7 @@
     "core:default",
     "opener:default",
     "store:default",
-    "opener:default"
+    "opener:default",
+    "notification:default"
   ]
 }

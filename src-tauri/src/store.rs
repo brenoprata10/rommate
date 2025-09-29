@@ -1,7 +1,7 @@
-use tauri::AppHandle;
-use serde_json::Value;
-use tauri_plugin_store::StoreExt;
 use crate::enums::error::Error;
+use serde_json::Value;
+use tauri::AppHandle;
+use tauri_plugin_store::StoreExt;
 
 const STORE_PATH: &str = "store.json";
 
