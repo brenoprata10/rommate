@@ -5,8 +5,9 @@ import Heading from '@/components/ui/heading'
 import {Progress} from '@/components/ui/progress'
 import useDownloader from '@/hooks/use-downloader'
 import {Rom} from '@/models/rom'
+import {cancelDownload} from '@/utils/http/downloader'
 import clsx from 'clsx'
-import {PlayIcon} from 'lucide-react'
+import {Ban, PlayIcon} from 'lucide-react'
 import {motion} from 'motion/react'
 import React, {useCallback, useMemo} from 'react'
 
@@ -24,6 +25,7 @@ function ContinuePlayingRom({
 	const romURL = `/rom/${rom.id}`
 	const {downloadRom, getRomDownload} = useDownloader()
 	const romDownload = useMemo(() => getRomDownload(rom.id), [rom.id, getRomDownload])
+	const isDownloadFinished = romDownload?.event === 'cancelled' || romDownload?.event === 'finished'
 
 	const handleHover = useCallback(() => {
 		onHover?.(rom.id)
@@ -32,6 +34,13 @@ function ContinuePlayingRom({
 	const startRomDownload = useCallback(() => {
 		downloadRom(rom.id)
 	}, [rom, downloadRom])
+
+	const cancelRomDownload = useCallback(() => {
+		if (!romDownload?.id) {
+			return
+		}
+		cancelDownload(romDownload.id)
+	}, [romDownload])
 
 	const getProgress = useCallback(() => {
 		if (romDownload?.event === 'finished') {
@@ -54,22 +63,29 @@ function ContinuePlayingRom({
 						</Heading>
 					</a>
 				)}
-				{romDownload ? (
+				{romDownload && !isDownloadFinished ? (
 					<motion.div
 						className='flex flex-col gap-1 mb-2'
 						initial={{opacity: 0, height: 0}}
 						animate={{opacity: 1, height: 'auto'}}
 					>
 						<Heading variant={'h5'}>Downloading...</Heading>
-						<div
-							className={clsx([
-								'w-full flex gap-1 text-sm text-neutral-400',
-								romDownload.event === 'progress' ? 'justify-between' : 'justify-end'
-							])}
-						>
-							<DownloadStatus download={romDownload} romSizeBytes={rom.fsSizeBytes} />
+						<div className='flex gap-2'>
+							<div className='flex gap-2 w-full flex-col'>
+								<div
+									className={clsx([
+										'w-full flex gap-2 text-sm text-neutral-400 items-end',
+										romDownload.event === 'progress' ? 'justify-between' : 'justify-end'
+									])}
+								>
+									<DownloadStatus download={romDownload} romSizeBytes={rom.fsSizeBytes} />
+								</div>
+								<Progress className={clsx(['flex w-full max-h-[0.25rem]'])} value={getProgress()} />
+							</div>
+							<Button variant={'destructive'} onClick={cancelRomDownload}>
+								<Ban />
+							</Button>
 						</div>
-						<Progress className={clsx(['flex w-full max-h-[0.25rem]'])} value={getProgress()} />
 					</motion.div>
 				) : (
 					<Button
