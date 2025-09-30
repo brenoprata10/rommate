@@ -19,6 +19,14 @@ A third party desktop application for [Romm](https://romm.app/) project, here ar
 - Install games directly from the app
 - Sync saves;
 
+## Screenshots
+
+<img width="1712" height="1188" alt="image" src="https://github.com/user-attachments/assets/0df7b03a-1261-4e48-a47f-b000a3c77a13" />
+<img width="2196" height="1189" alt="image" src="https://github.com/user-attachments/assets/d4685ab3-c928-4945-86c3-d495e06e2703" />
+<img width="2199" height="1199" alt="image" src="https://github.com/user-attachments/assets/31ca3288-4362-465d-8e2a-4fe5d99d9d27" />
+
+
+
 ## Contribute
 This project is powered by:
 - [Tauri](https://tauri.app/);
