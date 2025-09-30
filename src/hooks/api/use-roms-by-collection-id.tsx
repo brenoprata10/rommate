@@ -5,18 +5,22 @@ import {useQuery} from '@tanstack/react-query'
 
 export default function useRomsByCollectionId({
 	id,
-	collectionType
+	collectionType,
+	limit = 50,
+	offset = 0
 }: {
 	id?: number | string
 	collectionType?: RomCollection
+	limit?: number
+	offset?: number
 }) {
 	return useQuery({
-		queryKey: [QueryKey.ROM_BY_COLLECTION_ID, id, collectionType],
+		queryKey: [QueryKey.ROM_BY_COLLECTION_ID, id, collectionType, limit, offset],
 		queryFn: async () => {
 			if (!id || !collectionType) {
 				return null
 			}
-			const response = await getRomsByCollectionId(id, collectionType)
+			const response = await getRomsByCollectionId(id, collectionType, {limit, offset})
 			if (!response.success) {
 				throw Error(response.error)
 			}

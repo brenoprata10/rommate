@@ -5,13 +5,17 @@ use crate::{
     models::{collection::RomCollection, rom::Rom},
     services::rom::{
         get_recently_added, get_recently_played, get_rom_by_id, get_roms,
-        get_roms_by_collection_id, get_roms_by_platform_id, RomPayload,
+        get_roms_by_collection_id, get_roms_by_platform_id, RomPagination, RomPayload,
     },
 };
 
 #[tauri::command]
-pub async fn command_get_roms(app_handle: AppHandle) -> Result<RomPayload, Error> {
-    get_roms(&app_handle).await
+pub async fn command_get_roms(
+    app_handle: AppHandle,
+    pagination: RomPagination,
+    search_term: Option<String>,
+) -> Result<RomPayload, Error> {
+    get_roms(&app_handle, pagination, search_term).await
 }
 
 #[tauri::command]
@@ -34,8 +38,9 @@ pub async fn command_get_roms_by_collection_id(
     app_handle: AppHandle,
     id: String,
     collection_type: RomCollection,
+    pagination: RomPagination,
 ) -> Result<RomPayload, Error> {
-    get_roms_by_collection_id(&app_handle, id, collection_type).await
+    get_roms_by_collection_id(&app_handle, id, collection_type, pagination).await
 }
 
 #[tauri::command]

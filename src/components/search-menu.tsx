@@ -1,15 +1,16 @@
-import {useCallback, useEffect} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList} from './ui/command'
 import useSearchDialog from '@/hooks/use-search-dialog'
 import useRoms from '@/hooks/api/use-roms'
 import {CommandLoading} from 'cmdk'
-import {Link, useNavigate} from 'react-router'
+import {useNavigate} from 'react-router'
 import {Badge} from './ui/badge'
 
 export default function SearchMenu() {
+	const [searchInput, setSearchInput] = useState<string | null>(null)
 	const {isSearchDialogOpened, toggleSearchDialog} = useSearchDialog()
 	const navigate = useNavigate()
-	const {data: roms, isLoading} = useRoms()
+	const {data: roms, isLoading} = useRoms({limit: 6, offset: 0, searchTerm: searchInput ?? undefined})
 
 	useEffect(() => {
 		const down = (e: KeyboardEvent) => {
@@ -30,6 +31,10 @@ export default function SearchMenu() {
 		[navigate, toggleSearchDialog]
 	)
 
+	const onChangeInputValue = useCallback((value: string) => {
+		setSearchInput(value)
+	}, [])
+
 	return (
 		<CommandDialog
 			className='dark'
@@ -37,14 +42,19 @@ export default function SearchMenu() {
 			onOpenChange={toggleSearchDialog}
 			showCloseButton={false}
 		>
-			<CommandInput placeholder='Search rom title...' />
+			<CommandInput
+				value={searchInput ?? undefined}
+				onValueChange={onChangeInputValue}
+				placeholder='Search rom title...'
+			/>
 			<CommandList>
-				{isLoading && (
+				{isLoading ? (
 					<CommandLoading>
 						<div className='w-full flex justify-center p-5 text-sm'>Hang on…</div>
 					</CommandLoading>
+				) : (
+					<CommandEmpty>No results found.</CommandEmpty>
 				)}
-				<CommandEmpty>No results found.</CommandEmpty>
 				<CommandGroup heading='Roms'>
 					{roms?.map((rom) => (
 						<CommandItem key={`${rom.platformId}-${rom.id}`} onSelect={() => onClickItem(rom.id)}>

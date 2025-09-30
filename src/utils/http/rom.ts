@@ -4,8 +4,21 @@ import {RomCollection} from '@/models/collection'
 import {Channel} from '@tauri-apps/api/core'
 import {DownloadEvent} from '@/utils/downloader'
 
-export const getRoms = async (): Promise<TauriCommandPayload<{items: Rom[]}>> => {
-	return tauriInvoke(TauriCommandKey.GET_ROMS)
+type RomPagination = {
+	limit: number
+	offset: number
+}
+
+export type PaginatedPayload = {
+	total: number
+	items: Rom[]
+} & RomPagination
+
+export const getRoms = async (params: {
+	pagination: RomPagination
+	searchTerm?: string
+}): Promise<TauriCommandPayload<PaginatedPayload>> => {
+	return tauriInvoke(TauriCommandKey.GET_ROMS, params)
 }
 
 export const getRecentlyPlayed = async (): Promise<TauriCommandPayload<{items: Rom[]}>> => {
@@ -22,9 +35,10 @@ export const getRomById = async (id: number): Promise<TauriCommandPayload<Rom>> 
 
 export const getRomsByCollectionId = async (
 	id: number | string,
-	collectionType: RomCollection
-): Promise<TauriCommandPayload<{items: Rom[]}>> => {
-	return tauriInvoke(TauriCommandKey.GET_ROMS_BY_COLLECTION_ID, {id: id.toString(), collectionType})
+	collectionType: RomCollection,
+	pagination: RomPagination
+): Promise<TauriCommandPayload<PaginatedPayload>> => {
+	return tauriInvoke(TauriCommandKey.GET_ROMS_BY_COLLECTION_ID, {id: id.toString(), collectionType, pagination})
 }
 
 export const getRomsByPlatformId = async (id: number | string): Promise<TauriCommandPayload<{items: Rom[]}>> => {
