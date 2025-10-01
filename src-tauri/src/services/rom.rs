@@ -1,3 +1,4 @@
+use futures_util::TryFutureExt;
 use serde::{Deserialize, Serialize};
 use std::{fs::create_dir_all, sync::Mutex};
 use tauri::{ipc::Channel, AppHandle, State};
