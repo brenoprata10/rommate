@@ -1,18 +1,19 @@
 import {useCallback, useEffect, useState} from 'react'
 import {CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList} from './ui/command'
 import useSearchDialog from '@/hooks/use-search-dialog'
-import useRoms from '@/hooks/api/use-roms'
 import {useNavigate} from 'react-router'
 import {Badge} from './ui/badge'
 import {motion, AnimatePresence} from 'motion/react'
 import {Rom} from '@/models/rom'
+import {debounce} from 'lodash'
+import {getRoms} from '@/utils/http/rom'
 
 export default function SearchMenu() {
 	const [searchInput, setSearchInput] = useState<string | null>(null)
 	const [previousSearchResults, setPreviousSearchResults] = useState<Rom[]>([])
 	const {isSearchDialogOpened, toggleSearchDialog} = useSearchDialog()
+	const [roms, setRoms] = useState<Rom[]>([])
 	const navigate = useNavigate()
-	const {data: roms} = useRoms({limit: 6, offset: 0, searchTerm: searchInput ?? undefined})
 
 	useEffect(() => {
 		const down = (e: KeyboardEvent) => {
@@ -31,6 +32,22 @@ export default function SearchMenu() {
 		}
 	}, [roms])
 
+	const loadRoms = useCallback(
+		debounce(
+			async (searchTerm: string) => {
+				const response = await getRoms({pagination: {limit: 50, offset: 0}, searchTerm})
+				if (!response.success) {
+					throw Error(response.error)
+				}
+
+				setRoms(response.data.items)
+			},
+			500,
+			{trailing: true}
+		),
+		[]
+	)
+
 	const onClickItem = useCallback(
 		(romId: number) => {
 			navigate(`/rom/${romId}`)
@@ -39,9 +56,17 @@ export default function SearchMenu() {
 		[navigate, toggleSearchDialog]
 	)
 
-	const onChangeInputValue = useCallback((value: string) => {
-		setSearchInput(value)
-	}, [])
+	const onChangeInputValue = useCallback(
+		(value: string) => {
+			setSearchInput(value)
+			loadRoms(value)
+		},
+		[loadRoms]
+	)
+
+	if (!isSearchDialogOpened) {
+		return null
+	}
 
 	return (
 		<CommandDialog
