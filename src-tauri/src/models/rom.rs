@@ -38,7 +38,7 @@ pub struct Rom {
     youtube_video_id: Option<String>,
     metadatum: RomMetadatum,
     igdb_metadata: Option<IgdbMetadata>,
-    moby_metadata: Option<MobyMetadata>,
+    //moby_metadata: Option<MobyMetadata>,
     ss_metadata: Option<ScreenScrapperMetadata>,
     launchbox_metadata: Option<LaunchBoxMetadata>,
     hasheous_metadata: Option<HasheousMetadata>,

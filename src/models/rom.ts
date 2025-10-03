@@ -34,7 +34,7 @@ export type Rom = {
 	youtubeVideoId: string | null
 	metadatum: RomMetadatum
 	igdbMetadata: IgdbMetadata | null
-	mobyMetadata: MobyMetadata | null
+	//mobyMetadata: MobyMetadata | null
 	ssMetadata: ScreenScrapperMetadata | null
 	launchboxMetadata: LaunchBoxMetadata | null
 	hasheousMetadata: HasheousMetadata | null
