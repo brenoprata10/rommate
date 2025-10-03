@@ -1,3 +1,4 @@
+use futures_util::TryFutureExt;
 use serde::{Deserialize, Serialize};
 use std::{fs::create_dir_all, sync::Mutex};
 use tauri::{ipc::Channel, AppHandle, State};
@@ -14,13 +15,35 @@ use super::downloader::Downloader;
 
 #[derive(Serialize, Deserialize)]
 pub struct RomPayload {
+    total: u32,
+    limit: u32,
+    offset: u32,
     items: Vec<Rom>,
 }
 
-pub async fn get_roms(app_handle: &AppHandle) -> Result<RomPayload, Error> {
-    let response = RommHttp::get(app_handle, "/api/roms?limit=10000")?
-        .send()
-        .await?;
+#[derive(Serialize, Deserialize)]
+pub struct RomPagination {
+    limit: u16,
+    offset: u16,
+}
+
+pub fn get_roms_url_with_pagination(pagination: RomPagination) -> String {
+    format!(
+        "/api/roms?limit={}&offset={}",
+        pagination.limit, pagination.offset
+    )
+}
+
+pub async fn get_roms(
+    app_handle: &AppHandle,
+    pagination: RomPagination,
+    search_term: Option<String>,
+) -> Result<RomPayload, Error> {
+    let mut url = get_roms_url_with_pagination(pagination);
+    if let Some(search_term) = search_term {
+        url.push_str(format!("&search_term={search_term}").as_str());
+    };
+    let response = RommHttp::get(app_handle, url.as_str())?.send().await?;
 
     let roms = response.json::<RomPayload>().await?;
 
@@ -67,6 +90,7 @@ pub async fn get_roms_by_collection_id(
     app_handle: &AppHandle,
     id: String,
     collection_type: RomCollection,
+    pagination: RomPagination,
 ) -> Result<RomPayload, Error> {
     let collection_param = match collection_type {
         RomCollection::Smart => "smart_collection_id",
@@ -74,12 +98,10 @@ pub async fn get_roms_by_collection_id(
         RomCollection::Default => "collection_id",
     };
 
-    let response = RommHttp::get(
-        app_handle,
-        &format!("/api/roms?limit=10000&{}={}", collection_param, id),
-    )?
-    .send()
-    .await?;
+    let url = get_roms_url_with_pagination(pagination);
+    let response = RommHttp::get(app_handle, &format!("{url}&{collection_param}={id}"))?
+        .send()
+        .await?;
 
     let roms = response.json::<RomPayload>().await?;
 
@@ -89,13 +111,12 @@ pub async fn get_roms_by_collection_id(
 pub async fn get_roms_by_platform_id(
     app_handle: &AppHandle,
     id: String,
+    pagination: RomPagination,
 ) -> Result<RomPayload, Error> {
-    let response = RommHttp::get(
-        app_handle,
-        &format!("/api/roms?limit=10000&platform_id={}", id),
-    )?
-    .send()
-    .await?;
+    let url = get_roms_url_with_pagination(pagination);
+    let response = RommHttp::get(app_handle, &format!("{url}&platform_id={id}"))?
+        .send()
+        .await?;
 
     let roms = response.json::<RomPayload>().await?;
 
