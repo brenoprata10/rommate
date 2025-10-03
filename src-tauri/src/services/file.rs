@@ -1,7 +1,5 @@
 use std::{env, fs::exists, process::Command};
 
-use tauri::AppHandle;
-
 use crate::enums::error::Error;
 
 use super::downloader::Downloader;
@@ -29,13 +27,13 @@ pub fn open_directory(path: String) -> Result<(), Error> {
             Command::new("xdg-open").arg(path).spawn()?;
         }
         _ => {
-            return Err(Error::RommUrlNotSet());
+            return Err(Error::OSUnsupported());
         }
     }
     Ok(())
 }
 
-pub fn open_download_directory(app_handle: &AppHandle) -> Result<(), Error> {
+pub fn open_download_directory() -> Result<(), Error> {
     let download_path = Downloader::get_download_path()?;
 
     open_directory(download_path)?;

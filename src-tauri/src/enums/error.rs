@@ -22,6 +22,8 @@ pub enum Error {
     Serde(#[from] serde_json::Error),
     #[error("Download cancelled: {0}")]
     DownloadCancelled(String),
+    #[error("OS operation not supported")]
+    OSUnsupported(),
 }
 
 #[derive(serde::Serialize)]
@@ -38,6 +40,7 @@ enum ErrorKind {
     NotFound(String),
     Serde(String),
     DownloadCancelled(String),
+    OSUnsupported,
 }
 
 /// Helper to build a detailed error message by chaining sources.
@@ -68,6 +71,7 @@ impl serde::Serialize for Error {
             Self::InternalServer(_) => ErrorKind::InternalServer(error_message),
             Self::Serde(_) => ErrorKind::Serde(error_message),
             Self::DownloadCancelled(_) => ErrorKind::DownloadCancelled(error_message),
+            Self::OSUnsupported() => ErrorKind::OSUnsupported,
         };
         error_kind.serialize(serializer)
     }
