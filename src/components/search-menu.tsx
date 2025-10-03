@@ -2,7 +2,6 @@ import {useCallback, useEffect, useState} from 'react'
 import {CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList} from './ui/command'
 import useSearchDialog from '@/hooks/use-search-dialog'
 import useRoms from '@/hooks/api/use-roms'
-import {CommandLoading} from 'cmdk'
 import {useNavigate} from 'react-router'
 import {Badge} from './ui/badge'
 import {motion, AnimatePresence} from 'motion/react'
@@ -13,8 +12,7 @@ export default function SearchMenu() {
 	const [previousSearchResults, setPreviousSearchResults] = useState<Rom[]>([])
 	const {isSearchDialogOpened, toggleSearchDialog} = useSearchDialog()
 	const navigate = useNavigate()
-	const {data: roms, isLoading} = useRoms({limit: 6, offset: 0, searchTerm: searchInput ?? undefined})
-	console.log({roms})
+	const {data: roms} = useRoms({limit: 6, offset: 0, searchTerm: searchInput ?? undefined})
 
 	useEffect(() => {
 		const down = (e: KeyboardEvent) => {

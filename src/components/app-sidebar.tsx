@@ -20,6 +20,7 @@ import useCollections from '@/hooks/api/use-collections'
 import {Link, NavLink} from 'react-router'
 import useSearchDialog from '@/hooks/use-search-dialog'
 import DownloadManager from './download-manager'
+import {getCollectionType} from '@/utils/collection'
 
 const data = {
 	settings: [
@@ -72,7 +73,7 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
 				collections && !collectionsError
 					? collections?.map((collection) => ({
 							title: collection.name,
-							url: `/collection/${collection.id}`,
+							url: `/collection/${collection.id}/${getCollectionType(collection)}`,
 							badge: collection.romCount.toString()
 						}))
 					: []

@@ -14,7 +14,17 @@ export default function useRomsByCollectionIdPaginated({
 	collectionType?: RomCollection
 	limit?: number
 }) {
-	return useInfiniteQuery<PaginatedPayload, Error, PaginatedPayload, string[], number>({
+	return useInfiniteQuery<
+		PaginatedPayload,
+		Error,
+		{
+			pageParams: number[]
+
+			pages: PaginatedPayload[]
+		},
+		string[],
+		number
+	>({
 		initialPageParam: INITIAL_OFFSET,
 		queryKey: [
 			QueryKey.ROM_BY_COLLECTION_ID_PAGINATED,
