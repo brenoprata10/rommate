@@ -47,6 +47,7 @@ pub async fn command_get_roms_by_collection_id(
 pub async fn command_get_roms_by_platform_id(
     app_handle: AppHandle,
     id: String,
+    pagination: RomPagination,
 ) -> Result<RomPayload, Error> {
-    get_roms_by_platform_id(&app_handle, id).await
+    get_roms_by_platform_id(&app_handle, id, pagination).await
 }

@@ -111,13 +111,12 @@ pub async fn get_roms_by_collection_id(
 pub async fn get_roms_by_platform_id(
     app_handle: &AppHandle,
     id: String,
+    pagination: RomPagination,
 ) -> Result<RomPayload, Error> {
-    let response = RommHttp::get(
-        app_handle,
-        &format!("/api/roms?limit=10000&platform_id={}", id),
-    )?
-    .send()
-    .await?;
+    let url = get_roms_url_with_pagination(pagination);
+    let response = RommHttp::get(app_handle, &format!("{url}&platform_id={id}"))?
+        .send()
+        .await?;
 
     let roms = response.json::<RomPayload>().await?;
 

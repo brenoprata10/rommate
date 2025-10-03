@@ -41,8 +41,11 @@ export const getRomsByCollectionId = async (
 	return tauriInvoke(TauriCommandKey.GET_ROMS_BY_COLLECTION_ID, {id: id.toString(), collectionType, pagination})
 }
 
-export const getRomsByPlatformId = async (id: number | string): Promise<TauriCommandPayload<{items: Rom[]}>> => {
-	return tauriInvoke(TauriCommandKey.GET_ROMS_BY_PLATFORM_ID, {id: id.toString()})
+export const getRomsByPlatformId = async (
+	id: number | string,
+	pagination: RomPagination
+): Promise<TauriCommandPayload<PaginatedPayload>> => {
+	return tauriInvoke(TauriCommandKey.GET_ROMS_BY_PLATFORM_ID, {id: id.toString(), pagination})
 }
 
 export const downloadRom = async (id: string, romId: number, channel: Channel<DownloadEvent>) => {
