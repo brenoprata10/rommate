@@ -18,7 +18,9 @@ pub fn open_directory(path: String) -> Result<(), Error> {
 
     match os {
         "windows" => {
-            Command::new("explorer").arg(path).spawn()?;
+            Command::new("explorer")
+                .arg(path.replace("/", "\\"))
+                .spawn()?;
         }
         "macos" => {
             Command::new("open").arg(path).spawn()?;
