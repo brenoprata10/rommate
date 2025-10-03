@@ -33,7 +33,6 @@ pub fn run() {
             downloads: HashMap::<String, CancellationToken>::new(),
         }))
         .plugin(tauri_plugin_store::Builder::new().build())
-        .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             login,
             command_get_users,

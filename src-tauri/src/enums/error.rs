@@ -4,8 +4,6 @@ use std::error::Error as StdError;
 pub enum Error {
     #[error(transparent)]
     Io(#[from] std::io::Error),
-    #[error("Failed to open: {0}")]
-    Opener(#[from] tauri_plugin_opener::Error),
     #[error("Failed to load store: {0}")]
     Store(#[from] tauri_plugin_store::Error),
     #[error("Failed to fetch: {0}")]
@@ -31,7 +29,6 @@ pub enum Error {
 #[serde(rename_all = "camelCase")]
 enum ErrorKind {
     Io(String),
-    Opener(String),
     Store(String),
     Reqwest(String),
     RommUrlNotSet,
@@ -62,7 +59,6 @@ impl serde::Serialize for Error {
         let error_message = detailed_message(self);
         let error_kind = match self {
             Self::Io(_) => ErrorKind::Io(error_message),
-            Self::Opener(_) => ErrorKind::Opener(error_message),
             Self::Store(_) => ErrorKind::Store(error_message),
             Self::Reqwest(_) => ErrorKind::Reqwest(error_message),
             Self::RommUrlNotSet() => ErrorKind::RommUrlNotSet,
