@@ -13,11 +13,14 @@ const router = createBrowserRouter([
 		Component: Layout,
 		children: [
 			{index: true, Component: Home},
-			{path: '/updater', Component: AutoUpdater},
 			{path: '/rom/:id', Component: RomDetail},
 			{path: '/collection/:id/:collectionType', Component: Collection},
 			{path: '/platform/:id', Component: Platform}
 		]
+	},
+	{
+		path: '/updater',
+		Component: AutoUpdater
 	},
 	{
 		path: '/login',

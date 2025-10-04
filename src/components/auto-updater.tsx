@@ -4,9 +4,13 @@ import {check} from '@tauri-apps/plugin-updater'
 import Background from './ui/background'
 import Heading from './ui/heading'
 import {restartApp} from '@/utils/http/process'
+import bytes from 'bytes'
+import {Progress} from './ui/progress'
+import {motion} from 'motion/react'
 
 type AutoUpdaterPayload = {
 	status: AutoUpdaterMessage
+	progressBarValue?: number
 	text?: string
 }
 
@@ -40,8 +44,9 @@ export default function AutoUpdater() {
 						case 'Progress':
 							downloaded += event.data.chunkLength
 							setUpdateStatus({
+								progressBarValue: (downloaded * 100) / contentLength,
 								status: AutoUpdaterMessage.DOWNLOAD_IN_PROGRESS,
-								text: `Downloaded ${downloaded}/${contentLength} `
+								text: `${bytes(downloaded)} / ${bytes(contentLength)}`
 							})
 							break
 						case 'Finished':
@@ -61,12 +66,25 @@ export default function AutoUpdater() {
 
 	return (
 		<Background>
-			<div className='text-primary flex items-center justify-center h-[100vh]'>
-				<Heading variant={'h2'}>
-					{updateStatus.status}
-					{updateStatus.text ? ` - ${updateStatus.text}` : ''}
-				</Heading>
-			</div>
+			<motion.div
+				initial={{opacity: 0, translateX: -20}}
+				animate={{opacity: 1, translateX: 0}}
+				className='text-primary flex flex-col items-center justify-center h-[100vh] gap-6'
+			>
+				<Heading variant={'h2'}>{updateStatus.status}</Heading>
+				{updateStatus.status === AutoUpdaterMessage.DOWNLOAD_IN_PROGRESS && (
+					<motion.div
+						initial={{opacity: 0, translateY: -20}}
+						animate={{opacity: 1, translateY: 0}}
+						className='w-full max-w-[56.25rem] flex flex-col gap-2'
+					>
+						<Progress />
+						<Heading variant={'h5'} className='text-neutral-400 self-end'>
+							{updateStatus.text}
+						</Heading>
+					</motion.div>
+				)}
+			</motion.div>
 		</Background>
 	)
 }
