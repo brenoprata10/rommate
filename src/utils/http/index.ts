@@ -21,7 +21,8 @@ export enum TauriCommandKey {
 	DOWNLOAD_ROM = 'command_download_rom',
 	CANCEL_DOWNLOAD = 'command_cancel_download',
 	OPEN_DOWNLOAD_DIRECTORY = 'command_open_download_directory',
-	IS_FILE_DOWNLOADED = 'command_is_file_downloaded'
+	IS_FILE_DOWNLOADED = 'command_is_file_downloaded',
+	RESTART_APP = 'command_restart_app'
 }
 
 export const tauriInvoke = async <T>(
