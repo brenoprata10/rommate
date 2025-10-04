@@ -1,8 +1,7 @@
-import {useCallback, useState} from 'react'
+import {useState} from 'react'
 import {useMount} from 'react-use'
 import {check} from '@tauri-apps/plugin-updater'
 import {relaunch} from '@tauri-apps/plugin-process'
-import {useNavigate} from 'react-router'
 import Background from './ui/background'
 import Heading from './ui/heading'
 
@@ -22,13 +21,7 @@ enum AutoUpdaterMessage {
 }
 
 export default function AutoUpdater() {
-	console.log('asd')
-	const navigate = useNavigate()
 	const [updateStatus, setUpdateStatus] = useState<AutoUpdaterPayload>({status: AutoUpdaterMessage.CHECKING_UPDATE})
-
-	const goToNextScreen = useCallback(() => {
-		navigate('/')
-	}, [navigate])
 
 	useMount(async () => {
 		try {
@@ -63,8 +56,6 @@ export default function AutoUpdater() {
 			}
 		} catch (error) {
 			console.log(`Failed to download update: ${error}`)
-		} finally {
-			goToNextScreen()
 		}
 	})
 
