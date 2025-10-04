@@ -11,6 +11,8 @@ import SkeletonWrapper from '@/components/ui/skeleton-wrapper'
 import {motion} from 'motion/react'
 import useRecentlyPlayed from '@/hooks/api/use-recently-played'
 import useFocusedGame from '@/hooks/use-focused-game'
+import {useMount} from 'react-use'
+import {check} from '@tauri-apps/plugin-updater'
 
 export default function Home() {
 	const {focusedRomId, setFocusedGame} = useFocusedGame()
@@ -29,6 +31,13 @@ export default function Home() {
 
 		checkAuthentication()
 	}, [navigate, isAuthenticated])
+
+	useMount(async () => {
+		const update = await check()
+		if (update) {
+			navigate('/updater')
+		}
+	})
 
 	const onHoverRom = useCallback(
 		(romId: number) => {
