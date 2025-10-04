@@ -1,9 +1,9 @@
 import {useState} from 'react'
 import {useMount} from 'react-use'
 import {check} from '@tauri-apps/plugin-updater'
-import {relaunch} from '@tauri-apps/plugin-process'
 import Background from './ui/background'
 import Heading from './ui/heading'
+import {restartApp} from '@/utils/http/process'
 
 type AutoUpdaterPayload = {
 	status: AutoUpdaterMessage
@@ -52,7 +52,7 @@ export default function AutoUpdater() {
 				})
 
 				setUpdateStatus({status: AutoUpdaterMessage.UPDATE_INSTALLED})
-				await relaunch()
+				await restartApp()
 			}
 		} catch (error) {
 			console.log(`Failed to download update: ${error}`)

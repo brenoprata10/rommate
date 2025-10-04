@@ -7,6 +7,7 @@ use commands::downloader::{command_cancel_download, command_download_rom};
 use commands::file::{command_is_file_downloaded, command_open_download_directory};
 use commands::login::login;
 use commands::platform::command_get_platforms;
+use commands::process::command_restart_app;
 use commands::rom::{
     command_get_recently_added, command_get_recently_played, command_get_rom_by_id,
     command_get_roms, command_get_roms_by_collection_id, command_get_roms_by_platform_id,
@@ -51,7 +52,8 @@ pub fn run() {
             command_download_rom,
             command_cancel_download,
             command_is_file_downloaded,
-            command_open_download_directory
+            command_open_download_directory,
+            command_restart_app
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
