@@ -60,12 +60,12 @@ export default function RomList({
 				<Heading variant={'h1'} className='flex gap-2'>
 					<span>{title}</span>
 				</Heading>
-				<div className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-8 relative'>
+				<div className='grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-8 relative'>
 					{roms.map((rom) => (
 						<GameCover
 							key={rom.id}
 							id={rom.id}
-							width='255'
+							width='350'
 							height='340'
 							src={rom.pathCoverLarge}
 							onHover={() => handleHover(rom.id)}
@@ -73,7 +73,7 @@ export default function RomList({
 					))}
 					{hasNextPage && (
 						<>
-							<div ref={ref} className='absolute bottom-96'>
+							<div ref={ref} className='absolute bottom-[45rem]'>
 								&nbsp;
 							</div>
 							{Array(SKELETON_COUNTER)
