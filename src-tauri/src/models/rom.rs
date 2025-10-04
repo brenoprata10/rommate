@@ -3,8 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{
     hasheous::HasheousMetadata, igdb::IgdbMetadata, launchbox::LaunchBoxMetadata,
-    moby::MobyMetadata, retroachievements::RetroAchievementsMetadata,
-    screen_scrapper::ScreenScrapperMetadata,
+    retroachievements::RetroAchievementsMetadata, screen_scrapper::ScreenScrapperMetadata,
 };
 
 #[derive(Serialize, Deserialize)]
@@ -38,13 +37,12 @@ pub struct Rom {
     youtube_video_id: Option<String>,
     metadatum: RomMetadatum,
     igdb_metadata: Option<IgdbMetadata>,
-    //moby_metadata: Option<MobyMetadata>,
     ss_metadata: Option<ScreenScrapperMetadata>,
     launchbox_metadata: Option<LaunchBoxMetadata>,
     hasheous_metadata: Option<HasheousMetadata>,
     path_cover_small: String,
     path_cover_large: String,
-    url_cover: String,
+    url_cover: Option<String>,
     has_manual: bool,
     path_manual: Option<String>,
     url_manual: Option<String>,
@@ -54,9 +52,9 @@ pub struct Rom {
     regions: Vec<String>,
     languages: Vec<String>,
     tags: Vec<String>,
-    crc_hash: String,
-    md5_hash: String,
-    sha1_hash: String,
+    crc_hash: Option<String>,
+    md5_hash: Option<String>,
+    sha1_hash: Option<String>,
     multi: bool,
     files: Vec<RomFile>,
     full_path: String,

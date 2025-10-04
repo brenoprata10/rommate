@@ -1,7 +1,6 @@
 import {HasheousMetadata} from './hasheous'
 import {IgdbMetadata} from './igdb'
 import {LaunchBoxMetadata} from './launchbox'
-import {MobyMetadata} from './moby'
 import {RetroAchievementsMetadata} from './retroachievements'
 import {ScreenScrapperMetadata} from './screen-scrapper'
 
@@ -34,13 +33,12 @@ export type Rom = {
 	youtubeVideoId: string | null
 	metadatum: RomMetadatum
 	igdbMetadata: IgdbMetadata | null
-	//mobyMetadata: MobyMetadata | null
 	ssMetadata: ScreenScrapperMetadata | null
 	launchboxMetadata: LaunchBoxMetadata | null
 	hasheousMetadata: HasheousMetadata | null
 	pathCoverSmall: string
 	pathCoverLarge: string
-	urlCover: string
+	urlCover: string | null
 	hasManual: boolean
 	pathManual: string | null
 	urlManual: string | null
@@ -50,9 +48,9 @@ export type Rom = {
 	regions: string[]
 	languages: string[]
 	tags: string[]
-	crcHash: string
-	md5Hash: string
-	sha1Hash: string
+	crcHash: string | null
+	md5Hash: string | null
+	sha1Hash: string | null
 	multi: boolean
 	files: RomFile[]
 	fullPath: string

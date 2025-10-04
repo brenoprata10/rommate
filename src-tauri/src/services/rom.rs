@@ -1,4 +1,3 @@
-use futures_util::TryFutureExt;
 use serde::{Deserialize, Serialize};
 use std::{fs::create_dir_all, sync::Mutex};
 use tauri::{ipc::Channel, AppHandle, State};
@@ -114,9 +113,7 @@ pub async fn get_roms_by_platform_id(
     pagination: RomPagination,
 ) -> Result<RomPayload, Error> {
     let url = get_roms_url_with_pagination(pagination);
-    let response = RommHttp::get(app_handle, &format!("{url}&platform_id={id}"))?
-        .send()
-        .await?;
+    let response = reqwest::get("https://gist.githubusercontent.com/brenoprata10/6ee33a7d345502e26e3945c6572f0d05/raw/af29fa5372b01aef94290c946168d2c625f39f3a/gba.json").await?;
 
     let roms = response.json::<RomPayload>().await?;
 
