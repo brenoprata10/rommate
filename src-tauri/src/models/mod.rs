@@ -2,7 +2,6 @@ pub mod collection;
 pub mod hasheous;
 pub mod igdb;
 pub mod launchbox;
-pub mod moby;
 pub mod platform;
 pub mod retroachievements;
 pub mod rom;
