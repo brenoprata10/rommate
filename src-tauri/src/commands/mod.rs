@@ -6,4 +6,5 @@ pub mod login;
 pub mod platform;
 pub mod process;
 pub mod rom;
+pub mod shell;
 pub mod user;
