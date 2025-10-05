@@ -30,12 +30,12 @@ function ContinuePlayingRom({
 	const isDownloadFinished = romDownload?.event === 'cancelled' || romDownload?.event === 'finished'
 
 	const checkFileDownloaded = useCallback(async () => {
-		const downloaded = await isFileDownloaded(rom.fsName)
+		const downloaded = await isFileDownloaded(rom.fsName, rom.platformFsSlug)
 		if (!downloaded.success) {
 			return
 		}
 		setIsDownloaded(downloaded.data)
-	}, [rom.fsName])
+	}, [rom.fsName, rom.platformFsSlug])
 
 	useEffect(() => {
 		if (romDownload?.event === 'finished') {
@@ -61,8 +61,8 @@ function ContinuePlayingRom({
 	}, [romDownload])
 
 	const openFolderPath = useCallback(async () => {
-		openDownloadDirectory()
-	}, [])
+		openDownloadDirectory(rom.platformFsSlug)
+	}, [rom.platformFsSlug])
 
 	const getProgress = useCallback(() => {
 		if (romDownload?.event === 'finished') {

@@ -105,7 +105,7 @@ impl Downloader {
         }?;
 
         Ok(format!(
-            "{}/Rommate/Downloads",
+            "{}/Rommate/roms",
             home_dir_path
                 .to_str()
                 .expect("Failed to parse home dir to string.")
