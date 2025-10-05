@@ -1,3 +1,5 @@
+[![GitHub all releases](https://img.shields.io/github/downloads/brenoprata10/rommate/total?logo=github)](https://github.com/brenoprata10/rommate/releases)
+
 # Welcome to Rommate!
 
 A third party desktop application for [Romm](https://romm.app/) project, here are some cool features that are already supported:
