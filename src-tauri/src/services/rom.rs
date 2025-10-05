@@ -135,8 +135,12 @@ pub async fn download_rom(
     let rom = get_rom_by_id(app_handle, rom_id).await?;
     let content_length = rom.fs_size_bytes;
     let file_url = format!("/api/roms/{}/content/{}", rom.id, rom.fs_name);
-    let file_directory = Downloader::get_download_path()?;
-    let file_path = format!("{}/{}", file_directory, rom.fs_name);
+    let file_directory = format!(
+        "{}/{}",
+        Downloader::get_download_path()?,
+        rom.platform_fs_slug
+    );
+    let file_path = format!("{file_directory}/{}", rom.fs_name);
 
     // Create directory path if it does not exist
     create_dir_all(&file_directory)?;

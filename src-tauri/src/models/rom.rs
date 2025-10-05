@@ -20,7 +20,7 @@ pub struct Rom {
     tgdb_id: Option<u64>,
     platform_id: u16,
     platform_slug: String,
-    platform_fs_slug: String,
+    pub platform_fs_slug: String,
     platform_name: String,
     platform_custom_name: String,
     platform_display_name: String,
