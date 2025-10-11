@@ -15,6 +15,8 @@ import {useMount} from 'react-use'
 import {check} from '@tauri-apps/plugin-updater'
 import {Button} from '@/components/ui/button'
 import {playRetroarch} from '@/utils/http/retroarch'
+import {RetroarchCore} from '@/models/enums/retroarch-core'
+import {RetroarchRunner} from '@/models/enums/retroarch-runner'
 
 export default function Home() {
 	const {focusedRomId, setFocusedGame} = useFocusedGame()
@@ -49,7 +51,11 @@ export default function Home() {
 	)
 
 	const handleRunShell = useCallback(() => {
-		playRetroarch({romId: 1})
+		playRetroarch({
+			core: RetroarchCore.BSNES,
+			runner: RetroarchRunner.FlatpakLinux,
+			romPath: '/snes/Super Mario World'
+		})
 	}, [])
 
 	return (

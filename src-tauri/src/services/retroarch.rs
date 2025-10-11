@@ -1,9 +1,11 @@
-use futures_util::TryFutureExt;
+use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
-use tauri_plugin_shell::{process::CommandEvent, ShellExt};
+use tauri_plugin_shell::ShellExt;
 
-use crate::enums::error::Error;
+use crate::{enums::error::Error, services::downloader::Downloader};
 
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
+#[serde(rename_all = "lowercase")]
 pub enum RetroarchCore {
     ThreeDengine,
     EightOne,
@@ -209,6 +211,8 @@ pub enum RetroarchCore {
     Yabause,
 }
 
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
+#[serde(rename_all = "lowercase")]
 pub enum RetroarchRunner {
     FlatpakLinux,
     NativeLinux,
@@ -216,22 +220,26 @@ pub enum RetroarchRunner {
     NativeMacOs,
 }
 
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all(serialize = "camelCase"))]
 pub struct RetroarchPlayerConfig {
     config_path: &'static str,
     cores_path: &'static str,
     core_filename: &'static str,
     state_path: &'static str,
     save_path: &'static str,
+    rom_path: String,
 }
 
 impl RetroarchPlayerConfig {
-    fn new(config: RetroarchRunner, core: RetroarchCore) -> Self {
+    pub fn new(config: RetroarchRunner, core: RetroarchCore, rom_path: String) -> Self {
         match config {
             RetroarchRunner::FlatpakLinux => RetroarchPlayerConfig {
                 config_path: "$HOME/.var/app/org.libretro.RetroArch/config/retroarch",
                 cores_path: "/cores",
                 state_path: "/states",
                 save_path: "/saves",
+                rom_path,
                 core_filename: match core {
                     RetroarchCore::ThreeDengine => "3dengine_libretro.so",
                     RetroarchCore::EightOne => "81_libretro.so",
@@ -444,6 +452,7 @@ impl RetroarchPlayerConfig {
                 cores_path: "/cores",
                 state_path: "/states",
                 save_path: "/saves",
+                rom_path,
                 core_filename: match core {
                     RetroarchCore::ThreeDengine => "3dengine_libretro.so",
                     RetroarchCore::EightOne => "81_libretro.so",
@@ -656,6 +665,7 @@ impl RetroarchPlayerConfig {
                 cores_path: "\\cores",
                 state_path: "\\states",
                 save_path: "\\saves",
+                rom_path,
                 core_filename: match core {
                     RetroarchCore::ThreeDengine => "3dengine_libretro.dll",
                     RetroarchCore::EightOne => "81_libretro.dll",
@@ -868,6 +878,7 @@ impl RetroarchPlayerConfig {
                 cores_path: "../cores",
                 state_path: "../states",
                 save_path: "../saves",
+                rom_path,
                 core_filename: match core {
                     RetroarchCore::ThreeDengine => "3dengine_libretro.dylib",
                     RetroarchCore::EightOne => "81_libretro.dylib",
@@ -1079,16 +1090,17 @@ impl RetroarchPlayerConfig {
     }
 
     //flatpak run org.libretro.RetroArch -L /home/brenoprata/.var/app/org.libretro.RetroArch/config/retroarch/cores/bsnes_libretro.so /home/brenoprata/Rommate/roms/snes/Super\ Mario\ World
-    pub async fn play(app_handle: &AppHandle, rom_path: String) -> Result<String, Error> {
+    pub async fn play(&self, app_handle: &AppHandle) -> Result<String, Error> {
+        let download_dir = Downloader::get_download_path()?;
         let shell = app_handle.shell();
         let command = shell.command("flatpak").args([
             "run",
             "org.libretro.RetroArch",
             "-L",
             "bsnes_libretro.so",
-            "/home/brenoprata/Rommate/roms/snes/Super Mario World",
+            format!("{download_dir}{}", self.rom_path).as_str(),
         ]);
-        // Use spawn for non-blocking execution
+
         let output = match command.output().await {
             Ok(output) => Ok(output),
             Err(e) => Err(Error::InternalServer(e.to_string())),

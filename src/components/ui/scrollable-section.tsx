@@ -47,7 +47,7 @@ export default function ScrollableSection({
 	}, [getScrollOffset])
 
 	return (
-		<div className={clsx(['flex flex-col gap-5', className])}>
+		<div className={clsx(['flex flex-col gap-5 w-max', className])}>
 			<div className={clsx(['flex justify-between', padding])}>
 				<Heading variant={'h3'}>{title}</Heading>
 				<Navigation disabled={isScrollButtonDisabled} onNext={onNext} onPrevious={onPrevious} />
