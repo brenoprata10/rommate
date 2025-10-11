@@ -14,7 +14,7 @@ import {isFileDownloaded, openDownloadDirectory} from '@/utils/http/file'
 import {playRetroarch} from '@/utils/http/retroarch'
 import {RetroarchCore} from '@/models/enums/retroarch-core'
 import {RetroarchRunner} from '@/models/enums/retroarch-runner'
-import {isPlatformEmulationReady} from '@/utils/retroarch'
+import {coreConfig, isPlatformEmulationReady} from '@/utils/retroarch'
 
 function ContinuePlayingRom({
 	rom,
@@ -35,11 +35,11 @@ function ContinuePlayingRom({
 
 	const play = useCallback(() => {
 		playRetroarch({
-			core: RetroarchCore.BSNES,
+			core: coreConfig[rom.platformFsSlug][0],
 			runner: RetroarchRunner.FlatpakLinux,
-			romPath: '/snes/Super Mario World'
+			romPath: `/${rom.platformFsSlug}/${rom.fsName}`
 		})
-	}, [])
+	}, [rom.platformFsSlug, rom.fsName])
 
 	const checkFileDownloaded = useCallback(async () => {
 		const downloaded = await isFileDownloaded(rom.fsName, rom.platformFsSlug)
