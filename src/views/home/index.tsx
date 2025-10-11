@@ -13,8 +13,8 @@ import useRecentlyPlayed from '@/hooks/api/use-recently-played'
 import useFocusedGame from '@/hooks/use-focused-game'
 import {useMount} from 'react-use'
 import {check} from '@tauri-apps/plugin-updater'
-import {runShell} from '@/utils/http/shell'
 import {Button} from '@/components/ui/button'
+import {playRetroarch} from '@/utils/http/retroarch'
 
 export default function Home() {
 	const {focusedRomId, setFocusedGame} = useFocusedGame()
@@ -49,7 +49,7 @@ export default function Home() {
 	)
 
 	const handleRunShell = useCallback(() => {
-		runShell()
+		playRetroarch({romId: 1})
 	}, [])
 
 	return (
