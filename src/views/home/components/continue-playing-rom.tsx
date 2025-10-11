@@ -7,10 +7,14 @@ import useDownloader from '@/hooks/use-downloader'
 import {Rom} from '@/models/rom'
 import {cancelDownload} from '@/utils/http/downloader'
 import clsx from 'clsx'
-import {Ban, FolderOpen, PlayIcon} from 'lucide-react'
+import {Ban, FolderOpen, Play, PlayIcon} from 'lucide-react'
 import {motion} from 'motion/react'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {isFileDownloaded, openDownloadDirectory} from '@/utils/http/file'
+import {playRetroarch} from '@/utils/http/retroarch'
+import {RetroarchCore} from '@/models/enums/retroarch-core'
+import {RetroarchRunner} from '@/models/enums/retroarch-runner'
+import {isPlatformEmulationReady} from '@/utils/retroarch'
 
 function ContinuePlayingRom({
 	rom,
@@ -29,6 +33,14 @@ function ContinuePlayingRom({
 	const romDownload = useMemo(() => getRomDownload(rom.id), [rom.id, getRomDownload])
 	const isDownloadFinished = romDownload?.event === 'cancelled' || romDownload?.event === 'finished'
 
+	const play = useCallback(() => {
+		playRetroarch({
+			core: RetroarchCore.BSNES,
+			runner: RetroarchRunner.FlatpakLinux,
+			romPath: '/snes/Super Mario World'
+		})
+	}, [])
+
 	const checkFileDownloaded = useCallback(async () => {
 		const downloaded = await isFileDownloaded(rom.fsName, rom.platformFsSlug)
 		if (!downloaded.success) {
@@ -40,6 +52,7 @@ function ContinuePlayingRom({
 	useEffect(() => {
 		if (romDownload?.event === 'finished') {
 			setIsDownloaded(true)
+			return
 		}
 		checkFileDownloaded()
 	}, [checkFileDownloaded, romDownload?.event])
@@ -71,6 +84,29 @@ function ContinuePlayingRom({
 
 		return romDownload?.event === 'progress' ? romDownload.progress : 0
 	}, [romDownload])
+
+	const getCtaButton = useCallback(() => {
+		const isReadyToPlay = isDownloaded && isPlatformEmulationReady(rom.platformFsSlug)
+		if (isReadyToPlay) {
+			return (
+				<CtaButton onClick={play}>
+					<Play /> Play
+				</CtaButton>
+			)
+		}
+		if (isDownloaded) {
+			return (
+				<CtaButton onClick={openFolderPath}>
+					<FolderOpen /> Open file path
+				</CtaButton>
+			)
+		}
+		return (
+			<CtaButton onClick={startRomDownload}>
+				<PlayIcon /> Install
+			</CtaButton>
+		)
+	}, [isDownloaded, rom.platformFsSlug, openFolderPath, play, startRomDownload])
 
 	return (
 		<div className={clsx(['grid grid-cols-[14.8rem_16.812rem] max-w-[31.688rem] w-full', className])}>
@@ -110,30 +146,28 @@ function ContinuePlayingRom({
 						</div>
 					</motion.div>
 				) : (
-					<Button
-						onClick={isDownloaded ? openFolderPath : startRomDownload}
-						className={`
-						bg-neutral-900
-						text-white 
-						border 
-						border-neutral-700
-						hover:bg-neutral-800
-						cursor-pointer
-					`}
-					>
-						{isDownloaded ? (
-							<>
-								<FolderOpen /> Open file path
-							</>
-						) : (
-							<>
-								<PlayIcon /> Install
-							</>
-						)}
-					</Button>
+					getCtaButton()
 				)}
 			</div>
 		</div>
+	)
+}
+
+const CtaButton = ({onClick, children}: {onClick: () => void; children: React.ReactNode}) => {
+	return (
+		<Button
+			onClick={onClick}
+			className={`
+				bg-neutral-900
+				text-white 
+				border 
+				border-neutral-700
+				hover:bg-neutral-800
+				cursor-pointer
+			`}
+		>
+			{children}
+		</Button>
 	)
 }
 

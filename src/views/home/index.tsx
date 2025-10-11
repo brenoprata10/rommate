@@ -13,10 +13,6 @@ import useRecentlyPlayed from '@/hooks/api/use-recently-played'
 import useFocusedGame from '@/hooks/use-focused-game'
 import {useMount} from 'react-use'
 import {check} from '@tauri-apps/plugin-updater'
-import {Button} from '@/components/ui/button'
-import {playRetroarch} from '@/utils/http/retroarch'
-import {RetroarchCore} from '@/models/enums/retroarch-core'
-import {RetroarchRunner} from '@/models/enums/retroarch-runner'
 
 export default function Home() {
 	const {focusedRomId, setFocusedGame} = useFocusedGame()
@@ -50,14 +46,6 @@ export default function Home() {
 		[setFocusedGame]
 	)
 
-	const handleRunShell = useCallback(() => {
-		playRetroarch({
-			core: RetroarchCore.BSNES,
-			runner: RetroarchRunner.FlatpakLinux,
-			romPath: '/snes/Super Mario World'
-		})
-	}, [])
-
 	return (
 		<>
 			<div className='z-10 py-12 gap-9 flex flex-col'>
@@ -76,7 +64,6 @@ export default function Home() {
 				<div className='grid gap-8'>
 					<ContinuePlaying onHover={onHoverRom} />
 					<RecentlyAdded onHover={onHoverRom} />
-					<Button onClick={handleRunShell}>test shell</Button>
 				</div>
 			</div>
 			<Background romId={focusedRomId ?? roms?.[0].id}>&nbsp;</Background>
