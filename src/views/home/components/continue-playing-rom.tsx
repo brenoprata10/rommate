@@ -1,4 +1,5 @@
 import {DownloadStatus} from '@/components/download-manager'
+import {platform} from '@tauri-apps/plugin-os'
 import {Button} from '@/components/ui/button'
 import GameCover from '@/components/ui/game-cover'
 import Heading from '@/components/ui/heading'
@@ -12,7 +13,6 @@ import {motion} from 'motion/react'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {isFileDownloaded, openDownloadDirectory} from '@/utils/http/file'
 import {playRetroarch} from '@/utils/http/retroarch'
-import {RetroarchCore} from '@/models/enums/retroarch-core'
 import {RetroarchRunner} from '@/models/enums/retroarch-runner'
 import {coreConfig, isPlatformEmulationReady} from '@/utils/retroarch'
 
@@ -34,6 +34,11 @@ function ContinuePlayingRom({
 	const isDownloadFinished = romDownload?.event === 'cancelled' || romDownload?.event === 'finished'
 
 	const play = useCallback(() => {
+		console.log({
+			core: coreConfig[rom.platformFsSlug][0],
+			runner: RetroarchRunner.FlatpakLinux,
+			romPath: `/${rom.platformFsSlug}/${rom.fsName}`
+		})
 		playRetroarch({
 			core: coreConfig[rom.platformFsSlug][0],
 			runner: RetroarchRunner.FlatpakLinux,
@@ -86,7 +91,8 @@ function ContinuePlayingRom({
 	}, [romDownload])
 
 	const getCtaButton = useCallback(() => {
-		const isReadyToPlay = isDownloaded && isPlatformEmulationReady(rom.platformFsSlug)
+		const isReadyToPlay = isDownloaded && isPlatformEmulationReady(rom.platformFsSlug) && platform() === 'linux'
+
 		if (isReadyToPlay) {
 			return (
 				<CtaButton onClick={play}>

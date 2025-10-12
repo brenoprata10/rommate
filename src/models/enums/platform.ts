@@ -212,6 +212,7 @@ export enum RommPlatform {
 	NINTENDO_DSI = 'nintendo-dsi',
 	NES = 'nes',
 	NGC = 'ngc',
+	GC = 'gc',
 	NINTENDO_PLAYSTATION = 'nintendo-playstation',
 	SWITCH = 'switch',
 	NORTHSTAR = 'northstar',
