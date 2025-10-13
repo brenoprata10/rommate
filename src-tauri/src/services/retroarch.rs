@@ -111,7 +111,7 @@ impl RetroarchPlayerConfig {
                 core,
             },
             RetroarchRunner::NativeWindows => RetroarchPlayerConfig {
-                config_path: "%APPDATA%\\RetroArch",
+                config_path: "C:\\RetroArch-Win64",
                 cores_path: "\\cores",
                 state_path: "\\states",
                 save_path: "\\saves",

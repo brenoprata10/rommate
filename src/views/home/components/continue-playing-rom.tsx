@@ -91,7 +91,10 @@ function ContinuePlayingRom({
 	}, [romDownload])
 
 	const getCtaButton = useCallback(() => {
-		const isReadyToPlay = isDownloaded && isPlatformEmulationReady(rom.platformFsSlug) && platform() === 'linux'
+		const isReadyToPlay =
+			isDownloaded &&
+			isPlatformEmulationReady(rom.platformFsSlug) &&
+			['linux', 'windows'].some((os) => os === platform())
 
 		if (isReadyToPlay) {
 			return (
