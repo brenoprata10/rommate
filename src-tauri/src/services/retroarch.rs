@@ -183,6 +183,14 @@ impl RetroarchPlayerConfig {
                 self.core_filename,
                 format!("{download_dir}{}", self.rom_path).as_str(),
             ])),
+            RetroarchRunner::NativeWindows => Ok(shell
+                .command(format!("{}/retroarch.exe", self.config_path))
+                .args([
+                    "--fullscreen",
+                    "-L",
+                    self.core_filename,
+                    format!("{download_dir}{}", self.rom_path).as_str(),
+                ])),
             _ => Err(Error::InternalServer("Runner not supported.".to_string())),
         }?;
 
