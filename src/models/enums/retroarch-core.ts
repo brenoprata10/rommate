@@ -9,7 +9,7 @@ export enum RetroarchCore {
 	MELONDS = 'melonds',
 	MELONDSDS = 'melondsds',
 	MGBA = 'mgba',
-	MUPEN64PLUS_NEXT = 'mupen64plus_next',
+	MUPEN64PLUS_NEXT = 'mupen64plusnext',
 	PPSSPP = 'ppsspp',
 	SNES9X = 'snes9x',
 	VITAQUAKE2_ROGUE = 'vitaquake2_rogue',
