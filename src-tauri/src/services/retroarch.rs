@@ -44,18 +44,21 @@ pub struct RetroarchPlayerConfig {
     core_filename: &'static str,
     state_path: &'static str,
     save_path: &'static str,
+    core: RetroarchCore,
+    runner: RetroarchRunner,
     rom_path: String,
 }
 
 impl RetroarchPlayerConfig {
-    pub fn new(config: RetroarchRunner, core: RetroarchCore, rom_path: String) -> Self {
-        match config {
+    pub fn new(runner: RetroarchRunner, core: RetroarchCore, rom_path: String) -> Self {
+        match runner {
             RetroarchRunner::FlatpakLinux => RetroarchPlayerConfig {
                 config_path: "$HOME/.var/app/org.libretro.RetroArch/config/retroarch",
                 cores_path: "/cores",
                 state_path: "/states",
                 save_path: "/saves",
                 rom_path,
+                runner,
                 core_filename: match core {
                     RetroarchCore::BsnesHdBeta => "bsnes_hd_beta_libretro.so",
                     RetroarchCore::Bsnes => "bsnes_libretro.so",
@@ -76,6 +79,7 @@ impl RetroarchPlayerConfig {
                     RetroarchCore::Vitaquake2 => "vitaquake2_libretro.so",
                     RetroarchCore::Vitaquake3 => "vitaquake3_libretro.so",
                 },
+                core,
             },
             RetroarchRunner::NativeLinux => RetroarchPlayerConfig {
                 config_path: "$HOME/.config/retroarch",
@@ -83,6 +87,7 @@ impl RetroarchPlayerConfig {
                 state_path: "/states",
                 save_path: "/saves",
                 rom_path,
+                runner,
                 core_filename: match core {
                     RetroarchCore::BsnesHdBeta => "bsnes_hd_beta_libretro.so",
                     RetroarchCore::Bsnes => "bsnes_libretro.so",
@@ -103,6 +108,7 @@ impl RetroarchPlayerConfig {
                     RetroarchCore::Vitaquake2 => "vitaquake2_libretro.so",
                     RetroarchCore::Vitaquake3 => "vitaquake3_libretro.so",
                 },
+                core,
             },
             RetroarchRunner::NativeWindows => RetroarchPlayerConfig {
                 config_path: "%APPDATA%\\RetroArch",
@@ -110,6 +116,7 @@ impl RetroarchPlayerConfig {
                 state_path: "\\states",
                 save_path: "\\saves",
                 rom_path,
+                runner,
                 core_filename: match core {
                     RetroarchCore::BsnesHdBeta => "bsnes_hd_beta_libretro.dll",
                     RetroarchCore::Bsnes => "bsnes_libretro.dll",
@@ -130,6 +137,7 @@ impl RetroarchPlayerConfig {
                     RetroarchCore::Vitaquake2 => "vitaquake2_libretro.dll",
                     RetroarchCore::Vitaquake3 => "vitaquake3_libretro.dll",
                 },
+                core,
             },
             RetroarchRunner::NativeMacOs => RetroarchPlayerConfig {
                 config_path: "$HOME/Library/Application Support/RetroArch/config",
@@ -137,6 +145,7 @@ impl RetroarchPlayerConfig {
                 state_path: "../states",
                 save_path: "../saves",
                 rom_path,
+                runner,
                 core_filename: match core {
                     RetroarchCore::BsnesHdBeta => "bsnes_hd_beta_libretro.dylib",
                     RetroarchCore::Bsnes => "bsnes_libretro.dylib",
@@ -157,21 +166,25 @@ impl RetroarchPlayerConfig {
                     RetroarchCore::Vitaquake2 => "vitaquake2_libretro.dylib",
                     RetroarchCore::Vitaquake3 => "vitaquake3_libretro.dylib",
                 },
+                core,
             },
         }
     }
 
-    pub async fn play(&self, app_handle: &AppHandle) -> Result<String, Error> {
+    pub async fn play(&self, app_handle: &AppHandle) -> Result<(), Error> {
         let download_dir = Downloader::get_download_path()?;
         let shell = app_handle.shell();
-        let command = shell.command("flatpak").args([
-            "run",
-            "org.libretro.RetroArch",
-            "--fullscreen",
-            "-L",
-            self.core_filename,
-            format!("{download_dir}{}", self.rom_path).as_str(),
-        ]);
+        let command = match self.runner {
+            RetroarchRunner::FlatpakLinux => Ok(shell.command("flatpak").args([
+                "run",
+                "org.libretro.RetroArch",
+                "--fullscreen",
+                "-L",
+                self.core_filename,
+                format!("{download_dir}{}", self.rom_path).as_str(),
+            ])),
+            _ => Err(Error::InternalServer("Runner not supported.".to_string())),
+        }?;
 
         let output = match command.output().await {
             Ok(output) => Ok(output),
@@ -184,6 +197,6 @@ impl RetroarchPlayerConfig {
             String::from_utf8(output.stderr)
         );
 
-        Ok("".to_string())
+        Ok(())
     }
 }

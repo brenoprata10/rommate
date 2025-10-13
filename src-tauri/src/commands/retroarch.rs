@@ -11,7 +11,7 @@ pub async fn command_play_retroarch_game(
     runner: RetroarchRunner,
     core: RetroarchCore,
     rom_path: String,
-) -> Result<String, Error> {
+) -> Result<(), Error> {
     let config = RetroarchPlayerConfig::new(runner, core, rom_path);
     config.play(&app_handle).await
 }
