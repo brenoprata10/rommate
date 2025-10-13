@@ -184,7 +184,7 @@ impl RetroarchPlayerConfig {
                 format!("{download_dir}{}", self.rom_path).as_str(),
             ])),
             RetroarchRunner::NativeWindows => Ok(shell
-                .command(format!("{}/retroarch.exe", self.config_path))
+                .command(format!("{}\\retroarch.exe", self.config_path))
                 .args([
                     "--fullscreen",
                     "-L",
