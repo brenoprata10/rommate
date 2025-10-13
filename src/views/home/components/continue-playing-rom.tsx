@@ -41,7 +41,7 @@ function ContinuePlayingRom({
 		})
 		playRetroarch({
 			core: coreConfig[rom.platformFsSlug][0],
-			runner: RetroarchRunner.FlatpakLinux,
+			runner: platform() === 'linux' ? RetroarchRunner.FlatpakLinux : RetroarchRunner.NativeWindows,
 			romPath: `/${rom.platformFsSlug}/${rom.fsName}`
 		})
 	}, [rom.platformFsSlug, rom.fsName])
