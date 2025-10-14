@@ -183,7 +183,6 @@ impl RetroarchPlayerConfig {
                 self.core_filename,
                 format!("{download_dir}{}", self.rom_path).as_str(),
             ])),
-            //>C:\RetroArch-Win64\retroarch.exe -L "C:\RetroArch-Win64\cores\bsnes_libretro.dll" "C:\Users\brenoprata\Rommate\roms\snes\Super Mario World"
             RetroarchRunner::NativeWindows => Ok(shell
                 .command(format!("{}\\retroarch.exe", self.config_path))
                 .args([

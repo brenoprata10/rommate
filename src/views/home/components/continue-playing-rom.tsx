@@ -34,11 +34,6 @@ function ContinuePlayingRom({
 	const isDownloadFinished = romDownload?.event === 'cancelled' || romDownload?.event === 'finished'
 
 	const play = useCallback(() => {
-		console.log({
-			core: coreConfig[rom.platformFsSlug][0],
-			runner: RetroarchRunner.FlatpakLinux,
-			romPath: `/${rom.platformFsSlug}/${rom.fsName}`
-		})
 		playRetroarch({
 			core: coreConfig[rom.platformFsSlug][0],
 			runner: platform() === 'linux' ? RetroarchRunner.FlatpakLinux : RetroarchRunner.NativeWindows,
