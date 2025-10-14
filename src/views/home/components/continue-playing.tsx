@@ -7,7 +7,12 @@ export default function ContinuePlaying({onHover}: {onHover: (romId: number) => 
 	const {data: roms, isLoading} = useRecentlyPlayed()
 
 	return (
-		<ScrollableSection title='Continue Playing' itemsLength={roms?.length ?? 0} isScrollButtonDisabled={isLoading}>
+		<ScrollableSection
+			title='Continue Playing'
+			itemsLength={roms?.length ?? 0}
+			isScrollButtonDisabled={isLoading}
+			className='w-max'
+		>
 			{isLoading
 				? new Array(7).fill(<ContinuePlayingRomSkeleton />)
 				: roms?.map((rom) => <ContinuePlayingRom key={rom.id} rom={rom} onHover={onHover} />)}

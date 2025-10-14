@@ -45,6 +45,7 @@ const RecentlyAddedScrollWrapper = ({
 			itemsLength={romsLength}
 			itemGap='18px'
 			isScrollButtonDisabled={isLoading}
+			className='w-max'
 		>
 			{children}
 		</ScrollableSection>

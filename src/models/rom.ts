@@ -1,3 +1,4 @@
+import {RommPlatform} from './enums/platform'
 import {HasheousMetadata} from './hasheous'
 import {IgdbMetadata} from './igdb'
 import {LaunchBoxMetadata} from './launchbox'
@@ -16,7 +17,7 @@ export type Rom = {
 	tgdbId: number | null
 	platformId: number
 	platformSlug: string
-	platformFsSlug: string
+	platformFsSlug: RommPlatform
 	platformName: string
 	platformCustomName: string
 	platformDisplayName: string
