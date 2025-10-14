@@ -3,5 +3,7 @@ pub mod collection;
 pub mod downloader;
 pub mod file;
 pub mod platform;
+pub mod retroarch;
 pub mod rom;
+pub mod shell;
 pub mod user;
