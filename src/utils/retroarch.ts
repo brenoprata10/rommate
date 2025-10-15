@@ -1,5 +1,6 @@
 import {RommPlatform} from '@/models/enums/platform'
 import {RetroarchCore} from '@/models/enums/retroarch-core'
+import {RetroarchRunner} from '@/models/enums/retroarch-runner'
 
 export const EMULATION_READY_PLATFORMS: RommPlatform[] = [
 	RommPlatform.SNES,
@@ -29,4 +30,10 @@ export const coreConfig: Record<string, RetroarchCore[]> = {
 	[RommPlatform.PSP]: [RetroarchCore.PPSSPP],
 	[RommPlatform.PS]: [RetroarchCore.MEDNAFEN_PSX_HW],
 	[RommPlatform._3DS]: [RetroarchCore.CITRA]
+}
+
+export const runnerConfig: Record<string, RetroarchRunner> = {
+	macos: RetroarchRunner.NativeMacOs,
+	linux: RetroarchRunner.FlatpakLinux,
+	windows: RetroarchRunner.NativeWindows
 }

@@ -13,8 +13,7 @@ import {motion} from 'motion/react'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {isFileDownloaded, openDownloadDirectory} from '@/utils/http/file'
 import {playRetroarch} from '@/utils/http/retroarch'
-import {RetroarchRunner} from '@/models/enums/retroarch-runner'
-import {coreConfig, isPlatformEmulationReady} from '@/utils/retroarch'
+import {coreConfig, isPlatformEmulationReady, runnerConfig} from '@/utils/retroarch'
 //
 
 function ContinuePlayingRom({
@@ -35,9 +34,14 @@ function ContinuePlayingRom({
 	const isDownloadFinished = romDownload?.event === 'cancelled' || romDownload?.event === 'finished'
 
 	const play = useCallback(() => {
+		const runner = runnerConfig[platform()] ?? null
+
+		if (!runner) {
+			return
+		}
 		playRetroarch({
 			core: coreConfig[rom.platformFsSlug][0],
-			runner: platform() === 'linux' ? RetroarchRunner.FlatpakLinux : RetroarchRunner.NativeWindows,
+			runner,
 			romPath: `/${rom.platformFsSlug}/${rom.fsName}`
 		})
 	}, [rom.platformFsSlug, rom.fsName])
@@ -90,7 +94,7 @@ function ContinuePlayingRom({
 		const isReadyToPlay =
 			isDownloaded &&
 			isPlatformEmulationReady(rom.platformFsSlug) &&
-			['linux', 'windows'].some((os) => os === platform())
+			['linux', 'windows', 'macos'].some((os) => os === platform())
 
 		if (isReadyToPlay) {
 			return (

@@ -140,10 +140,10 @@ impl RetroarchPlayerConfig {
                 core,
             },
             RetroarchRunner::NativeMacOs => RetroarchPlayerConfig {
-                config_path: "$HOME/Library/Application Support/RetroArch/config",
-                cores_path: "../cores",
-                state_path: "../states",
-                save_path: "../saves",
+                config_path: "$HOME/Library/Application Support/RetroArch",
+                cores_path: "/cores",
+                state_path: "/states",
+                save_path: "/saves",
                 rom_path,
                 runner,
                 core_filename: match core {
@@ -191,6 +191,12 @@ impl RetroarchPlayerConfig {
                     self.core_filename,
                     format!("{download_dir}{}", self.rom_path.replace("/", "\\")).as_str(),
                 ])),
+            RetroarchRunner::NativeMacOs=> Ok(shell.command("/Applications/RetroArch.app/Contents/MacOS/RetroArch").args([
+                "--fullscreen",
+                "-L",
+                self.core_filename,
+                format!("{download_dir}{}", self.rom_path).as_str(),
+            ])),
             _ => Err(Error::InternalServer("Runner not supported.".to_string())),
         }?;
 
