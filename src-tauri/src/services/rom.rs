@@ -153,7 +153,7 @@ pub async fn download_rom(
         .downloads
         .insert(id.clone(), cancellation_token.clone());
 
-    tauri::async_runtime::spawn(Downloader::track_progress(
+    tauri::async_runtime::spawn(Downloader::with_stream(
         id,
         response,
         file_path,
@@ -162,5 +162,13 @@ pub async fn download_rom(
         cancellation_token,
     ));
 
+    Ok(())
+}
+
+pub fn download_save_file(rom_id: i32, platform_id: i32) -> Result<(), Error> {
+    //call getSaves
+    //Fetch the last save
+    //rename file with same name in dir to prevent data loss
+    //download file
     Ok(())
 }

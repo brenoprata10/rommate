@@ -1,6 +1,11 @@
 use futures_util::StreamExt;
-use reqwest::Response;
-use std::{fs::remove_file, sync::Mutex, time::Instant};
+use reqwest::{RequestBuilder, Response};
+use std::{
+    fs::{create_dir_all, remove_file},
+    io::Write,
+    sync::Mutex,
+    time::Instant,
+};
 use tauri::{ipc::Channel, State};
 use tokio::{fs::File, io::AsyncWriteExt};
 use tokio_util::sync::CancellationToken;
@@ -13,7 +18,22 @@ use crate::{
 pub struct Downloader {}
 
 impl Downloader {
-    pub async fn track_progress(
+    pub async fn file(
+        request: RequestBuilder,
+        file_name: String,
+        directory: String,
+    ) -> Result<(), Error> {
+        // Create directories path if it does not exist
+        create_dir_all(&directory)?;
+
+        let mut file = std::fs::File::create(format!("{directory}/{file_name}"))?;
+        let bytes = request.send().await?.bytes().await?;
+        file.write_all(&bytes)?;
+
+        Ok(())
+    }
+
+    pub async fn with_stream(
         id: String,
         response: Response,
         file_path: String,
