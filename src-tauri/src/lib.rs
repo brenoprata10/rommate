@@ -13,7 +13,6 @@ use commands::rom::{
     command_get_recently_added, command_get_recently_played, command_get_rom_by_id,
     command_get_roms, command_get_roms_by_collection_id, command_get_roms_by_platform_id,
 };
-use commands::shell::command_run_shell;
 use commands::user::{command_get_logged_in_user, command_get_users};
 use tokio_util::sync::CancellationToken;
 
@@ -59,7 +58,6 @@ pub fn run() {
             command_is_file_downloaded,
             command_open_download_directory,
             command_restart_app,
-            command_run_shell,
             command_play_retroarch_game,
         ])
         .run(tauri::generate_context!())

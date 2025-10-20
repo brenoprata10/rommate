@@ -3,9 +3,9 @@ use tauri::AppHandle;
 
 use crate::{enums::error::Error, romm::romm_http::RommHttp};
 
-pub struct RommAsset {}
+pub struct RommAssetService {}
 
-impl RommAsset {
+impl RommAssetService {
     pub async fn get_asset(app_handle: &AppHandle, url: String) -> Result<Vec<u8>, Error> {
         let response = RommHttp::get(app_handle, url.as_str())?.send().await?;
 

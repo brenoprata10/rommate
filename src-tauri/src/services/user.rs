@@ -1,18 +1,22 @@
 use crate::{enums::error::Error, models::user::User, romm::romm_http::RommHttp};
 use tauri::AppHandle;
 
-pub async fn get_users(app_handle: &AppHandle) -> Result<Vec<User>, Error> {
-    let response = RommHttp::get(app_handle, "/api/users")?.send().await?;
+pub struct UserService {}
 
-    let users = response.json::<Vec<User>>().await?;
+impl UserService {
+    pub async fn get_users(app_handle: &AppHandle) -> Result<Vec<User>, Error> {
+        let response = RommHttp::get(app_handle, "/api/users")?.send().await?;
 
-    Ok(users)
-}
+        let users = response.json::<Vec<User>>().await?;
 
-pub async fn get_logged_in_user(app_handle: &AppHandle) -> Result<User, Error> {
-    let response = RommHttp::get(app_handle, "/api/users/me")?.send().await?;
+        Ok(users)
+    }
 
-    let user = response.json::<User>().await?;
+    pub async fn get_logged_in_user(app_handle: &AppHandle) -> Result<User, Error> {
+        let response = RommHttp::get(app_handle, "/api/users/me")?.send().await?;
 
-    Ok(user)
+        let user = response.json::<User>().await?;
+
+        Ok(user)
+    }
 }

@@ -7,5 +7,4 @@ pub mod platform;
 pub mod process;
 pub mod retroarch;
 pub mod rom;
-pub mod shell;
 pub mod user;

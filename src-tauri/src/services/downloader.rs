@@ -15,9 +15,9 @@ use crate::{
     AppState,
 };
 
-pub struct Downloader {}
+pub struct DownloaderService {}
 
-impl Downloader {
+impl DownloaderService {
     pub async fn file(
         request: RequestBuilder,
         file_name: String,
@@ -78,8 +78,9 @@ impl Downloader {
             if current_mb > last_reported_mb || downloaded == content_length as usize {
                 last_reported_mb = current_mb;
 
-                let speed = Downloader::get_speed(downloaded as f64, start_time);
-                let progress = Downloader::get_progress(downloaded as f64, content_length as f64);
+                let speed = DownloaderService::get_speed(downloaded as f64, start_time);
+                let progress =
+                    DownloaderService::get_progress(downloaded as f64, content_length as f64);
 
                 on_event
                     .send(DownloadEvent::Progress {
@@ -131,16 +132,19 @@ impl Downloader {
                 .expect("Failed to parse home dir to string.")
         ))
     }
-}
 
-pub async fn cancel_download(state: State<'_, Mutex<AppState>>, id: String) -> Result<(), Error> {
-    let mut state = state.lock().unwrap();
+    pub async fn cancel_download(
+        state: State<'_, Mutex<AppState>>,
+        id: String,
+    ) -> Result<(), Error> {
+        let mut state = state.lock().unwrap();
 
-    if let Some(token) = state.downloads.get(&id) {
-        token.cancel();
-        state.downloads.remove(&id);
-        Ok(())
-    } else {
-        Err(Error::NotFound("Download ID not found.".to_string()))
+        if let Some(token) = state.downloads.get(&id) {
+            token.cancel();
+            state.downloads.remove(&id);
+            Ok(())
+        } else {
+            Err(Error::NotFound("Download ID not found.".to_string()))
+        }
     }
 }

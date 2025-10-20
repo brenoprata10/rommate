@@ -7,14 +7,14 @@ use crate::{
     romm::romm_http::RommHttp,
 };
 
-pub struct Collection {}
+pub struct CollectionService {}
 
-impl Collection {
+impl CollectionService {
     pub async fn get_all(app_handle: &AppHandle) -> Result<Vec<VirtualCollection>, Error> {
         let (collections, smart_collections, virtual_collections) = join![
-            Collection::get_default(app_handle),
-            Collection::get_smart(app_handle),
-            Collection::get_virtual(app_handle),
+            CollectionService::get_default(app_handle),
+            CollectionService::get_smart(app_handle),
+            CollectionService::get_virtual(app_handle),
         ];
 
         let mut all_collections = Vec::new();
