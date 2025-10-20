@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 use tauri_plugin_shell::ShellExt;
 
-use crate::{enums::error::Error, services::downloader::Downloader};
+use crate::{enums::error::Error, services::downloader::DownloaderService};
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "lowercase")]
@@ -38,7 +38,7 @@ pub enum RetroarchRunner {
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all(serialize = "camelCase"))]
-pub struct RetroarchPlayerConfig {
+pub struct RetroarchService {
     config_path: &'static str,
     cores_path: &'static str,
     core_filename: &'static str,
@@ -49,10 +49,10 @@ pub struct RetroarchPlayerConfig {
     rom_path: String,
 }
 
-impl RetroarchPlayerConfig {
+impl RetroarchService {
     pub fn new(runner: RetroarchRunner, core: RetroarchCore, rom_path: String) -> Self {
         match runner {
-            RetroarchRunner::FlatpakLinux => RetroarchPlayerConfig {
+            RetroarchRunner::FlatpakLinux => RetroarchService {
                 config_path: "$HOME/.var/app/org.libretro.RetroArch/config/retroarch",
                 cores_path: "/cores",
                 state_path: "/states",
@@ -81,7 +81,7 @@ impl RetroarchPlayerConfig {
                 },
                 core,
             },
-            RetroarchRunner::NativeLinux => RetroarchPlayerConfig {
+            RetroarchRunner::NativeLinux => RetroarchService {
                 config_path: "$HOME/.config/retroarch",
                 cores_path: "/cores",
                 state_path: "/states",
@@ -110,7 +110,7 @@ impl RetroarchPlayerConfig {
                 },
                 core,
             },
-            RetroarchRunner::NativeWindows => RetroarchPlayerConfig {
+            RetroarchRunner::NativeWindows => RetroarchService {
                 config_path: "C:\\RetroArch-Win64",
                 cores_path: "\\cores",
                 state_path: "\\states",
@@ -139,7 +139,7 @@ impl RetroarchPlayerConfig {
                 },
                 core,
             },
-            RetroarchRunner::NativeMacOs => RetroarchPlayerConfig {
+            RetroarchRunner::NativeMacOs => RetroarchService {
                 config_path: "$HOME/Library/Application Support/RetroArch",
                 cores_path: "/cores",
                 state_path: "/states",
@@ -172,7 +172,7 @@ impl RetroarchPlayerConfig {
     }
 
     pub async fn play(&self, app_handle: &AppHandle) -> Result<(), Error> {
-        let download_dir = Downloader::get_download_path()?;
+        let download_dir = DownloaderService::get_download_path()?;
         let shell = app_handle.shell();
         let command = match self.runner {
             RetroarchRunner::FlatpakLinux => Ok(shell.command("flatpak").args([
@@ -191,12 +191,14 @@ impl RetroarchPlayerConfig {
                     self.core_filename,
                     format!("{download_dir}{}", self.rom_path.replace("/", "\\")).as_str(),
                 ])),
-            RetroarchRunner::NativeMacOs=> Ok(shell.command("/Applications/RetroArch.app/Contents/MacOS/RetroArch").args([
-                "--fullscreen",
-                "-L",
-                self.core_filename,
-                format!("{download_dir}{}", self.rom_path).as_str(),
-            ])),
+            RetroarchRunner::NativeMacOs => Ok(shell
+                .command("/Applications/RetroArch.app/Contents/MacOS/RetroArch")
+                .args([
+                    "--fullscreen",
+                    "-L",
+                    self.core_filename,
+                    format!("{download_dir}{}", self.rom_path).as_str(),
+                ])),
             _ => Err(Error::InternalServer("Runner not supported.".to_string())),
         }?;
 

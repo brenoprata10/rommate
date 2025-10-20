@@ -23,7 +23,6 @@ export enum TauriCommandKey {
 	OPEN_DOWNLOAD_DIRECTORY = 'command_open_download_directory',
 	IS_FILE_DOWNLOADED = 'command_is_file_downloaded',
 	RESTART_APP = 'command_restart_app',
-	RUN_SHELL = 'command_run_shell',
 	PLAY_RETROARCH_GAME = 'command_play_retroarch_game'
 }
 

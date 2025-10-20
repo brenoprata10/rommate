@@ -1,6 +1,11 @@
 use futures_util::StreamExt;
-use reqwest::Response;
-use std::{fs::remove_file, sync::Mutex, time::Instant};
+use reqwest::{RequestBuilder, Response};
+use std::{
+    fs::{create_dir_all, remove_file},
+    io::Write,
+    sync::Mutex,
+    time::Instant,
+};
 use tauri::{ipc::Channel, State};
 use tokio::{fs::File, io::AsyncWriteExt};
 use tokio_util::sync::CancellationToken;
@@ -10,10 +15,25 @@ use crate::{
     AppState,
 };
 
-pub struct Downloader {}
+pub struct DownloaderService {}
 
-impl Downloader {
-    pub async fn track_progress(
+impl DownloaderService {
+    pub async fn file(
+        request: RequestBuilder,
+        file_name: String,
+        directory: String,
+    ) -> Result<(), Error> {
+        // Create directories path if it does not exist
+        create_dir_all(&directory)?;
+
+        let mut file = std::fs::File::create(format!("{directory}/{file_name}"))?;
+        let bytes = request.send().await?.bytes().await?;
+        file.write_all(&bytes)?;
+
+        Ok(())
+    }
+
+    pub async fn with_stream(
         id: String,
         response: Response,
         file_path: String,
@@ -58,8 +78,9 @@ impl Downloader {
             if current_mb > last_reported_mb || downloaded == content_length as usize {
                 last_reported_mb = current_mb;
 
-                let speed = Downloader::get_speed(downloaded as f64, start_time);
-                let progress = Downloader::get_progress(downloaded as f64, content_length as f64);
+                let speed = DownloaderService::get_speed(downloaded as f64, start_time);
+                let progress =
+                    DownloaderService::get_progress(downloaded as f64, content_length as f64);
 
                 on_event
                     .send(DownloadEvent::Progress {
@@ -111,16 +132,19 @@ impl Downloader {
                 .expect("Failed to parse home dir to string.")
         ))
     }
-}
 
-pub async fn cancel_download(state: State<'_, Mutex<AppState>>, id: String) -> Result<(), Error> {
-    let mut state = state.lock().unwrap();
+    pub async fn cancel_download(
+        state: State<'_, Mutex<AppState>>,
+        id: String,
+    ) -> Result<(), Error> {
+        let mut state = state.lock().unwrap();
 
-    if let Some(token) = state.downloads.get(&id) {
-        token.cancel();
-        state.downloads.remove(&id);
-        Ok(())
-    } else {
-        Err(Error::NotFound("Download ID not found.".to_string()))
+        if let Some(token) = state.downloads.get(&id) {
+            token.cancel();
+            state.downloads.remove(&id);
+            Ok(())
+        } else {
+            Err(Error::NotFound("Download ID not found.".to_string()))
+        }
     }
 }
