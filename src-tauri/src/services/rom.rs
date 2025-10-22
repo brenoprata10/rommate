@@ -7,6 +7,7 @@ use crate::{
     enums::{download_event::DownloadEvent, error::Error},
     models::{collection::RomCollection, rom::Rom},
     romm::romm_http::RommHttp,
+    services::file::FileService,
     AppState,
 };
 
@@ -168,7 +169,20 @@ impl RomService {
         Ok(())
     }
 
-    pub fn download_save_file(rom_id: i32, platform_id: i32) -> Result<(), Error> {
+    pub async fn download_save_file(
+        app_handle: &AppHandle,
+        rom_id: i32,
+        platform_id: i32,
+    ) -> Result<(), Error> {
+        let rom = RomService::get_rom_by_id(app_handle, rom_id).await?;
+        let saves = match rom.user_saves {
+            Some(saves) => Ok(saves),
+            None => Err(Error::InternalServer("User saves are empty.".to_string())),
+        }?;
+        let save = saves.first();
+        if let Some(save) = save {
+            DownloaderService::file(request, save.file_name, directory).await?;
+        }
         //call getSaves
         //Fetch the last save
         //rename file with same name in dir to prevent data loss
