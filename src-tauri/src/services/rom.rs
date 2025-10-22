@@ -5,7 +5,7 @@ use tokio_util::sync::CancellationToken;
 
 use crate::{
     enums::{download_event::DownloadEvent, error::Error},
-    models::{collection::RomCollection, rom::Rom},
+    models::{collection::RomCollection, rom::{Rom, RomUserSave}},
     romm::romm_http::RommHttp,
     services::file::FileService,
     AppState,
@@ -126,6 +126,18 @@ impl RomService {
         Ok(roms)
     }
 
+    pub async fn get_rom_saves(
+        app_handle: &AppHandle,
+        rom_id: i32,
+        platform_id: i32,
+    ) -> Result<Vec<RomUserSave>, Error> {
+        let response = RommHttp::get(app_handle, format!("/api/saves?rom_id{rom_id}&platform_id={platform_id}").as_str())?.send().await?;
+
+        let saves = response.json::<Vec<RomUserSave>>().await?;
+
+        Ok(saves)
+    }
+
     pub async fn download_rom(
         app_handle: &AppHandle,
         state: State<'_, Mutex<AppState>>,
@@ -174,11 +186,7 @@ impl RomService {
         rom_id: i32,
         platform_id: i32,
     ) -> Result<(), Error> {
-        let rom = RomService::get_rom_by_id(app_handle, rom_id).await?;
-        let saves = match rom.user_saves {
-            Some(saves) => Ok(saves),
-            None => Err(Error::InternalServer("User saves are empty.".to_string())),
-        }?;
+        let saves = RomService::get_rom_saves(app_handle, rom_id, platform_id).await?;
         let save = saves.first();
         if let Some(save) = save {
             DownloaderService::file(request, save.file_name, directory).await?;
