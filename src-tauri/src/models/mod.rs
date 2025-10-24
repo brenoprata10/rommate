@@ -1,6 +1,7 @@
 pub mod collection;
 pub mod hasheous;
 pub mod igdb;
+pub mod installed_game;
 pub mod launchbox;
 pub mod platform;
 pub mod retroachievements;

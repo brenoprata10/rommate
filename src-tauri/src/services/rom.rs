@@ -184,6 +184,7 @@ impl RomService {
             content_length,
             on_event,
             cancellation_token,
+            || println!("finished"),
         ));
 
         Ok(())

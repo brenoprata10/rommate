@@ -33,14 +33,18 @@ impl DownloaderService {
         Ok(())
     }
 
-    pub async fn with_stream(
+    pub async fn with_stream<F>(
         id: String,
         response: Response,
         file_path: String,
         content_length: u64,
         on_event: Channel<DownloadEvent>,
         cancellation_token: CancellationToken,
-    ) -> Result<(), Error> {
+        on_finished: F,
+    ) -> Result<(), Error>
+    where
+        F: Fn(),
+    {
         let mut stream = response.bytes_stream();
         let mut downloaded: usize = 0;
 
@@ -96,6 +100,8 @@ impl DownloaderService {
         on_event
             .send(DownloadEvent::Finished { id: id.clone() })
             .unwrap();
+
+        on_finished();
 
         Ok(())
     }
