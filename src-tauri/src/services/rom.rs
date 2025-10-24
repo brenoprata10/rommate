@@ -5,9 +5,12 @@ use tokio_util::sync::CancellationToken;
 
 use crate::{
     enums::{download_event::DownloadEvent, error::Error},
-    models::{collection::RomCollection, rom::{Rom, RomUserSave}},
+    models::{
+        collection::RomCollection,
+        rom::{Rom, RomUserSave},
+    },
     romm::romm_http::RommHttp,
-    services::file::FileService,
+    services::retroarch::{RetroarchCore, RetroarchRunner, RetroarchService},
     AppState,
 };
 
@@ -129,9 +132,14 @@ impl RomService {
     pub async fn get_rom_saves(
         app_handle: &AppHandle,
         rom_id: i32,
-        platform_id: i32,
+        platform_id: u16,
     ) -> Result<Vec<RomUserSave>, Error> {
-        let response = RommHttp::get(app_handle, format!("/api/saves?rom_id{rom_id}&platform_id={platform_id}").as_str())?.send().await?;
+        let response = RommHttp::get(
+            app_handle,
+            format!("/api/saves?rom_id={rom_id}&platform_id={platform_id}").as_str(),
+        )?
+        .send()
+        .await?;
 
         let saves = response.json::<Vec<RomUserSave>>().await?;
 
@@ -184,17 +192,19 @@ impl RomService {
     pub async fn download_save_file(
         app_handle: &AppHandle,
         rom_id: i32,
-        platform_id: i32,
+        platform_id: u16,
+        runner: RetroarchRunner,
+        core: RetroarchCore,
+        rom_path: String,
     ) -> Result<(), Error> {
         let saves = RomService::get_rom_saves(app_handle, rom_id, platform_id).await?;
-        let save = saves.first();
-        if let Some(save) = save {
-            DownloaderService::file(request, save.file_name, directory).await?;
+        println!("here");
+        if let Some(save) = saves.first() {
+            let save_request = RommHttp::get(app_handle, &save.download_path)?;
+            let retroarch_service = RetroarchService::new(runner, core, rom_path);
+            DownloaderService::file(save_request, &save.file_name, retroarch_service.save_path)
+                .await?;
         }
-        //call getSaves
-        //Fetch the last save
-        //rename file with same name in dir to prevent data loss
-        //download file
         Ok(())
     }
 }

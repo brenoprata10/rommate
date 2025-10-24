@@ -20,11 +20,11 @@ pub struct DownloaderService {}
 impl DownloaderService {
     pub async fn file(
         request: RequestBuilder,
-        file_name: String,
-        directory: String,
+        file_name: &str,
+        directory: &str,
     ) -> Result<(), Error> {
         // Create directories path if it does not exist
-        create_dir_all(&directory)?;
+        create_dir_all(directory)?;
 
         let mut file = std::fs::File::create(format!("{directory}/{file_name}"))?;
         let bytes = request.send().await?.bytes().await?;

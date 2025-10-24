@@ -115,7 +115,7 @@ pub struct RomUserSave {
     file_path: String,
     file_size_bytes: u64,
     full_path: String,
-    download_path: String,
+    pub download_path: String,
     missing_from_fs: bool,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,

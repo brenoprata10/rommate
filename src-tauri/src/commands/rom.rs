@@ -3,7 +3,10 @@ use tauri::AppHandle;
 use crate::{
     enums::error::Error,
     models::{collection::RomCollection, rom::Rom},
-    services::rom::{RomPagination, RomPayload, RomService},
+    services::{
+        retroarch::{RetroarchCore, RetroarchRunner},
+        rom::{RomPagination, RomPayload, RomService},
+    },
 };
 
 #[tauri::command]
@@ -47,4 +50,16 @@ pub async fn command_get_roms_by_platform_id(
     pagination: RomPagination,
 ) -> Result<RomPayload, Error> {
     RomService::get_roms_by_platform_id(&app_handle, id, pagination).await
+}
+
+#[tauri::command]
+pub async fn command_download_save_file(
+    app_handle: AppHandle,
+    rom_id: i32,
+    platform_id: u16,
+    runner: RetroarchRunner,
+    core: RetroarchCore,
+    rom_path: String,
+) -> Result<(), Error> {
+    RomService::download_save_file(&app_handle, rom_id, platform_id, runner, core, rom_path).await
 }

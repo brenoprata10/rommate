@@ -39,11 +39,11 @@ pub enum RetroarchRunner {
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all(serialize = "camelCase"))]
 pub struct RetroarchService {
-    config_path: &'static str,
+    pub config_path: &'static str,
     cores_path: &'static str,
     core_filename: &'static str,
     state_path: &'static str,
-    save_path: &'static str,
+    pub save_path: &'static str,
     core: RetroarchCore,
     runner: RetroarchRunner,
     rom_path: String,
@@ -143,7 +143,7 @@ impl RetroarchService {
                 config_path: "$HOME/Library/Application Support/RetroArch",
                 cores_path: "/cores",
                 state_path: "/states",
-                save_path: "/saves",
+                save_path: "$HOME/Documents/RetroArch/saves",
                 rom_path,
                 runner,
                 core_filename: match core {
