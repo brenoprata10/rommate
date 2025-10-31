@@ -1,8 +1,9 @@
 use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
 
 use crate::services::retroarch::RetroarchCore;
 
-#[derive(Default)]
+#[derive(Default, Deserialize, Serialize)]
 pub struct InstalledGame {
     path: String,
     cloud_synced: bool,
