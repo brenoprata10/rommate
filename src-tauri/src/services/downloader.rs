@@ -6,7 +6,7 @@ use std::{
     sync::Mutex,
     time::Instant,
 };
-use tauri::{ipc::Channel, State};
+use tauri::{ipc::Channel, AppHandle, State};
 use tokio::{fs::File, io::AsyncWriteExt};
 use tokio_util::sync::CancellationToken;
 
@@ -34,6 +34,7 @@ impl DownloaderService {
     }
 
     pub async fn with_stream<F>(
+        app_handle: AppHandle,
         id: String,
         response: Response,
         file_path: String,
@@ -43,7 +44,7 @@ impl DownloaderService {
         on_finished: F,
     ) -> Result<(), Error>
     where
-        F: Fn(),
+        F: Fn(AppHandle, String) -> Result<(), Error>,
     {
         let mut stream = response.bytes_stream();
         let mut downloaded: usize = 0;
@@ -101,7 +102,7 @@ impl DownloaderService {
             .send(DownloadEvent::Finished { id: id.clone() })
             .unwrap();
 
-        on_finished();
+        on_finished(app_handle, file_path)?;
 
         Ok(())
     }

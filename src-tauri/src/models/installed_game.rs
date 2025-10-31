@@ -5,6 +5,7 @@ use crate::services::retroarch::RetroarchCore;
 
 #[derive(Default, Deserialize, Serialize)]
 pub struct InstalledGame {
+    id: String,
     path: String,
     cloud_synced: bool,
     selected_core: Option<RetroarchCore>,
@@ -16,9 +17,10 @@ pub struct InstalledGame {
 }
 
 impl InstalledGame {
-    pub fn new(path: String) -> Self {
+    pub fn new(id: &str, path: &str) -> Self {
         InstalledGame {
-            path,
+            id: id.to_string(),
+            path: path.to_string(),
             ..Default::default()
         }
     }

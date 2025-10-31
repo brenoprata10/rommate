@@ -7,10 +7,14 @@ use crate::{
     enums::{download_event::DownloadEvent, error::Error},
     models::{
         collection::RomCollection,
+        installed_game::InstalledGame,
         rom::{Rom, RomUserSave},
     },
     romm::romm_http::RommHttp,
-    services::retroarch::{RetroarchCore, RetroarchRunner, RetroarchService},
+    services::{
+        retroarch::{RetroarchCore, RetroarchRunner, RetroarchService},
+        store::StoreService,
+    },
     AppState,
 };
 
@@ -177,9 +181,13 @@ impl RomService {
             .downloads
             .insert(id.clone(), cancellation_token.clone());
 
-        let on_finished = || println!("here");
+        let on_finished = move |app_handle: AppHandle, file_path: String| {
+            StoreService::new(&app_handle)
+                .add_installed_game(InstalledGame::new(&rom_id.to_string(), &file_path))
+        };
 
         tauri::async_runtime::spawn(DownloaderService::with_stream(
+            app_handle.clone(),
             id,
             response,
             file_path,
