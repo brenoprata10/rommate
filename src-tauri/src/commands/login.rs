@@ -1,4 +1,4 @@
-use crate::{enums::error::Error, store::set_store_value};
+use crate::{enums::error::Error, services::store::StoreService};
 use reqwest::{self, StatusCode};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -20,6 +20,7 @@ pub async fn login(app_handle: AppHandle, payload: LoginPayload) -> Result<(), E
         server_url,
     } = payload;
 
+    let store = StoreService::new(&app_handle);
     let client = reqwest::Client::builder().build()?;
 
     let response = client
@@ -32,10 +33,10 @@ pub async fn login(app_handle: AppHandle, payload: LoginPayload) -> Result<(), E
         StatusCode::OK => {
             for cookie in response.cookies() {
                 if cookie.name() == "romm_session" {
-                    set_store_value(&app_handle, "romm_session", json!(cookie.value()))?;
+                    store.set_value("romm_session", json!(cookie.value()))?;
                 }
             }
-            set_store_value(&app_handle, "romm_url", json!(server_url))?;
+            store.set_value("romm_url", json!(server_url))?;
             Ok(())
         }
         StatusCode::UNAUTHORIZED => Err(Error::InvalidCredentials()),

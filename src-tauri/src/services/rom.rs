@@ -177,6 +177,8 @@ impl RomService {
             .downloads
             .insert(id.clone(), cancellation_token.clone());
 
+        let on_finished = || println!("here");
+
         tauri::async_runtime::spawn(DownloaderService::with_stream(
             id,
             response,
@@ -184,7 +186,7 @@ impl RomService {
             content_length,
             on_event,
             cancellation_token,
-            || println!("finished"),
+            on_finished,
         ));
 
         Ok(())

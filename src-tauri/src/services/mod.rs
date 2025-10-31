@@ -5,4 +5,5 @@ pub mod platform;
 pub mod retroarch;
 pub mod rom;
 pub mod romm_asset;
+pub mod store;
 pub mod user;

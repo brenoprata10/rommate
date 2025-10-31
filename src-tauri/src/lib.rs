@@ -22,7 +22,6 @@ mod enums;
 mod models;
 mod romm;
 mod services;
-mod store;
 
 pub struct AppState {
     pub downloads: HashMap<String, CancellationToken>,
