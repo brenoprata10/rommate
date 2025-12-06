@@ -7,59 +7,62 @@ use crate::{
     romm::romm_http::RommHttp,
 };
 
-pub async fn get_all_collections(app_handle: &AppHandle) -> Result<Vec<VirtualCollection>, Error> {
-    let (collections, smart_collections, virtual_collections) = join![
-        get_collections(app_handle),
-        get_collections_smart(app_handle),
-        get_collections_virtual(app_handle),
-    ];
+pub struct CollectionService {}
 
-    let mut all_collections = Vec::new();
+impl CollectionService {
+    pub async fn get_all(app_handle: &AppHandle) -> Result<Vec<VirtualCollection>, Error> {
+        let (collections, smart_collections, virtual_collections) = join![
+            CollectionService::get_default(app_handle),
+            CollectionService::get_smart(app_handle),
+            CollectionService::get_virtual(app_handle),
+        ];
 
-    all_collections.extend(
-        collections?
-            .into_iter()
-            .map(VirtualCollection::from_user_collection),
-    );
-    all_collections.extend(
-        smart_collections?
-            .into_iter()
-            .map(VirtualCollection::from_user_collection),
-    );
-    all_collections.extend(virtual_collections?);
-    all_collections.sort_by(|collection_a, collection_b| collection_a.name.cmp(&collection_b.name));
+        let mut all_collections = Vec::new();
 
-    Ok(all_collections)
-}
+        all_collections.extend(
+            collections?
+                .into_iter()
+                .map(VirtualCollection::from_user_collection),
+        );
+        all_collections.extend(
+            smart_collections?
+                .into_iter()
+                .map(VirtualCollection::from_user_collection),
+        );
+        all_collections.extend(virtual_collections?);
+        all_collections
+            .sort_by(|collection_a, collection_b| collection_a.name.cmp(&collection_b.name));
 
-pub async fn get_collections(app_handle: &AppHandle) -> Result<Vec<UserCollection>, Error> {
-    let response = RommHttp::get(app_handle, "/api/collections")?
-        .send()
-        .await?;
+        Ok(all_collections)
+    }
 
-    let collections = response.json::<Vec<UserCollection>>().await?;
+    pub async fn get_default(app_handle: &AppHandle) -> Result<Vec<UserCollection>, Error> {
+        let response = RommHttp::get(app_handle, "/api/collections")?
+            .send()
+            .await?;
 
-    Ok(collections)
-}
+        let collections = response.json::<Vec<UserCollection>>().await?;
 
-pub async fn get_collections_smart(app_handle: &AppHandle) -> Result<Vec<UserCollection>, Error> {
-    let response = RommHttp::get(app_handle, "/api/collections/smart")?
-        .send()
-        .await?;
+        Ok(collections)
+    }
 
-    let collections = response.json::<Vec<UserCollection>>().await?;
+    pub async fn get_smart(app_handle: &AppHandle) -> Result<Vec<UserCollection>, Error> {
+        let response = RommHttp::get(app_handle, "/api/collections/smart")?
+            .send()
+            .await?;
 
-    Ok(collections)
-}
+        let collections = response.json::<Vec<UserCollection>>().await?;
 
-pub async fn get_collections_virtual(
-    app_handle: &AppHandle,
-) -> Result<Vec<VirtualCollection>, Error> {
-    let response = RommHttp::get(app_handle, "/api/collections/virtual?type=collection")?
-        .send()
-        .await?;
+        Ok(collections)
+    }
 
-    let collections = response.json::<Vec<VirtualCollection>>().await?;
+    pub async fn get_virtual(app_handle: &AppHandle) -> Result<Vec<VirtualCollection>, Error> {
+        let response = RommHttp::get(app_handle, "/api/collections/virtual?type=collection")?
+            .send()
+            .await?;
 
-    Ok(collections)
+        let collections = response.json::<Vec<VirtualCollection>>().await?;
+
+        Ok(collections)
+    }
 }

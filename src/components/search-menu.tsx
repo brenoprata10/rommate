@@ -3,7 +3,7 @@ import {CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, Co
 import useSearchDialog from '@/hooks/use-search-dialog'
 import {useNavigate} from 'react-router'
 import {Badge} from './ui/badge'
-import {motion, AnimatePresence} from 'motion/react'
+import {AnimatePresence, motion} from 'motion/react'
 import {Rom} from '@/models/rom'
 import {debounce} from 'lodash'
 import {getRoms} from '@/utils/http/rom'
@@ -35,7 +35,10 @@ export default function SearchMenu() {
 	const loadRoms = useCallback(
 		debounce(
 			async (searchTerm: string) => {
-				const response = await getRoms({pagination: {limit: 50, offset: 0}, searchTerm})
+				const response = await getRoms({
+					pagination: {limit: 50, offset: 0},
+					searchTerm
+				})
 				if (!response.success) {
 					throw Error(response.error)
 				}
@@ -98,7 +101,7 @@ export default function SearchMenu() {
 											<Badge variant={'outline'}>{rom.id}</Badge>
 											{rom.name}
 										</div>
-										<Badge variant={'secondary'}>{rom.platformName}</Badge>
+										<Badge variant={'secondary'}>{rom.platformDisplayName}</Badge>
 									</div>
 								</CommandItem>
 							</motion.div>

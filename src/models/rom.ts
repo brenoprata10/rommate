@@ -18,7 +18,6 @@ export type Rom = {
 	platformId: number
 	platformSlug: string
 	platformFsSlug: RommPlatform
-	platformName: string
 	platformCustomName: string
 	platformDisplayName: string
 	fsName: string
