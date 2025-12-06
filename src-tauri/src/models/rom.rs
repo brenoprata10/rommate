@@ -21,7 +21,6 @@ pub struct Rom {
     platform_id: u16,
     platform_slug: String,
     pub platform_fs_slug: String,
-    platform_name: String,
     platform_custom_name: String,
     platform_display_name: String,
     pub fs_name: String,

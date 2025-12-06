@@ -17,7 +17,7 @@ import {check} from '@tauri-apps/plugin-updater'
 export default function Home() {
 	const {focusedRomId, setFocusedGame} = useFocusedGame()
 	const {isAuthenticated} = useRommSession()
-	const {data: roms} = useRecentlyPlayed()
+	const {data: recentlyPlayedRoms} = useRecentlyPlayed()
 	const {data: currentUser} = useLoggedInUser()
 	const navigate = useNavigate()
 
@@ -62,11 +62,11 @@ export default function Home() {
 					)}
 				</Heading>
 				<div className='grid gap-8'>
-					<ContinuePlaying onHover={onHoverRom} />
+					{recentlyPlayedRoms && recentlyPlayedRoms?.length > 0 && <ContinuePlaying onHover={onHoverRom} />}
 					<RecentlyAdded onHover={onHoverRom} />
 				</div>
 			</div>
-			<Background romId={focusedRomId ?? roms?.[0].id}>&nbsp;</Background>
+			<Background romId={focusedRomId ?? recentlyPlayedRoms?.[0]?.id}>&nbsp;</Background>
 		</>
 	)
 }

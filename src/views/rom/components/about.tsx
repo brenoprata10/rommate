@@ -52,9 +52,10 @@ const GENRE_CONFIG: Record<string, LucideIconComponent> = {
 export default function About({rom}: {rom: Rom}) {
 	const {franchises, companies, genres} = rom.metadatum
 
-	const releaseDate = new Intl.DateTimeFormat('en', {month: 'long', year: 'numeric'}).format(
-		rom?.metadatum.firstReleaseDate
-	)
+	const releaseDate = new Intl.DateTimeFormat('en', {
+		month: 'long',
+		year: 'numeric'
+	}).format(rom?.metadatum.firstReleaseDate)
 
 	return (
 		<div className='max-[1110px]:max-w-none max-w-[16.375rem] w-full'>
@@ -62,7 +63,7 @@ export default function About({rom}: {rom: Rom}) {
 				<div className='flex flex-col gap-3'>
 					<AboutBadge label={rom.fsName} badge={<File {...BADGE_SIZE} />} />
 					<AboutBadge label={bytes(rom.fsSizeBytes) ?? ''} badge={<HardDrive {...BADGE_SIZE} />} />
-					<AboutBadge label={rom.platformName} badge={<JoystickIcon {...BADGE_SIZE} />} />
+					<AboutBadge label={rom.platformDisplayName} badge={<JoystickIcon {...BADGE_SIZE} />} />
 					<AboutBadge label={releaseDate} badge={<Rocket {...BADGE_SIZE} />} />
 					<BadgeList list={rom.tags.map((tag) => ({label: tag, icon: Tag}))} />
 					<BadgeList
@@ -71,8 +72,18 @@ export default function About({rom}: {rom: Rom}) {
 							icon: GENRE_CONFIG[genre.toLowerCase()] ?? Ellipsis
 						}))}
 					/>
-					<BadgeList list={franchises.map((franchise) => ({label: franchise, icon: LibraryBig}))} />
-					<BadgeList list={companies.map((company) => ({label: company, icon: Castle}))} />
+					<BadgeList
+						list={franchises.map((franchise) => ({
+							label: franchise,
+							icon: LibraryBig
+						}))}
+					/>
+					<BadgeList
+						list={companies.map((company) => ({
+							label: company,
+							icon: Castle
+						}))}
+					/>
 				</div>
 			</ContentCard>
 		</div>
