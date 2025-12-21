@@ -25,7 +25,10 @@ enum AutoUpdaterMessage {
 }
 
 export default function AutoUpdater() {
-	const [updateStatus, setUpdateStatus] = useState<AutoUpdaterPayload>({status: AutoUpdaterMessage.CHECKING_UPDATE})
+	const [updateStatus, setUpdateStatus] = useState<AutoUpdaterPayload>({
+		status: AutoUpdaterMessage.CHECKING_UPDATE
+	})
+	const [progress, setProgress] = useState(50)
 
 	useMount(async () => {
 		try {
@@ -43,6 +46,7 @@ export default function AutoUpdater() {
 							break
 						case 'Progress':
 							downloaded += event.data.chunkLength
+							setProgress((contentLength * 100) / downloaded)
 							setUpdateStatus({
 								progressBarValue: (downloaded * 100) / contentLength,
 								status: AutoUpdaterMessage.DOWNLOAD_IN_PROGRESS,
@@ -78,7 +82,7 @@ export default function AutoUpdater() {
 						animate={{opacity: 1, translateY: 0}}
 						className='w-full max-w-[56.25rem] flex flex-col gap-2'
 					>
-						<Progress />
+						<Progress value={progress} />
 						<Heading variant={'h5'} className='text-neutral-400 self-end'>
 							{updateStatus.text}
 						</Heading>
