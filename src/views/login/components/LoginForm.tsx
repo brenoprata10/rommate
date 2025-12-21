@@ -52,6 +52,7 @@ export function LoginForm({className, ...props}: React.ComponentProps<'form'>) {
 					label='Server URL'
 					id='server-url'
 					type='url'
+					placeholder='http://192.168.0.1:8080'
 					autoFocus
 					register={register('serverURL', {required: true})}
 					fieldError={errors.serverURL}
