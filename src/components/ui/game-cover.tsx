@@ -41,6 +41,7 @@ function GameCover({
 			className={clsx([className, 'hover:border-neutral-200 cursor-pointer'])}
 			width={width}
 			height={height}
+			style={{width, height}}
 			src={imageURL}
 			onClick={redirectToRomPage}
 			onMouseEnter={onHover}

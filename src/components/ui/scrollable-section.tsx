@@ -1,4 +1,4 @@
-import {useCallback, useRef} from 'react'
+import {useCallback, useLayoutEffect, useRef, useState} from 'react'
 import Heading from './heading'
 import Navigation from './navigation'
 import ScrollContainer from './scroll-container'
@@ -22,6 +22,15 @@ export default function ScrollableSection({
 	children: React.ReactNode
 }) {
 	const scrollRef = useRef<HTMLDivElement>(null)
+	const [hasScroll, setHasScroll] = useState(false)
+
+	useLayoutEffect(() => {
+		if (!scrollRef.current || itemsLength === 0) {
+			return
+		}
+
+		setHasScroll(scrollRef.current.scrollWidth > scrollRef.current.clientWidth)
+	}, [itemsLength])
 
 	const getScrollOffset = useCallback(() => {
 		if (!scrollRef.current) {
@@ -50,7 +59,7 @@ export default function ScrollableSection({
 		<div className={clsx(['flex flex-col gap-5', className])}>
 			<div className={clsx(['flex justify-between', padding])}>
 				<Heading variant={'h3'}>{title}</Heading>
-				<Navigation disabled={isScrollButtonDisabled} onNext={onNext} onPrevious={onPrevious} />
+				{hasScroll && <Navigation disabled={isScrollButtonDisabled} onNext={onNext} onPrevious={onPrevious} />}
 			</div>
 
 			<ScrollContainer scrollRef={scrollRef} padding={padding} itemGap={itemGap}>
