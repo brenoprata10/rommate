@@ -134,12 +134,12 @@
 }
 
 .scrollbar-hidden {
-  scrollbar-width: none; 
+  scrollbar-width: none;
 }
 .scrollbar-hidden::-webkit-scrollbar {
   display: none;
 }
 
 p {
-	padding: 0 0 0.5rem 0;
+  padding: 0 0 0.5rem 0;
 }
