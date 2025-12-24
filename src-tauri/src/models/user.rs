@@ -14,7 +14,7 @@ pub enum UserRole {
 pub struct User {
     id: i32,
     username: String,
-    email: bool,
+    email: String,
     enabled: bool,
     role: UserRole,
     avatar_path: Option<String>,
