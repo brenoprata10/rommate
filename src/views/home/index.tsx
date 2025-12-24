@@ -1,6 +1,6 @@
 import Heading from '@/components/ui/heading'
 import useLoggedInUser from '@/hooks/api/use-logged-in-user'
-import {useCallback, useEffect} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {useNavigate} from 'react-router'
 import ContinuePlaying from './components/continue-playing'
 import useRommSession from '@/hooks/use-romm-session'
@@ -13,24 +13,29 @@ import useRecentlyPlayed from '@/hooks/api/use-recently-played'
 import useFocusedGame from '@/hooks/use-focused-game'
 import {useMount} from 'react-use'
 import {check} from '@tauri-apps/plugin-updater'
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle
+} from '@/components/ui/alert-dialog'
 
 export default function Home() {
 	const {focusedRomId, setFocusedGame} = useFocusedGame()
-	const {isAuthenticated} = useRommSession()
+	const [authError, setAuthError] = useState<string | null>(null)
+	const {checkAuthentication} = useRommSession()
 	const {data: recentlyPlayedRoms} = useRecentlyPlayed()
 	const {data: currentUser} = useLoggedInUser()
 	const navigate = useNavigate()
 
 	useEffect(() => {
-		const checkAuthentication = async () => {
-			const isLoggedIn = await isAuthenticated()
-			if (!isLoggedIn) {
-				navigate('/login')
-			}
-		}
-
-		checkAuthentication()
-	}, [navigate, isAuthenticated])
+		checkAuthentication().catch((error) => {
+			setAuthError(error.toString())
+		})
+	}, [checkAuthentication])
 
 	useMount(async () => {
 		const update = await check()
@@ -38,6 +43,10 @@ export default function Home() {
 			navigate('/updater')
 		}
 	})
+
+	const handleAuthErrorModalAction = useCallback(() => {
+		navigate('/login')
+	}, [navigate])
 
 	const onHoverRom = useCallback(
 		(romId: number) => {
@@ -67,6 +76,17 @@ export default function Home() {
 				</div>
 			</div>
 			<Background romId={focusedRomId ?? recentlyPlayedRoms?.[0]?.id}>&nbsp;</Background>
+			<AlertDialog open={Boolean(authError)}>
+				<AlertDialogContent className='bg-card text-card-foreground'>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Failed to authenticate!</AlertDialogTitle>
+						<AlertDialogDescription>{authError}</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogAction onClick={handleAuthErrorModalAction}>Close</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 		</>
 	)
 }

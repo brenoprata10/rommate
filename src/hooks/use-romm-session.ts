@@ -9,10 +9,16 @@ export default function useRommSession() {
 	const {get, deleteKey} = useStore()
 	const navigate = useNavigate()
 
-	const isAuthenticated = useCallback(async () => {
+	const checkAuthentication = useCallback(async () => {
 		const [rommSession, loggedInUser] = await Promise.all([get<string>(ROMM_SESSION_KEY), getLoggedInUser()])
 
-		return Boolean(rommSession) && loggedInUser.success
+		if (!rommSession) {
+			throw Error('Could not fetch rommSession token.')
+		}
+
+		if (!loggedInUser.success) {
+			throw Error(loggedInUser.error)
+		}
 	}, [get])
 
 	const logout = useCallback(async () => {
@@ -20,5 +26,5 @@ export default function useRommSession() {
 		navigate('/login')
 	}, [deleteKey, navigate])
 
-	return {isAuthenticated, logout}
+	return {checkAuthentication, logout}
 }
