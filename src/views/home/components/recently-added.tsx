@@ -10,7 +10,6 @@ export default function RecentlyAdded({onHover}: {onHover: (romId: number) => vo
 		<ScrollableSection
 			title='Recently Added'
 			itemsLength={roms?.length ?? 0}
-			itemGap='18px'
 			isScrollButtonDisabled={isLoading}
 			className='w-max'
 		>

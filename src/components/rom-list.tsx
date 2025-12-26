@@ -6,7 +6,6 @@ import Heading from './ui/heading'
 import {useCallback, useEffect, useRef} from 'react'
 import useFocusedGame from '@/hooks/use-focused-game'
 import SkeletonGameCover from './ui/skeleton-game-cover'
-import {motion} from 'motion/react'
 
 const SKELETON_COUNTER = 6
 
@@ -62,18 +61,15 @@ export default function RomList({
 			<div className='z-10 py-12 gap-9 flex flex-col px-header'>
 				<Heading variant={'h1'} className='flex gap-4 items-center'>
 					{imageUrl && <img src={imageUrl} className='aspect-square max-w-15' />}
-					<motion.span initial={{opacity: 0, translateX: -20}} animate={{opacity: 1, translateX: 0}}>
-						{title}
-					</motion.span>
+					<span>{title}</span>
 				</Heading>
-				<div className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-8 relative'>
+				<div className='grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-2 relative'>
 					{roms.map((rom) => (
 						<GameCover
 							key={rom.id}
 							id={rom.id}
-							width='350'
-							height='340'
 							src={rom.pathCoverLarge}
+							platformSlug={rom.platformSlug}
 							onHover={() => handleHover(rom.id)}
 						/>
 					))}
