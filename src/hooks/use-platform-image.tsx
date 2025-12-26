@@ -1,11 +1,10 @@
-import {Platform} from '@/models/platform'
 import useServerUrl from './use-server-url'
 import {getPlatformImage} from '@/utils/platform-image'
 
-export default function usePlatformImage({slug}: Pick<Platform, 'slug'>) {
+export default function usePlatformImage({slug}: {slug?: string}) {
 	const serverUrl = useServerUrl()
 
-	if (!serverUrl) {
+	if (!serverUrl || !slug) {
 		return null
 	}
 

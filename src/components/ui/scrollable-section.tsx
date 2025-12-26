@@ -8,7 +8,7 @@ export default function ScrollableSection({
 	title,
 	className,
 	itemsLength,
-	itemGap = '18px',
+	itemGap = '8px',
 	padding = 'px-header',
 	isScrollButtonDisabled,
 	children

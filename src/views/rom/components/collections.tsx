@@ -31,7 +31,14 @@ const RomRelatedCollection = ({collection}: {collection: Collection}) => {
 		<motion.div className='col-span-2' initial={{opacity: 0}} animate={{opacity: 1}}>
 			<ScrollableSection title={collection.name} padding='px-0' itemsLength={data?.items.length ?? collection.romCount}>
 				{data?.items.map((rom) => (
-					<GameCover key={rom.id} id={rom.id} src={rom.pathCoverSmall} width='145px' height='193px' />
+					<GameCover
+						key={rom.id}
+						id={rom.id}
+						src={rom.pathCoverSmall}
+						platformSlug={rom.platformSlug}
+						width='145px'
+						height='193px'
+					/>
 				))}
 			</ScrollableSection>
 		</motion.div>

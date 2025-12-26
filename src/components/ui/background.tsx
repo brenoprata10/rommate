@@ -16,7 +16,7 @@ export default function Background({children, romId}: {children: React.ReactNode
 				after:top-0
 				after:left-0
 				after:z-[-1]
-				w-full
+				grow
 			'
 		>
 			<motion.div
