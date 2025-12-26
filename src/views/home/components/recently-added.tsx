@@ -20,6 +20,7 @@ export default function RecentlyAdded({onHover}: {onHover: (romId: number) => vo
 							key={rom.id}
 							id={rom.id}
 							src={rom.pathCoverLarge}
+							platformSlug={rom.platformSlug}
 							width='145px'
 							height='193px'
 							onHover={() => onHover(rom.id)}

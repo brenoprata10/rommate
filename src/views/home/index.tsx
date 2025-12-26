@@ -27,7 +27,7 @@ export default function Home() {
 	const {focusedRomId, setFocusedGame} = useFocusedGame()
 	const [authError, setAuthError] = useState<string | null>(null)
 	const {checkAuthentication} = useRommSession()
-	const {data: recentlyPlayedRoms} = useRecentlyPlayed()
+	const {data: recentlyPlayedRoms, isLoading: isLoadingRecentlyPlayed} = useRecentlyPlayed()
 	const {data: currentUser} = useLoggedInUser()
 	const navigate = useNavigate()
 
@@ -71,7 +71,9 @@ export default function Home() {
 					)}
 				</Heading>
 				<div className='grid gap-8'>
-					{recentlyPlayedRoms && recentlyPlayedRoms?.length > 0 && <ContinuePlaying onHover={onHoverRom} />}
+					{((recentlyPlayedRoms && recentlyPlayedRoms?.length > 0) || isLoadingRecentlyPlayed) && (
+						<ContinuePlaying onHover={onHoverRom} />
+					)}
 					<RecentlyAdded onHover={onHoverRom} />
 				</div>
 			</div>
