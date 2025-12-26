@@ -18,7 +18,7 @@ export default function Achievements({
 }) {
 	const {data: currentUser} = useLoggedInUser()
 
-	const userRomAchievements = currentUser?.raProgression?.results.find((achievement) => achievement.romRaId === raId)
+	const userRomAchievements = currentUser?.raProgression?.results?.find((achievement) => achievement.romRaId === raId)
 	const userUnlockedAchievementsIds = userRomAchievements?.earnedAchievements
 		.sort((a1, a2) => (new Date(a1.date) > new Date(a2.date) ? 1 : -1))
 		.map((achievement) => achievement.id)

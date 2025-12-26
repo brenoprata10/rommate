@@ -29,8 +29,8 @@ pub struct User {
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all(serialize = "camelCase"))]
 struct RAProgression {
-    total: i16,
-    results: Vec<RAResults>,
+    total: Option<i16>,
+    results: Option<Vec<RAResults>>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
