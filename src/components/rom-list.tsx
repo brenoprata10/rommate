@@ -6,6 +6,7 @@ import Heading from './ui/heading'
 import {useCallback, useEffect, useRef} from 'react'
 import useFocusedGame from '@/hooks/use-focused-game'
 import SkeletonGameCover from './ui/skeleton-game-cover'
+import {motion} from 'motion/react'
 
 const SKELETON_COUNTER = 6
 
@@ -13,11 +14,13 @@ export default function RomList({
 	roms,
 	title,
 	hasNextPage,
+	imageUrl,
 	loadMore
 }: {
 	roms: Rom[]
 	title: string
 	hasNextPage?: boolean
+	imageUrl?: string
 	loadMore: () => void
 }) {
 	const {focusedRomId, setFocusedGame} = useFocusedGame()
@@ -33,7 +36,7 @@ export default function RomList({
 					loadMore()
 				}
 			},
-			{threshold: 0.1}
+			{threshold: 0.2}
 		)
 
 		if (element) {
@@ -57,10 +60,13 @@ export default function RomList({
 	return (
 		<Background romId={isFocusedGameWithinRoms && focusedRomId ? focusedRomId : firstRomId}>
 			<div className='z-10 py-12 gap-9 flex flex-col px-header'>
-				<Heading variant={'h1'} className='flex gap-2'>
-					<span>{title}</span>
+				<Heading variant={'h1'} className='flex gap-4 items-center'>
+					{imageUrl && <img src={imageUrl} className='aspect-square max-w-15' />}
+					<motion.span initial={{opacity: 0, translateX: -20}} animate={{opacity: 1, translateX: 0}}>
+						{title}
+					</motion.span>
 				</Heading>
-				<div className='grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-8 relative'>
+				<div className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-8 relative'>
 					{roms.map((rom) => (
 						<GameCover
 							key={rom.id}

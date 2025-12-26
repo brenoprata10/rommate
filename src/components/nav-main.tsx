@@ -25,6 +25,7 @@ export type NavItem = {
 		title: string
 		url: string
 		badge: string
+		imageUrl?: string
 	}[]
 }
 
@@ -83,9 +84,12 @@ const CollapsibleItem = ({item}: {item: NavItem}) => {
 										onClick={(event) => onClickItem(event, subItem.url)}
 										className='flex justify-between cursor-pointer'
 									>
-										<span className='max-w-[8.75rem] overflow-hidden text-ellipsis whitespace-nowrap'>
-											{subItem.title}
-										</span>
+										<div className='flex gap-2 flex-1'>
+											{subItem.imageUrl && <img src={subItem.imageUrl} className='aspect-square max-w-5' />}
+											<span className='max-w-[8.75rem] overflow-hidden text-ellipsis whitespace-nowrap'>
+												{subItem.title}
+											</span>
+										</div>
 										<Badge className='text-xs' variant={'secondary'}>
 											{subItem.badge}
 										</Badge>

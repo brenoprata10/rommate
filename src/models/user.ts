@@ -20,8 +20,8 @@ export type User = {
 }
 
 export type RAProgression = {
-	total: number
-	results: RAResults[]
+	total?: number
+	results?: RAResults[]
 }
 
 export type RAResults = {

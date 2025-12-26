@@ -21,6 +21,8 @@ import {Link, NavLink} from 'react-router'
 import useSearchDialog from '@/hooks/use-search-dialog'
 import DownloadManager from './download-manager'
 import {getCollectionType} from '@/utils/collection'
+import {getPlatformImage} from '@/utils/platform-image'
+import useServerUrl from '@/hooks/use-server-url'
 
 const data = {
 	settings: [
@@ -34,6 +36,7 @@ const data = {
 
 export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
 	const {toggleSearchDialog} = useSearchDialog()
+	const serverUrl = useServerUrl()
 	const {data: currentUser, isLoading: isLoadingUser} = useLoggedInUser()
 	const {data: platforms, error: platformsError} = usePlatforms()
 	const {data: collections, error: collectionsError} = useCollections()
@@ -49,7 +52,8 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
 							?.map((platform) => ({
 								title: platform.name,
 								url: `/platform/${platform.id}`,
-								badge: platform.romCount.toString()
+								badge: platform.romCount.toString(),
+								imageUrl: serverUrl ? getPlatformImage({serverUrl, slug: platform.slug}) : undefined
 							}))
 							.reduce(
 								(result, platform) => {
@@ -62,7 +66,7 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
 							)
 					: []
 		}),
-		[platforms, platformsError]
+		[platforms, platformsError, serverUrl]
 	)
 	const collectionMenuItem: NavItem = React.useMemo(
 		() => ({
