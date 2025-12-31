@@ -76,7 +76,7 @@ pub struct Rom {
 struct RomUserNote {
     user_id: i32,
     username: String,
-    note_raw_markdown: String,
+    note_raw_markdown: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -171,7 +171,7 @@ struct RomUser {
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
     last_played: Option<DateTime<Utc>>,
-    note_raw_markdown: String,
+    note_raw_markdown: Option<String>,
     note_is_public: bool,
     is_main_sibling: bool,
     backlogged: bool,
