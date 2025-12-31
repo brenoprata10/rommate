@@ -1,4 +1,5 @@
 import {RomCollection} from '@/models/collection'
+import {toast} from 'sonner'
 import QueryKey from '@/models/enums/QueryKey'
 import {getRomsByCollectionId} from '@/utils/http/rom'
 import {useQuery} from '@tanstack/react-query'
@@ -22,6 +23,7 @@ export default function useRomsByCollectionId({
 			}
 			const response = await getRomsByCollectionId(id, collectionType, {limit, offset})
 			if (!response.success) {
+				toast.error(response.error)
 				throw Error(response.error)
 			}
 

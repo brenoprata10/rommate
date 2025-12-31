@@ -1,4 +1,5 @@
 import QueryKey from '@/models/enums/QueryKey'
+import {toast} from 'sonner'
 import {getRoms, PaginatedPayload} from '@/utils/http/rom'
 import {useInfiniteQuery} from '@tanstack/react-query'
 
@@ -30,6 +31,7 @@ export default function useRoms({
 		queryFn: async () => {
 			const response = await getRoms({pagination: {limit, offset}, searchTerm})
 			if (!response.success) {
+				toast.error(response.error)
 				throw Error(response.error)
 			}
 

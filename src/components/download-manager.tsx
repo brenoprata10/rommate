@@ -14,14 +14,15 @@ import clsx from 'clsx'
 import bytes from 'bytes'
 import {Button} from './ui/button'
 import useDownloader from '@/hooks/use-downloader'
-import useNotification from '@/hooks/use-notification'
+import {toast} from 'sonner'
+import useServerUrl from '@/hooks/use-server-url'
 
 const ONE_GB_IN_BYTES = 1073741824
 
 export default function DownloadManager() {
 	const dispatch = useContext(CommonDispatchContext)
+	const serverURL = useServerUrl()
 	const [notifiedDownloads, setNofifiedDownloads] = useState<string[]>([])
-	const {notify} = useNotification()
 	const {state} = useSidebar()
 	const {pendingDownloads, ongoingDownloads, completedDownloads} = useDownloader()
 
@@ -47,26 +48,39 @@ export default function DownloadManager() {
 
 	useEffect(() => {
 		const notifyCompletedDownloads = async () => {
-			const isNotified = completedDownloads.every((download) => notifiedDownloads.includes(download.id))
-			if (completedDownloads.length === 0 || isNotified) {
+			const completedDownloadsToNotify = completedDownloads.filter(
+				(download) => !notifiedDownloads.includes(download.id)
+			)
+			if (completedDownloadsToNotify.length === 0) {
 				return
 			}
-			const lastCompletedDownload = completedDownloads[completedDownloads.length - 1]
-			const rom = await getRomById(lastCompletedDownload.romId)
-			setNofifiedDownloads([...notifiedDownloads, ...completedDownloads.map((download) => download.id)])
-			if (!rom.success) {
-				notify({title: `Download Completed.`, body: 'Your game has finished downloading.'})
-				return
-			}
-			notify({
-				title: `Rommate`,
-				body: `${rom.data.name}${completedDownloads.length > 1 ? ` + ${completedDownloads.length - 1} others` : ''} have finished downloading.`,
-				icon: `asset://tauri.svg`
+			completedDownloadsToNotify.forEach(async (download) => {
+				const rom = await getRomById(download.romId)
+				if (!rom.success) {
+					return
+				}
+
+				toast(
+					<div className='flex gap-3 items-center'>
+						<motion.img
+							className='rounded-md'
+							loading='lazy'
+							width={'60px'}
+							height={'80px'}
+							src={`${serverURL}/${rom.data.pathCoverSmall}`}
+						/>
+						<div>
+							{rom.data.name} has&nbsp;{download.event === 'finished' && <span>finished downloading.</span>}
+							{download.event === 'cancelled' && <span>been cancelled.</span>}
+						</div>
+					</div>
+				)
 			})
+			setNofifiedDownloads([...notifiedDownloads, ...completedDownloadsToNotify.map((download) => download.id)])
 		}
 
 		notifyCompletedDownloads()
-	}, [completedDownloads, notify, notifiedDownloads])
+	}, [completedDownloads, notifiedDownloads, serverURL])
 
 	const clearFinishedDownloads = useCallback(() => {
 		dispatch({type: ActionEnum.CLEAR_FINISHED_DOWNLOADS})
@@ -112,7 +126,14 @@ const DownloadCard = ({event, collapsed}: {event: DownloadRomEvent; collapsed?: 
 	}
 
 	const progressBar = <Progress className={clsx(['w-full h-[0.25rem]'])} value={getProgress()} />
-	const gameCover = <GameCover id={event.romId} src={rom.pathCoverSmall} width={'60'} height={'80'} />
+	const gameCover = (
+		<GameCover
+			id={event.romId}
+			src={rom.pathCoverSmall}
+			width={collapsed ? '29px' : '60px'}
+			height={collapsed ? '42px' : '80px'}
+		/>
+	)
 	const wrapperAnimations = {
 		initial: {opacity: 0, height: 0},
 		animate: {opacity: 1, height: 'auto'},
@@ -134,8 +155,8 @@ const DownloadCard = ({event, collapsed}: {event: DownloadRomEvent; collapsed?: 
 	return (
 		<motion.div {...wrapperAnimations} className='transition-colors hover:bg-neutral-800 rounded-md'>
 			<Link className='flex gap-2 w-full p-2 item-start' to={romURL}>
-				<div className='max-w-[2.925rem] min-w-[2.938rem]'>{gameCover}</div>
-				<div className='flex flex-col gap-2 grow'>
+				<div className='max-w-[3.8rem] min-w-[2.938rem] flex'>{gameCover}</div>
+				<div className='flex flex-col gap-2 grow justify-center'>
 					<motion.span
 						initial={{opacity: 0, translateY: 10}}
 						animate={{opacity: 1, translateY: 0}}
