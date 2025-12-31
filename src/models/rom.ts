@@ -71,7 +71,7 @@ export type Rom = {
 type RomUserNote = {
 	userId: number
 	username: string
-	noteRawMarkdown: string
+	noteRawMarkdown?: string
 }
 
 type RomUserCollection = {
@@ -156,7 +156,7 @@ type RomUser = {
 	createdAt: string
 	updatedAt: string
 	lastPlayed: string | null
-	noteRawMarkdown: string
+	noteRawMarkdown?: string
 	noteIsPublic: boolean
 	isMainSibling: boolean
 	backlogged: boolean
