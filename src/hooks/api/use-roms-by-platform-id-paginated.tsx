@@ -1,4 +1,5 @@
 import QueryKey from '@/models/enums/QueryKey'
+import {toast} from 'sonner'
 import {getRomsByPlatformId, PaginatedPayload} from '@/utils/http/rom'
 import {useInfiniteQuery} from '@tanstack/react-query'
 
@@ -28,6 +29,7 @@ export default function useRomsByPlatformIdPaginated({id, limit = 30}: {id?: num
 			}
 			const response = await getRomsByPlatformId(id, {limit, offset: pageParam})
 			if (!response.success) {
+				toast.error(response.error)
 				throw Error(response.error)
 			}
 

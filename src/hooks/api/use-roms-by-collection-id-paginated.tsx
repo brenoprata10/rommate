@@ -1,4 +1,5 @@
 import {RomCollection} from '@/models/collection'
+import {toast} from 'sonner'
 import QueryKey from '@/models/enums/QueryKey'
 import {getRomsByCollectionId, PaginatedPayload} from '@/utils/http/rom'
 import {useInfiniteQuery} from '@tanstack/react-query'
@@ -39,6 +40,7 @@ export default function useRomsByCollectionIdPaginated({
 			}
 			const response = await getRomsByCollectionId(id, collectionType, {limit, offset: pageParam})
 			if (!response.success) {
+				toast.error(response.error)
 				throw Error(response.error)
 			}
 

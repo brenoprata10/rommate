@@ -1,4 +1,5 @@
 import QueryKey from '@/models/enums/QueryKey'
+import {toast} from 'sonner'
 import {getRomById} from '@/utils/http/rom'
 import {useQuery} from '@tanstack/react-query'
 
@@ -11,6 +12,7 @@ export default function useRom({id}: {id?: number}) {
 			}
 			const response = await getRomById(id)
 			if (!response.success) {
+				toast.error(response.error)
 				throw Error(response.error)
 			}
 

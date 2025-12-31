@@ -1,6 +1,7 @@
 import QueryKey from '@/models/enums/QueryKey'
 import {getRecentlyAdded} from '@/utils/http/rom'
 import {useQuery} from '@tanstack/react-query'
+import {toast} from 'sonner'
 
 export default function useRecentlyAdded() {
 	return useQuery({
@@ -8,6 +9,7 @@ export default function useRecentlyAdded() {
 		queryFn: async () => {
 			const response = await getRecentlyAdded()
 			if (!response.success) {
+				toast.error(response.error)
 				throw Error(response.error)
 			}
 

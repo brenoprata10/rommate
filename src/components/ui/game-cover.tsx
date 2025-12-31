@@ -40,7 +40,7 @@ function GameCover({
 	}, [])
 
 	return (
-		<a
+		<div
 			className={clsx([className, 'relative hover:border-neutral-200'])}
 			onClick={redirectToRomPage}
 			style={{minWidth: width, height}}
@@ -62,7 +62,7 @@ function GameCover({
 					className='bottom-1.5 object-center left-1.5 absolute pointer-events-none cursor-pointer'
 				/>
 			)}
-		</a>
+		</div>
 	)
 }
 

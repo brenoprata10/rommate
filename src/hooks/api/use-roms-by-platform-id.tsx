@@ -1,4 +1,5 @@
 import QueryKey from '@/models/enums/QueryKey'
+import {toast} from 'sonner'
 import {getRomsByPlatformId} from '@/utils/http/rom'
 import {useQuery} from '@tanstack/react-query'
 
@@ -19,6 +20,7 @@ export default function useRomsByPlatformId({
 			}
 			const response = await getRomsByPlatformId(id, {limit, offset})
 			if (!response.success) {
+				toast.error(response.error)
 				throw Error(response.error)
 			}
 
