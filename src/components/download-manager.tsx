@@ -14,7 +14,6 @@ import clsx from 'clsx'
 import bytes from 'bytes'
 import {Button} from './ui/button'
 import useDownloader from '@/hooks/use-downloader'
-import useNotification from '@/hooks/use-notification'
 import {toast} from 'sonner'
 import useServerUrl from '@/hooks/use-server-url'
 
@@ -24,7 +23,6 @@ export default function DownloadManager() {
 	const dispatch = useContext(CommonDispatchContext)
 	const serverURL = useServerUrl()
 	const [notifiedDownloads, setNofifiedDownloads] = useState<string[]>([])
-	const {notify} = useNotification()
 	const {state} = useSidebar()
 	const {pendingDownloads, ongoingDownloads, completedDownloads} = useDownloader()
 
@@ -50,38 +48,39 @@ export default function DownloadManager() {
 
 	useEffect(() => {
 		const notifyCompletedDownloads = async () => {
-			const isNotified = completedDownloads.every((download) => notifiedDownloads.includes(download.id))
-			if (completedDownloads.length === 0 || isNotified) {
-				return
-			}
-			const lastCompletedDownload = completedDownloads[completedDownloads.length - 1]
-			const rom = await getRomById(lastCompletedDownload.romId)
-			setNofifiedDownloads([...notifiedDownloads, ...completedDownloads.map((download) => download.id)])
-			if (!rom.success) {
-				notify({title: `Download Completed.`, body: 'Your game has finished downloading.'})
-				return
-			}
-			toast(
-				<div className='flex gap-3 items-center'>
-					<motion.img
-						className='rounded-md'
-						loading='lazy'
-						width={'60px'}
-						height={'80px'}
-						src={`${serverURL}/${rom.data.pathCoverSmall}`}
-					/>
-					<div>{rom.data.name} has finished downloading.</div>
-				</div>
+			const completedDownloadsToNotify = completedDownloads.filter(
+				(download) => !notifiedDownloads.includes(download.id)
 			)
-			notify({
-				title: `Rommate`,
-				body: `${rom.data.name} has finished downloading.`,
-				icon: `asset://tauri.svg`
+			if (completedDownloadsToNotify.length === 0) {
+				return
+			}
+			completedDownloadsToNotify.forEach(async (download) => {
+				const rom = await getRomById(download.romId)
+				if (!rom.success) {
+					return
+				}
+
+				toast(
+					<div className='flex gap-3 items-center'>
+						<motion.img
+							className='rounded-md'
+							loading='lazy'
+							width={'60px'}
+							height={'80px'}
+							src={`${serverURL}/${rom.data.pathCoverSmall}`}
+						/>
+						<div>
+							{rom.data.name} has&nbsp;{download.event === 'finished' && <span>finished downloading.</span>}
+							{download.event === 'cancelled' && <span>been cancelled.</span>}
+						</div>
+					</div>
+				)
 			})
+			setNofifiedDownloads([...notifiedDownloads, ...completedDownloadsToNotify.map((download) => download.id)])
 		}
 
 		notifyCompletedDownloads()
-	}, [completedDownloads, notify, notifiedDownloads, serverURL])
+	}, [completedDownloads, notifiedDownloads, serverURL])
 
 	const clearFinishedDownloads = useCallback(() => {
 		dispatch({type: ActionEnum.CLEAR_FINISHED_DOWNLOADS})
@@ -157,7 +156,7 @@ const DownloadCard = ({event, collapsed}: {event: DownloadRomEvent; collapsed?: 
 		<motion.div {...wrapperAnimations} className='transition-colors hover:bg-neutral-800 rounded-md'>
 			<Link className='flex gap-2 w-full p-2 item-start' to={romURL}>
 				<div className='max-w-[3.8rem] min-w-[2.938rem] flex'>{gameCover}</div>
-				<div className='flex flex-col gap-2 grow'>
+				<div className='flex flex-col gap-2 grow justify-center'>
 					<motion.span
 						initial={{opacity: 0, translateY: 10}}
 						animate={{opacity: 1, translateY: 0}}
