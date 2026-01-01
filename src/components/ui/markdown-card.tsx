@@ -46,6 +46,7 @@ function MarkdownCard({
 			id={id}
 			title={title}
 			className={clsx(['break-words', className])}
+			collapsedCardClassName='max-h-96'
 			disableDialog={disableDialog}
 			component={<div dangerouslySetInnerHTML={{__html: content}} />}
 			dialogComponent={<div dangerouslySetInnerHTML={{__html: content}} />}

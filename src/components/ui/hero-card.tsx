@@ -9,6 +9,7 @@ export default function HeroCard({
 	title,
 	className,
 	cardClassName,
+	collapsedCardClassName,
 	disableDialog,
 	component,
 	dialogComponent
@@ -17,6 +18,7 @@ export default function HeroCard({
 	title: string
 	className?: string
 	cardClassName?: string
+	collapsedCardClassName?: string
 	disableDialog?: boolean
 	component: React.ReactNode
 	dialogComponent: React.ReactNode
@@ -37,8 +39,9 @@ export default function HeroCard({
 					<ContentCard
 						title={title}
 						className={clsx([
-							!disableDialog && 'cursor-pointer overflow-hidden hover:scale-105 transition max-h-96',
-							cardClassName
+							!disableDialog && 'cursor-pointer overflow-hidden hover:scale-105 transition',
+							cardClassName,
+							collapsedCardClassName
 						])}
 					>
 						{component}
