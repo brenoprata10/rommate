@@ -172,7 +172,7 @@ struct RomUser {
     updated_at: DateTime<Utc>,
     last_played: Option<DateTime<Utc>>,
     note_raw_markdown: Option<String>,
-    note_is_public: bool,
+    note_is_public: Option<bool>,
     is_main_sibling: bool,
     backlogged: bool,
     now_playing: bool,
