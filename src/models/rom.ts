@@ -157,7 +157,7 @@ type RomUser = {
 	updatedAt: string
 	lastPlayed: string | null
 	noteRawMarkdown?: string
-	noteIsPublic: boolean
+	noteIsPublic?: boolean
 	isMainSibling: boolean
 	backlogged: boolean
 	nowPlaying: boolean
