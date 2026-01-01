@@ -51,7 +51,7 @@ export type Rom = {
 	crcHash: string | null
 	md5Hash: string | null
 	sha1Hash: string | null
-	multi: boolean
+	multi?: boolean
 	files: RomFile[]
 	fullPath: string
 	createdAt: string

@@ -54,7 +54,7 @@ pub struct Rom {
     crc_hash: Option<String>,
     md5_hash: Option<String>,
     sha1_hash: Option<String>,
-    multi: bool,
+    multi: Option<bool>,
     files: Vec<RomFile>,
     full_path: String,
     created_at: DateTime<Utc>,
