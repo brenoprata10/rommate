@@ -18,7 +18,7 @@ export default function RomDetail() {
 	const {data: user} = useLoggedInUser()
 	const romId = Number(params.id)
 	const {data: rom, isLoading: isLoadingRom} = useRom({id: romId})
-	const notes = rom?.userNotes?.find((note) => note.userId === user?.id)?.noteRawMarkdown
+	const notes = rom?.allUserNotes?.filter((note) => note.userId === user?.id)
 
 	// Score
 	const igdbScore = rom?.igdbMetadata?.totalRating
@@ -62,9 +62,15 @@ export default function RomDetail() {
 								launchboxScore={launchboxScore}
 							/>
 						)}
-						{notes && (
-							<MarkdownCard className='max-[1450px]:col-span-2' id={'notes'} title='Notes' markdownData={notes} />
-						)}
+						{notes?.map((note) => (
+							<MarkdownCard
+								key={note.id}
+								className='max-[1450px]:col-span-2'
+								id={note.id.toString()}
+								title={`${note.title} ${!note.isPublic ? '🔒' : ''}`}
+								markdownData={note.content ?? ''}
+							/>
+						))}
 						<GameData
 							className='max-[1450px]:col-span-2'
 							userId={user?.id}

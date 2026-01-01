@@ -36,7 +36,10 @@ export default function HeroCard({
 				<motion.div className={className} layoutId={id} onClick={toggleZoom}>
 					<ContentCard
 						title={title}
-						className={clsx([!disableDialog && 'cursor-pointer hover:scale-105 transition', cardClassName])}
+						className={clsx([
+							!disableDialog && 'cursor-pointer overflow-hidden hover:scale-105 transition max-h-96',
+							cardClassName
+						])}
 					>
 						{component}
 					</ContentCard>

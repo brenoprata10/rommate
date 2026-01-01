@@ -64,14 +64,19 @@ export type Rom = {
 	userSaves: RomUserSave[] | null
 	userStates: RomUserState[] | null
 	userScreenshots: RomUserScreenshot[] | null
-	userNotes: RomUserNote[] | null
+	allUserNotes: RomUserNote[] | null
 	userCollections: RomUserCollection[] | null
 }
 
 type RomUserNote = {
+	id: number
 	userId: number
 	username: string
-	noteRawMarkdown?: string
+	content?: string
+	title: string
+	isPublic: boolean
+	createdAt: string
+	updatedAt: string
 }
 
 type RomUserCollection = {

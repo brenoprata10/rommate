@@ -67,16 +67,21 @@ pub struct Rom {
     user_saves: Option<Vec<RomUserSave>>,
     user_states: Option<Vec<RomUserState>>,
     user_screenshots: Option<Vec<RomUserScreenshot>>,
-    user_notes: Option<Vec<RomUserNote>>,
+    all_user_notes: Option<Vec<RomUserNote>>,
     user_collections: Option<Vec<RomUserCollection>>,
 }
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all(serialize = "camelCase"))]
 struct RomUserNote {
+    id: i32,
     user_id: i32,
     username: String,
-    note_raw_markdown: Option<String>,
+    content: Option<String>,
+    title: String,
+    is_public: bool,
+    created_at: Option<DateTime<Utc>>,
+    updated_at: Option<DateTime<Utc>>,
 }
 
 #[derive(Serialize, Deserialize)]
