@@ -53,7 +53,9 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
 								title: platform.name,
 								url: `/platform/${platform.id}`,
 								badge: platform.romCount.toString(),
-								imageUrl: serverUrl ? getPlatformImage({serverUrl, slug: platform.slug}) : undefined
+								imageUrl: serverUrl
+									? getPlatformImage({serverUrl, slug: platform.slug, isUnidentified: platform.isUnidentified})
+									: undefined
 							}))
 							.reduce(
 								(result, platform) => {
