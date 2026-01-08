@@ -9,6 +9,7 @@ export default function HeroCard({
 	title,
 	className,
 	cardClassName,
+	collapsedCardClassName,
 	disableDialog,
 	component,
 	dialogComponent
@@ -17,6 +18,7 @@ export default function HeroCard({
 	title: string
 	className?: string
 	cardClassName?: string
+	collapsedCardClassName?: string
 	disableDialog?: boolean
 	component: React.ReactNode
 	dialogComponent: React.ReactNode
@@ -36,7 +38,11 @@ export default function HeroCard({
 				<motion.div className={className} layoutId={id} onClick={toggleZoom}>
 					<ContentCard
 						title={title}
-						className={clsx([!disableDialog && 'cursor-pointer hover:scale-105 transition', cardClassName])}
+						className={clsx([
+							!disableDialog && 'cursor-pointer overflow-hidden hover:scale-105 transition',
+							cardClassName,
+							collapsedCardClassName
+						])}
 					>
 						{component}
 					</ContentCard>

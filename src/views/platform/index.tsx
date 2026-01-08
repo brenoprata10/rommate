@@ -29,7 +29,11 @@ export default function Platform() {
 			title={platform?.name ?? 'Platform'}
 			roms={romsList ?? []}
 			loadMore={fetchNextPage}
-			imageUrl={serverUrl && platform ? getPlatformImage({slug: platform.slug, serverUrl}) : undefined}
+			imageUrl={
+				serverUrl && platform
+					? getPlatformImage({slug: platform.slug, serverUrl, isUnidentified: platform.isUnidentified})
+					: undefined
+			}
 			hasNextPage={hasNextPage}
 		/>
 	)

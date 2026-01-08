@@ -6,8 +6,8 @@ import {RetroAchievement, RetroAchievementsMetadata} from '@/models/retroachieve
 import {RAResults} from '@/models/user'
 import clsx from 'clsx'
 
-const MAX_ITEMS_COLLAPSED = 3
-const MAX_ITEMS_LOCKED_COLLAPSED = 3
+const MAX_ITEMS_COLLAPSED = 2
+const MAX_ITEMS_LOCKED_COLLAPSED = 2
 
 export default function Achievements({
 	raId,
