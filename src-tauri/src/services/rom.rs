@@ -116,7 +116,7 @@ impl RomService {
         pagination: RomPagination,
     ) -> Result<RomPayload, Error> {
         let url = RomService::get_roms_url_with_pagination(pagination);
-        let response = RommHttp::get(app_handle, &format!("{url}&platform_id={id}"))?
+        let response = RommHttp::get(app_handle, &format!("{url}&platform_ids={id}"))?
             .send()
             .await?;
 
