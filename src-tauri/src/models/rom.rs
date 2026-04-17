@@ -164,7 +164,7 @@ struct RomUserState {
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
     emulator: String,
-    screenshot: RomUserScreenshot,
+    screenshot: Option<RomUserScreenshot>,
 }
 
 #[derive(Serialize, Deserialize)]
