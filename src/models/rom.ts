@@ -151,7 +151,7 @@ export type RomUserState = {
 	createdAt: string
 	updatedAt: string
 	emulator: string
-	screenshot: RomUserScreenshot
+	screenshot: RomUserScreenshot | null
 }
 
 type RomUser = {

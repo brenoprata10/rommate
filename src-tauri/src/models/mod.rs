@@ -7,3 +7,4 @@ pub mod retroachievements;
 pub mod rom;
 pub mod screen_scrapper;
 pub mod user;
+pub mod stat;

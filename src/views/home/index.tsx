@@ -5,6 +5,7 @@ import {useNavigate} from 'react-router'
 import ContinuePlaying from './components/continue-playing'
 import useRommSession from '@/hooks/use-romm-session'
 import RecentlyAdded from './components/recently-added'
+import ServerStatsCard from './components/server-stats'
 import Background from '@/components/ui/background'
 import {Skeleton} from '@/components/ui/skeleton'
 import SkeletonWrapper from '@/components/ui/skeleton-wrapper'
@@ -58,17 +59,20 @@ export default function Home() {
 	return (
 		<>
 			<div className='z-10 py-12 gap-9 flex flex-col'>
-				<Heading variant={'h1'} className='px-header flex gap-2'>
-					<span>Welcome</span>
-					{currentUser?.username ? (
-						<motion.span animate={{opacity: 1}} initial={{opacity: 0}}>
-							{currentUser?.username}
-						</motion.span>
-					) : (
-						<SkeletonWrapper>
-							<Skeleton className='h-[3rem] w-[15rem]' />
-						</SkeletonWrapper>
-					)}
+				<Heading variant={'h1'} className='px-header flex flex-wrap gap-6 w-full justify-between items-center'>
+					<div className='flex gap-2'>
+						<span>Welcome</span>
+						{currentUser?.username ? (
+							<motion.span animate={{opacity: 1}} initial={{opacity: 0}}>
+								{currentUser?.username}
+							</motion.span>
+						) : (
+							<SkeletonWrapper>
+								<Skeleton className='h-[3rem] w-[15rem]' />
+							</SkeletonWrapper>
+						)}
+					</div>
+					<ServerStatsCard />
 				</Heading>
 				<div className='grid gap-8'>
 					{((recentlyPlayedRoms && recentlyPlayedRoms?.length > 0) || isLoadingRecentlyPlayed) && (

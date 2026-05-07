@@ -8,3 +8,4 @@ pub mod process;
 pub mod retroarch;
 pub mod rom;
 pub mod user;
+pub mod stat;

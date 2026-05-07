@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "rommate",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "identifier": "com.brenoprata.rommate",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -13,7 +13,7 @@
     "windows": [
       {
         "title": "Rommate",
-	"fullscreen": false,
+        "fullscreen": false,
         "width": 1920,
         "height": 1080
       }
@@ -34,15 +34,15 @@
       "icons/icon.ico"
     ],
     "macOS": {
-	    "signingIdentity": "-" 
+      "signingIdentity": "-"
     }
   },
   "plugins": {
-	  "updater": {
-		  "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDU4RjgxRDkyNTlFQTdDNjYKUldSbWZPcFpraDM0V0lIVjkxd3NjcWJKT2JBWmhzeHN0SVhZZ0ZDU2lncm5IbmdVLzY0L1l5alQK",
-		  "endpoints": [
-			  "https://github.com/brenoprata10/rommate/releases/latest/download/latest.json"
-		  ]
-	  }
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDU4RjgxRDkyNTlFQTdDNjYKUldSbWZPcFpraDM0V0lIVjkxd3NjcWJKT2JBWmhzeHN0SVhZZ0ZDU2lncm5IbmdVLzY0L1l5alQK",
+      "endpoints": [
+        "https://github.com/brenoprata10/rommate/releases/latest/download/latest.json"
+      ]
+    }
   }
 }
