@@ -14,19 +14,8 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {isFileDownloaded, openDownloadDirectory} from '@/utils/http/file'
 import {playRetroarch} from '@/utils/http/retroarch'
 import {coreConfig, isPlatformEmulationReady, runnerConfig} from '@/utils/retroarch'
-//
 
-function ContinuePlayingRom({
-	rom,
-	className,
-	hideTitle,
-	onHover
-}: {
-	rom: Rom
-	className?: string
-	hideTitle?: boolean
-	onHover?: (romId: number) => void
-}) {
+function ContinuePlayingRom({rom, className, hideTitle}: {rom: Rom; className?: string; hideTitle?: boolean}) {
 	const romURL = `/rom/${rom.id}`
 	const [isDownloaded, setIsDownloaded] = useState(false)
 	const {downloadRom, getRomDownload} = useDownloader()
@@ -61,10 +50,6 @@ function ContinuePlayingRom({
 		}
 		checkFileDownloaded()
 	}, [checkFileDownloaded, romDownload?.event])
-
-	const handleHover = useCallback(() => {
-		onHover?.(rom.id)
-	}, [onHover, rom.id])
 
 	const startRomDownload = useCallback(() => {
 		downloadRom(rom.id)
@@ -119,7 +104,7 @@ function ContinuePlayingRom({
 
 	return (
 		<div className={clsx(['grid grid-cols-[14.8rem_16.812rem] max-w-[31.688rem] w-full', className])}>
-			<GameCover src={rom.pathCoverLarge} id={rom.id} width='237' height='316' onHover={handleHover} />
+			<GameCover src={rom.pathCoverLarge} id={rom.id} width='237' height='316' />
 			<div className='flex flex-col pt-[1.375rem] px-[1.375rem] justify-between'>
 				{hideTitle ? (
 					<div>&nbsp;</div>

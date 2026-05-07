@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/alert-dialog'
 
 export default function Home() {
-	const {focusedRomId, setFocusedGame} = useFocusedGame()
+	const {focusedRomId} = useFocusedGame()
 	const [authError, setAuthError] = useState<string | null>(null)
 	const {checkAuthentication} = useRommSession()
 	const {data: recentlyPlayedRoms, isLoading: isLoadingRecentlyPlayed} = useRecentlyPlayed()
@@ -49,13 +49,6 @@ export default function Home() {
 		navigate('/login')
 	}, [navigate])
 
-	const onHoverRom = useCallback(
-		(romId: number) => {
-			setFocusedGame(romId)
-		},
-		[setFocusedGame]
-	)
-
 	return (
 		<>
 			<div className='z-10 py-12 gap-9 flex flex-col'>
@@ -75,10 +68,8 @@ export default function Home() {
 					<ServerStatsCard />
 				</Heading>
 				<div className='grid gap-8'>
-					{((recentlyPlayedRoms && recentlyPlayedRoms?.length > 0) || isLoadingRecentlyPlayed) && (
-						<ContinuePlaying onHover={onHoverRom} />
-					)}
-					<RecentlyAdded onHover={onHoverRom} />
+					{((recentlyPlayedRoms && recentlyPlayedRoms?.length > 0) || isLoadingRecentlyPlayed) && <ContinuePlaying />}
+					<RecentlyAdded />
 				</div>
 			</div>
 			<Background romId={focusedRomId ?? recentlyPlayedRoms?.[0]?.id}>&nbsp;</Background>

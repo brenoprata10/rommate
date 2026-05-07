@@ -57,7 +57,7 @@ export default function RomList({
 	)
 
 	return (
-		<Background romId={isFocusedGameWithinRoms && focusedRomId ? focusedRomId : firstRomId}>
+		<Background>
 			<div className='z-10 py-12 gap-9 flex flex-col px-header'>
 				<Heading variant={'h1'} className='flex gap-4 items-center'>
 					{imageUrl && <img src={imageUrl} className='aspect-square max-w-15' />}

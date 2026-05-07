@@ -3,7 +3,7 @@ import useRecentlyAdded from '@/hooks/api/use-recently-added'
 import GameCover from '@/components/ui/game-cover'
 import RecentlyAddedSkeleton from './recently-added-skeleton'
 
-export default function RecentlyAdded({onHover}: {onHover: (romId: number) => void}) {
+export default function RecentlyAdded() {
 	const {data: roms, isLoading} = useRecentlyAdded()
 
 	return (
@@ -23,7 +23,6 @@ export default function RecentlyAdded({onHover}: {onHover: (romId: number) => vo
 							platformSlug={rom.platformSlug}
 							width='145px'
 							height='193px'
-							onHover={() => onHover(rom.id)}
 						/>
 					))}
 		</ScrollableSection>
