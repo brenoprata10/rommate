@@ -1,4 +1,5 @@
 import {Outlet} from 'react-router'
+import {TooltipProvider} from '@/components/ui/tooltip'
 import {AppSidebar} from '@/components/app-sidebar'
 import {SidebarProvider} from '@/components/ui/sidebar'
 import {CommonContext, CommonDispatchContext} from '@/context'
@@ -27,9 +28,11 @@ export default function Layout() {
 		<CommonDispatchContext.Provider value={dispatch}>
 			<CommonContext.Provider value={state}>
 				<SidebarProvider>
-					<AppSidebar className='overflow-hidden' />
-					<Outlet />
-					<SearchMenu />
+					<TooltipProvider delayDuration={0}>
+						<AppSidebar className='overflow-hidden' />
+						<Outlet />
+						<SearchMenu />
+					</TooltipProvider>
 				</SidebarProvider>
 			</CommonContext.Provider>
 		</CommonDispatchContext.Provider>
