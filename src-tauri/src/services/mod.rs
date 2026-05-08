@@ -7,3 +7,4 @@ pub mod rom;
 pub mod romm_asset;
 pub mod user;
 pub mod stat;
+pub mod suggestion_section;
