@@ -5,6 +5,7 @@ import {useNavigate} from 'react-router'
 import ContinuePlaying from './components/continue-playing'
 import useRommSession from '@/hooks/use-romm-session'
 import RecentlyAdded from './components/recently-added'
+import SuggestionSections from './components/suggestion-sections'
 import ServerStatsCard from './components/server-stats'
 import Background from '@/components/ui/background'
 import {Skeleton} from '@/components/ui/skeleton'
@@ -70,6 +71,7 @@ export default function Home() {
 				<div className='grid gap-8'>
 					{((recentlyPlayedRoms && recentlyPlayedRoms?.length > 0) || isLoadingRecentlyPlayed) && <ContinuePlaying />}
 					<RecentlyAdded />
+					<SuggestionSections />
 				</div>
 			</div>
 			<Background romId={focusedRomId ?? recentlyPlayedRoms?.[0]?.id}>&nbsp;</Background>

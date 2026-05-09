@@ -24,7 +24,8 @@ export enum TauriCommandKey {
 	IS_FILE_DOWNLOADED = 'command_is_file_downloaded',
 	RESTART_APP = 'command_restart_app',
 	PLAY_RETROARCH_GAME = 'command_play_retroarch_game',
-	GET_SERVER_STATS = 'command_get_stats'
+	GET_SERVER_STATS = 'command_get_stats',
+	GET_SUGGESTION_SECTIONS = 'command_get_sections'
 }
 
 export const tauriInvoke = async <T>(
