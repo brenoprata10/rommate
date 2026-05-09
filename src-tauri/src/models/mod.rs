@@ -8,3 +8,4 @@ pub mod rom;
 pub mod screen_scrapper;
 pub mod user;
 pub mod stat;
+pub mod suggestion_section;

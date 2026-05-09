@@ -14,16 +14,16 @@ use super::downloader::DownloaderService;
 
 #[derive(Serialize, Deserialize)]
 pub struct RomPayload {
-    total: u32,
-    limit: u32,
-    offset: u32,
-    items: Vec<Rom>,
+    pub total: u32,
+    pub limit: u32,
+    pub offset: u32,
+    pub items: Vec<Rom>,
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct RomPagination {
-    limit: u16,
-    offset: u16,
+    pub limit: u16,
+    pub offset: u16,
 }
 
 pub struct RomService {}
@@ -122,6 +122,15 @@ impl RomService {
 
         let roms = response.json::<RomPayload>().await?;
 
+        Ok(roms)
+    }
+    
+    pub async fn get_verified_roms(app_handle: &AppHandle, pagination: RomPagination) -> Result<RomPayload, Error> {
+        let url = RomService::get_roms_url_with_pagination(pagination);
+        let response = RommHttp::get(app_handle, &format!("{url}&verified=true"))?.send().await?;
+        
+        let roms = response.json::<RomPayload>().await?;
+        
         Ok(roms)
     }
 

@@ -11,10 +11,11 @@ use commands::process::command_restart_app;
 use commands::retroarch::command_play_retroarch_game;
 use commands::rom::{
     command_get_recently_added, command_get_recently_played, command_get_rom_by_id,
-    command_get_roms, command_get_roms_by_collection_id, command_get_roms_by_platform_id,
+    command_get_roms, command_get_roms_by_collection_id, command_get_roms_by_platform_id
 };
 use commands::user::{command_get_logged_in_user, command_get_users};
 use commands::stat::command_get_stats;
+use commands::suggestion_section::command_get_sections;
 use tokio_util::sync::CancellationToken;
 
 mod commands;
@@ -61,6 +62,7 @@ pub fn run() {
             command_restart_app,
             command_play_retroarch_game,
             command_get_stats,
+            command_get_sections
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
