@@ -1,11 +1,10 @@
 import {SuggestionSection} from '@/models/suggestion_section'
 import GameCover from '@/components/ui/game-cover'
-import RecentlyAddedSkeleton from '../recently-added-skeleton'
 import ScrollableSection from '@/components/ui/scrollable-section'
 import useScrapper from '@/hooks/useScrapper'
 import {Scrapper} from '@/models/enums/scrapper'
 
-export default function VerifiedSection({data, isLoading}: {data: SuggestionSection; isLoading: boolean}) {
+export default function VerifiedSection({data}: {data: SuggestionSection}) {
 	const hasheousConfig = useScrapper(Scrapper.HASHEOUS)
 
 	return (
@@ -17,21 +16,18 @@ export default function VerifiedSection({data, isLoading}: {data: SuggestionSect
 				</div>
 			}
 			itemsLength={data.items?.length ?? 0}
-			isScrollButtonDisabled={isLoading}
 			className='w-max'
 		>
-			{isLoading
-				? new Array(15).fill(<RecentlyAddedSkeleton />)
-				: data.items.map((rom) => (
-						<GameCover
-							key={rom.id}
-							id={rom.id}
-							src={rom.pathCoverLarge}
-							platformSlug={rom.platformSlug}
-							width='145px'
-							height='193px'
-						/>
-					))}
+			{data.items.map((rom) => (
+				<GameCover
+					key={rom.id}
+					id={rom.id}
+					src={rom.pathCoverLarge}
+					platformSlug={rom.platformSlug}
+					width='145px'
+					height='193px'
+				/>
+			))}
 		</ScrollableSection>
 	)
 }
