@@ -1,4 +1,4 @@
-import {useCallback, useLayoutEffect, useRef, useState} from 'react'
+import React, {useCallback, useLayoutEffect, useRef, useState} from 'react'
 import Heading from './heading'
 import Navigation from './navigation'
 import ScrollContainer from './scroll-container'
@@ -13,7 +13,7 @@ export default function ScrollableSection({
 	isScrollButtonDisabled,
 	children
 }: {
-	title: string
+	title: string | React.ReactNode
 	className?: string
 	itemsLength: number
 	itemGap?: string

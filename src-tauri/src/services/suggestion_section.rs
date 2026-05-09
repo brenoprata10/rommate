@@ -1,4 +1,5 @@
 use tauri::AppHandle;
+use rand::{rng, RngExt};
 
 use crate::{enums::{error::Error, suggestion_section_kind::SuggestionSectionKind}, models::suggestion_section::SuggestionSection, services::rom::{RomPagination, RomService}};
 
@@ -16,18 +17,21 @@ impl SuggestionSectionService {
 			offset: 0,
 		}).await?;
 		
-		let limit = 20;
-		let max_offset = total - limit;
-		let items = RomService::get_verified_roms(app_handle, RomPagination {
-			limit,
-			offset: rand::thread_rng().gen_range(0..=max_offset),
-		});
+		let limit: u32 = 20;
+		let max_offset = rom_payload.total.saturating_sub(limit);
 		
-		println!("{}", rom_payload.total);
+		let random_offset = {
+			let mut rng = rng();
+			rng.random_range(0..=max_offset as u16)
+		};
+		let verified_roms_payload = RomService::get_verified_roms(app_handle, RomPagination {
+			limit: limit as u16,
+			offset: random_offset,
+		}).await?;
 		
 		Ok(SuggestionSection {
-			items: vec![],
-			title: "Test".to_string(),
+			items: verified_roms_payload.items,
+			title: "Hasheous Verified".to_string(),
 			kind: SuggestionSectionKind::Verified
 		})
 	}
