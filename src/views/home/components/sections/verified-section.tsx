@@ -2,16 +2,17 @@ import {SuggestionSection} from '@/models/suggestion_section'
 import GameCover from '@/components/ui/game-cover'
 import RecentlyAddedSkeleton from '../recently-added-skeleton'
 import ScrollableSection from '@/components/ui/scrollable-section'
-import useServerUrl from '@/hooks/use-server-url'
+import useScrapper from '@/hooks/useScrapper'
+import {Scrapper} from '@/models/enums/scrapper'
 
 export default function VerifiedSection({data, isLoading}: {data: SuggestionSection; isLoading: boolean}) {
-	const serverUrl = useServerUrl()
+	const hasheousConfig = useScrapper(Scrapper.HASHEOUS)
 
 	return (
 		<ScrollableSection
 			title={
 				<div className='flex gap-2 items-center'>
-					<img width={16} height={16} src={`${serverUrl}/assets/scrappers/hasheous.png`} />
+					<img width={20} height={20} src={hasheousConfig.logoUrl} />
 					{data.title}
 				</div>
 			}
