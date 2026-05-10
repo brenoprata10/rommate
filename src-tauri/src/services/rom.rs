@@ -22,8 +22,8 @@ pub struct RomPayload {
 
 #[derive(Serialize, Deserialize)]
 pub struct RomPagination {
-    pub limit: u16,
-    pub offset: u16,
+    pub limit: u32,
+    pub offset: u32,
 }
 
 pub struct RomService {}
@@ -128,6 +128,15 @@ impl RomService {
     pub async fn get_verified_roms(app_handle: &AppHandle, pagination: RomPagination) -> Result<RomPayload, Error> {
         let url = RomService::get_roms_url_with_pagination(pagination);
         let response = RommHttp::get(app_handle, &format!("{url}&verified=true"))?.send().await?;
+        
+        let roms = response.json::<RomPayload>().await?;
+        
+        Ok(roms)
+    }
+    
+    pub async fn get_favorite_roms(app_handle: &AppHandle, pagination: RomPagination) -> Result<RomPayload, Error> {
+        let url = RomService::get_roms_url_with_pagination(pagination);
+        let response = RommHttp::get(app_handle, &format!("{url}&favorite=true"))?.send().await?;
         
         let roms = response.json::<RomPayload>().await?;
         

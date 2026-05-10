@@ -4,7 +4,8 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all(serialize = "camelCase"))]
 pub enum SuggestionSectionKind {
 	Verified,
+	Favorite,
 	FileSize {
 		size: u32
-	}
+	},
 }
