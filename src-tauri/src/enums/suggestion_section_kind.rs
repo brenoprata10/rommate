@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 pub enum SuggestionSectionKind {
 	Verified,
 	Favorite,
+	Retroachievements,
 	FileSize {
 		size: u32
 	},

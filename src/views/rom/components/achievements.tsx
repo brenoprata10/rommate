@@ -1,5 +1,5 @@
 import HeroCard from '@/components/ui/hero-card'
-import {Progress} from '@/components/ui/progress'
+import RetroachievementProgress from '@/components/ui/retroachievement-progress'
 import useLoggedInUser from '@/hooks/api/use-logged-in-user'
 import useServerUrl from '@/hooks/use-server-url'
 import {RetroAchievement, RetroAchievementsMetadata} from '@/models/retroachievements'
@@ -76,7 +76,7 @@ const AchievementCardWrapper = ({
 }) => {
 	return (
 		<div className='flex flex-col gap-2'>
-			<Progress value={value} className={'!bg-[#644F10] h-1'} indicatorClassName={'!bg-[#D97706]'} />
+			<RetroachievementProgress value={value} />
 			<span className='text-sm font-medium text-neutral-400 self-end'>
 				{userRomAchievements?.numAwarded ?? 0}/{totalAchievementsCount} Unlocked
 			</span>

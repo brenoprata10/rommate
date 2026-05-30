@@ -1,7 +1,7 @@
 use std::future::Future;
 
 use tauri::AppHandle;
-use rand::{rng, RngExt};
+use rand::{rng, RngExt, seq::SliceRandom};
 
 use crate::{enums::{error::Error, suggestion_section_kind::SuggestionSectionKind}, models::{rom::Rom, suggestion_section::SuggestionSection}, services::rom::{RomPagination, RomPayload, RomService}};
 
@@ -14,8 +14,9 @@ impl SuggestionSectionService {
 	pub async fn get_sections(app_handle: &AppHandle) -> Result<Vec<SuggestionSection>, Error> {
 		let favorite_section = Self::get_favorite_section(&app_handle).await?;
 		let verified_section = Self::get_verified_section(&app_handle).await?;
+		let retroachievements_section = Self::get_retroachievements_section(&app_handle).await?;
 		
-		let sections: Vec<SuggestionSection> = vec![favorite_section, verified_section]
+		let sections: Vec<SuggestionSection> = vec![favorite_section, verified_section, retroachievements_section]
 			.into_iter()
 			.filter(|section| !section.items.is_empty())
 			.collect();
@@ -47,6 +48,18 @@ impl SuggestionSectionService {
 		})
 	}
 	
+	pub async fn get_retroachievements_section(app_handle: &AppHandle) -> Result<SuggestionSection, Error> {
+		let retroachievements_roms = Self::get_section_items(
+			|pagination| RomService::get_retroachievement_roms(app_handle, pagination)
+		).await?;
+		
+		Ok(SuggestionSection { 
+			items: retroachievements_roms,
+			title: "Retroachievements Supported".to_string(),
+			kind: SuggestionSectionKind::Retroachievements 
+		})
+	}
+	
 	pub async fn get_section_items<F, Fut>(get_items: F) -> Result<Vec<Rom>, Error> 
 	  where 
 	    F: Fn(RomPagination) -> Fut, 
@@ -64,7 +77,13 @@ impl SuggestionSectionService {
 			offset: random_offset,
 		}).await?;
 		
-		Ok(roms_payload.items)
+		let mut roms = roms_payload.items;
+		let mut rng = rng();
+		
+		// Randomize order output
+		roms.shuffle(&mut rng);
+		
+		Ok(roms)
 	}
 	
 	fn get_random_offset(total: u32) -> u32 {

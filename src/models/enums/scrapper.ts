@@ -1,3 +1,4 @@
 export enum Scrapper {
-	HASHEOUS = 'hasheous'
+	HASHEOUS = 'hasheous',
+	RETROACHIEVEMENTS = 'ra'
 }

@@ -1,6 +1,7 @@
 import useSuggestionSections from '@/hooks/api/use-suggestion-sections'
 import VerifiedSection from './sections/verified-section'
 import FavoriteSection from './sections/favorite-section'
+import RetroachievementSection from './sections/retroachievement-section'
 import {SuggestionSection} from '@/models/suggestion_section'
 
 const CONFIG: Record<
@@ -14,6 +15,10 @@ const CONFIG: Record<
 	verified: {
 		shouldShow: (section) => section.kind === 'verified',
 		component: (section: SuggestionSection) => <VerifiedSection data={section} />
+	},
+	retroachievements: {
+		shouldShow: (section) => section.kind === 'retroachievements',
+		component: (section: SuggestionSection) => <RetroachievementSection data={section} />
 	}
 }
 
