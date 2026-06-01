@@ -82,7 +82,7 @@ export default function RomDetail() {
 					<div className='flex flex-col gap-6'>
 						<About rom={rom} />
 						{rom.mergedRaMetadata && rom.raId && (
-							<Achievements raId={rom.raId} availableAchievements={rom.mergedRaMetadata} />
+							<Achievements rom={{raId: rom.raId, mergedRaMetadata: rom.mergedRaMetadata}} />
 						)}
 					</div>
 				</div>
