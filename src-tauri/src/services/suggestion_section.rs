@@ -1,7 +1,7 @@
 use std::future::Future;
 
 use tauri::AppHandle;
-use rand::{prelude::IndexedRandom, rng, RngExt, seq::SliceRandom};
+use rand::{prelude::IndexedRandom, prelude::IteratorRandom, rng, RngExt, seq::SliceRandom};
 
 use crate::{enums::{error::Error, suggestion_section_kind::SuggestionSectionKind}, models::{rom::Rom, suggestion_section::SuggestionSection}, services::{collection::CollectionService, platform::PlatformService, rom::{RomPagination, RomPayload, RomService}}};
 
@@ -17,13 +17,15 @@ impl SuggestionSectionService {
 		let retroachievements_section = Self::get_retroachievements_section(app_handle).await?;
 		let platform_section = Self::get_platform_section(app_handle).await?;
 		let collection_section = Self::get_collection_section(app_handle).await?;
+		let genre_section = Self::get_genre_section(app_handle).await?;
 		
 		let sections: Vec<SuggestionSection> = vec![
 			favorite_section,
 			verified_section, 
 			retroachievements_section,
 			platform_section,
-			collection_section
+			collection_section,
+			genre_section
 		].into_iter().filter(|section| !section.items.is_empty()).collect();
 		
 		Ok(sections)
@@ -125,6 +127,25 @@ impl SuggestionSectionService {
 				items: collection_roms,
 				title: format!("{} Collection", collection.name),
 				kind: SuggestionSectionKind::Collection,
+			}
+		)
+	}
+	
+	pub async fn get_genre_section(app_handle: &AppHandle) -> Result<SuggestionSection, Error> {
+		let recently_added_roms = RomService::get_recently_added(app_handle).await?;
+		let genres = recently_added_roms.items.into_iter().map(|rom| rom.metadatum.genres).flatten();
+		let genre = genres.choose(&mut rand::rng()).unwrap_or("Action".to_string());
+		let title = format!("{}", genre);
+		
+		let genre_roms = Self::get_section_items(
+			move |pagination| RomService::get_roms_by_genre(app_handle, genre.clone(), pagination)
+		).await?;
+		
+		Ok(
+			SuggestionSection {
+				items: genre_roms,
+				title,
+				kind: SuggestionSectionKind::Genre,
 			}
 		)
 	}

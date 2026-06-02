@@ -36,6 +36,10 @@ const CONFIG: Record<
 		shouldShow: (section) => section.kind === 'collection',
 		component: (section: SuggestionSection) => <GameCoverSection data={section} />
 	},
+	genre: {
+		shouldShow: (section) => section.kind === 'genre',
+		component: (section: SuggestionSection) => <GameCoverSection data={section} />
+	},
 	platform: {
 		shouldShow: (section) => isPlatformSection(section),
 		component: (section: SuggestionSection, serverUrl) => {

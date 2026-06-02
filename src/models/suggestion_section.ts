@@ -8,6 +8,7 @@ export type SuggestionSection = {
 		| 'favorite'
 		| 'retroachievements'
 		| 'collection'
+		| 'genre'
 		| {platform: {slug: string; is_unidentified: boolean}}
 		| {fileSize: {size: number}}
 }
