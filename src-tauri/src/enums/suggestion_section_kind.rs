@@ -5,6 +5,10 @@ use serde::{Deserialize, Serialize};
 pub enum SuggestionSectionKind {
 	Verified,
 	Favorite,
+	Platform {
+		slug: String,
+		is_unidentified: bool
+	},
 	Retroachievements,
 	FileSize {
 		size: u32
