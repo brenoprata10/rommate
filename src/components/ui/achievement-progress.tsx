@@ -3,7 +3,7 @@ import useServerUrl from '@/hooks/use-server-url'
 import {RetroAchievement, RetroAchievementsMetadata} from '@/models/retroachievements'
 import clsx from 'clsx'
 import useRetroachievements from '@/hooks/use-retroachievements'
-import {useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 
 export default function AchievementProgress({
 	className,
@@ -20,17 +20,19 @@ export default function AchievementProgress({
 	maxAchievementCount?: number
 	randomizeOrder?: boolean
 }) {
-	console.log(rom)
 	const {lockedAchievements, unlockedAchievements, progressPercentage, totalAchievementsCount, userRomAchievements} =
 		useRetroachievements({raId: rom.raId, availableAchievements: rom.mergedRaMetadata})
 
+	const randomizeAchievementsList = useCallback(() => {
+		return randomizeOrder ? Math.random() - 0.5 : 0
+	}, [randomizeOrder])
+
 	const achievements = useMemo(
-		() =>
-			[
-				...unlockedAchievements.map((achievement) => ({...achievement, isLocked: false})),
-				...lockedAchievements.map((achievement) => ({...achievement, isLocked: true}))
-			].sort(() => (randomizeOrder ? Math.random() - 0.5 : 0)),
-		[unlockedAchievements, lockedAchievements, randomizeOrder]
+		() => [
+			...unlockedAchievements.map((achievement) => ({...achievement, isLocked: false})).sort(randomizeAchievementsList),
+			...lockedAchievements.map((achievement) => ({...achievement, isLocked: true})).sort(randomizeAchievementsList)
+		],
+		[unlockedAchievements, lockedAchievements, randomizeAchievementsList]
 	)
 
 	if (achievements.length === 0) {
