@@ -17,6 +17,7 @@ impl SuggestionSectionService {
 		let retroachievements_section = Self::get_retroachievements_section(app_handle).await?;
 		let platform_section = Self::get_platform_section(app_handle).await?;
 		let collection_section = Self::get_collection_section(app_handle).await?;
+		let company_section = Self::get_company_section(app_handle).await?;
 		let genre_section = Self::get_genre_section(app_handle).await?;
 		
 		let sections: Vec<SuggestionSection> = vec![
@@ -25,7 +26,8 @@ impl SuggestionSectionService {
 			retroachievements_section,
 			platform_section,
 			collection_section,
-			genre_section
+			company_section,
+			genre_section,
 		].into_iter().filter(|section| !section.items.is_empty()).collect();
 		
 		Ok(sections)
@@ -148,6 +150,37 @@ impl SuggestionSectionService {
 				kind: SuggestionSectionKind::Genre,
 			}
 		)
+	}
+	
+	pub async fn get_company_section(app_handle: &AppHandle) -> Result<SuggestionSection, Error> {
+		let recently_added_roms = RomService::get_recently_added(app_handle).await?;
+		let companies: Vec<String> = recently_added_roms.items
+			.into_iter()
+			.map(|rom| rom.metadatum.companies)
+			.flatten()
+			.collect();
+		if companies.len() == 0 {
+			return Ok(
+				SuggestionSection {
+					items: vec![],
+					title: "".to_string(),
+					kind: SuggestionSectionKind::Collection,
+				}
+			) 
+		}
+		let company = companies.choose(&mut rand::rng()).ok_or(Error::NotFound("Cannot find company".to_string()))?;
+		let title = format!("From {}", company);
+		let company_roms = Self::get_section_items(
+			|pagination| RomService::get_roms_by_company(app_handle, company.to_string(), pagination)
+		).await?;
+		
+		Ok(
+			SuggestionSection {
+				items: company_roms,
+				title,
+				kind: SuggestionSectionKind::Company,
+			}
+		)	
 	}
 	
 	pub async fn get_section_items<F, Fut>(get_items: F) -> Result<Vec<Rom>, Error> 

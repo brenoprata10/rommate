@@ -249,7 +249,7 @@ pub struct RomMetadatum {
     pub genres: Vec<String>,
     franchises: Vec<String>,
     collections: Vec<String>,
-    companies: Vec<String>,
+    pub companies: Vec<String>,
     game_modes: Vec<String>,
     age_ratings: Vec<String>,
     first_release_date: Option<u64>,

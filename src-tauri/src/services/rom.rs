@@ -140,6 +140,21 @@ impl RomService {
         Ok(roms)
     }
     
+    pub async fn get_roms_by_company(
+        app_handle: &AppHandle,
+        company: String,
+        pagination: RomPagination,
+    ) -> Result<RomPayload, Error> {
+        let url = RomService::get_roms_url_with_pagination(pagination);
+        let response = RommHttp::get(app_handle, &format!("{url}&companies={company}"))?
+            .send()
+            .await?;
+    
+        let roms = response.json::<RomPayload>().await?;
+    
+        Ok(roms)
+    }
+    
     pub async fn get_verified_roms(app_handle: &AppHandle, pagination: RomPagination) -> Result<RomPayload, Error> {
         let url = RomService::get_roms_url_with_pagination(pagination);
         let response = RommHttp::get(app_handle, &format!("{url}&verified=true"))?.send().await?;

@@ -7,6 +7,7 @@ pub enum SuggestionSectionKind {
 	Favorite,
 	Collection,
 	Genre,
+	Company,
 	Platform {
 		slug: String,
 		is_unidentified: bool

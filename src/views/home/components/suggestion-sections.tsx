@@ -10,7 +10,7 @@ import useServerUrl from '@/hooks/use-server-url'
 function isPlatformSection(
 	section: SuggestionSection
 ): section is SuggestionSection & {kind: {platform: {slug: string; isUnidentified: boolean}}} {
-	return 'platform' in (section.kind as object)
+	return typeof section.kind === 'object' && 'platform' in section.kind
 }
 
 const CONFIG: Record<
@@ -31,14 +31,6 @@ const CONFIG: Record<
 	retroachievements: {
 		shouldShow: (section) => section.kind === 'retroachievements',
 		component: (section: SuggestionSection) => <RetroachievementSection data={section} />
-	},
-	collection: {
-		shouldShow: (section) => section.kind === 'collection',
-		component: (section: SuggestionSection) => <GameCoverSection data={section} />
-	},
-	genre: {
-		shouldShow: (section) => section.kind === 'genre',
-		component: (section: SuggestionSection) => <GameCoverSection data={section} />
 	},
 	platform: {
 		shouldShow: (section) => isPlatformSection(section),
@@ -68,6 +60,10 @@ const CONFIG: Record<
 				/>
 			)
 		}
+	},
+	default: {
+		shouldShow: (section) => section.kind === 'collection' || section.kind === 'genre' || section.kind === 'company',
+		component: (section: SuggestionSection) => <GameCoverSection data={section} />
 	}
 }
 

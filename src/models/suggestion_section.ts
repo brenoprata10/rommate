@@ -9,6 +9,7 @@ export type SuggestionSection = {
 		| 'retroachievements'
 		| 'collection'
 		| 'genre'
+		| 'company'
 		| {platform: {slug: string; is_unidentified: boolean}}
 		| {fileSize: {size: number}}
 }
