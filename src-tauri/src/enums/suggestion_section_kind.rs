@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 pub enum SuggestionSectionKind {
 	Verified,
 	Favorite,
+	Collection,
 	Platform {
 		slug: String,
 		is_unidentified: bool

@@ -42,13 +42,13 @@ pub struct VirtualCollection {
     path_cover_large: Option<String>,
     path_covers_small: Vec<String>,
     path_covers_large: Vec<String>,
-    is_public: bool,
-    is_favorite: bool,
-    is_virtual: bool,
-    is_smart: bool,
+    pub is_public: bool,
+    pub is_favorite: bool,
+    pub is_virtual: bool,
+    pub is_smart: bool,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
-    id: String,
+    pub id: String,
     url_cover: Option<String>,
     r#type: Option<String>,
 }
@@ -73,6 +73,14 @@ impl VirtualCollection {
             id: collection.id.to_string(),
             url_cover: collection.url_cover,
             r#type: Some("user-collection".to_string()),
+        }
+    }
+    
+    pub fn kind(&self) -> RomCollection {
+        match (self.is_virtual, self.is_smart) {
+            (true, _) => RomCollection::Virtual, 
+            (_, true) => RomCollection::Smart,
+            _ => RomCollection::Default,
         }
     }
 }

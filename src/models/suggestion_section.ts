@@ -7,6 +7,7 @@ export type SuggestionSection = {
 		| 'verified'
 		| 'favorite'
 		| 'retroachievements'
+		| 'collection'
 		| {platform: {slug: string; is_unidentified: boolean}}
 		| {fileSize: {size: number}}
 }

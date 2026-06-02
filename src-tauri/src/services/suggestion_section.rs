@@ -3,7 +3,7 @@ use std::future::Future;
 use tauri::AppHandle;
 use rand::{prelude::IndexedRandom, rng, RngExt, seq::SliceRandom};
 
-use crate::{enums::{error::Error, suggestion_section_kind::SuggestionSectionKind}, models::{rom::Rom, suggestion_section::SuggestionSection}, services::{platform::PlatformService, rom::{RomPagination, RomPayload, RomService}}};
+use crate::{enums::{error::Error, suggestion_section_kind::SuggestionSectionKind}, models::{rom::Rom, suggestion_section::SuggestionSection}, services::{collection::CollectionService, platform::PlatformService, rom::{RomPagination, RomPayload, RomService}}};
 
 pub struct SuggestionSectionService {
 }
@@ -16,12 +16,14 @@ impl SuggestionSectionService {
 		let verified_section = Self::get_verified_section(app_handle).await?;
 		let retroachievements_section = Self::get_retroachievements_section(app_handle).await?;
 		let platform_section = Self::get_platform_section(app_handle).await?;
+		let collection_section = Self::get_collection_section(app_handle).await?;
 		
 		let sections: Vec<SuggestionSection> = vec![
 			favorite_section,
 			verified_section, 
 			retroachievements_section,
-			platform_section
+			platform_section,
+			collection_section
 		].into_iter().filter(|section| !section.items.is_empty()).collect();
 		
 		Ok(sections)
@@ -65,6 +67,18 @@ impl SuggestionSectionService {
 	
 	pub async fn get_platform_section(app_handle: &AppHandle) -> Result<SuggestionSection, Error> {
 		let platforms = PlatformService::get_platforms(app_handle).await?;
+		if platforms.len() == 0 {
+			return Ok(
+				SuggestionSection {
+					items: vec![],
+					title: "".to_string(),
+					kind: SuggestionSectionKind::Platform {
+						slug: "".to_string(),
+						is_unidentified: false
+					 },
+				}
+			)
+		}
 		let default_platform = platforms.first().ok_or(
 			Error::NotFound("Platforms are unavailable.".to_string())
 		)?;
@@ -82,6 +96,35 @@ impl SuggestionSectionService {
 					slug: platform.slug.clone(),
 					is_unidentified: platform.is_unidentified
 				 },
+			}
+		)
+	}
+	
+	pub async fn get_collection_section(app_handle: &AppHandle) -> Result<SuggestionSection, Error> {
+		let collections = CollectionService::get_all(app_handle).await?;
+		if collections.len() == 0 {
+			return Ok(
+				SuggestionSection {
+					items: vec![],
+					title: "".to_string(),
+					kind: SuggestionSectionKind::Collection,
+				}
+			)
+		}
+		let default_collection = collections.first().ok_or(
+			Error::NotFound("Collections are unavailable.".to_string())
+		)?;
+		let collection = collections.choose(&mut rand::rng()).unwrap_or(default_collection);
+		
+		let collection_roms = Self::get_section_items(
+			|pagination| RomService::get_roms_by_collection_id(app_handle, collection.id.to_string(), collection.kind(), pagination)
+		).await?;
+		
+		Ok(
+			SuggestionSection {
+				items: collection_roms,
+				title: format!("{} Collection", collection.name),
+				kind: SuggestionSectionKind::Collection,
 			}
 		)
 	}

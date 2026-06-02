@@ -32,6 +32,10 @@ const CONFIG: Record<
 		shouldShow: (section) => section.kind === 'retroachievements',
 		component: (section: SuggestionSection) => <RetroachievementSection data={section} />
 	},
+	collection: {
+		shouldShow: (section) => section.kind === 'collection',
+		component: (section: SuggestionSection) => <GameCoverSection data={section} />
+	},
 	platform: {
 		shouldShow: (section) => isPlatformSection(section),
 		component: (section: SuggestionSection, serverUrl) => {
