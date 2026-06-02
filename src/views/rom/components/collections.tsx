@@ -9,7 +9,9 @@ import React from 'react'
 
 function RomCollections({romId}: {romId: number}) {
 	const {data: collections, isLoading, error} = useCollections()
-	const romCollections = collections?.filter((collection) => collection.romIds.includes(romId))
+	const romCollections = collections?.filter(
+		(collection) => !collection.isFavorite && collection.romIds.includes(romId)
+	)
 	if (!romCollections || isLoading || error) {
 		return null
 	}
