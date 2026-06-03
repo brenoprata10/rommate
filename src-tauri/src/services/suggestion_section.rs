@@ -231,11 +231,11 @@ impl SuggestionSectionService {
 	} 
 	
 	pub async fn get_favorite_related_section(app_handle: &AppHandle) -> Result<SuggestionSection, Error> {
-		let favorite_roms = RomService::get_favorite_roms(
-			app_handle, 
-			RomPagination {limit: Self::LIMIT, offset: 0}
+		let favorite_roms  = Self::get_section_items(
+			|pagination| RomService::get_favorite_roms(app_handle, pagination)
 		).await?;
-		if favorite_roms.items.len() == 0 {
+		
+		if favorite_roms.len() == 0 {
 			return Ok(
 				SuggestionSection {
 					items: vec![],
@@ -244,10 +244,10 @@ impl SuggestionSectionService {
 				}
 			)
 		}
-		let default_rom = favorite_roms.items.first().ok_or(
+		let default_rom = favorite_roms.first().ok_or(
 			Error::NotFound("Failed to load favorite roms.".to_string())
 		)?;
-		let selected_rom = favorite_roms.items.choose(&mut rand::rng()).unwrap_or(default_rom);
+		let selected_rom = favorite_roms.choose(&mut rand::rng()).unwrap_or(default_rom);
 		let title = format!("Because you liked {}", selected_rom.name);
 		
 		let related_roms = Self::get_section_items(
