@@ -11,6 +11,7 @@ export type SuggestionSection = {
 		| 'genre'
 		| 'company'
 		| 'playedRelated'
+		| 'favoriteRelated'
 		| {platform: {slug: string; is_unidentified: boolean}}
 		| {fileSize: {size: number}}
 }

@@ -1,6 +1,7 @@
 use std::future::Future;
 
 use tauri::AppHandle;
+use tokio::try_join;
 use rand::{prelude::IndexedRandom, prelude::IteratorRandom, rng, RngExt, seq::SliceRandom};
 
 use crate::{enums::{error::Error, suggestion_section_kind::SuggestionSectionKind}, models::{rom::Rom, suggestion_section::SuggestionSection}, services::{collection::CollectionService, platform::PlatformService, rom::{RomPagination, RomPayload, RomService}}};
@@ -9,26 +10,40 @@ pub struct SuggestionSectionService {
 }
 
 impl SuggestionSectionService {
-	const LIMIT : u32 = 20;
+	const LIMIT : u32 = 10;
 	
 	pub async fn get_sections(app_handle: &AppHandle) -> Result<Vec<SuggestionSection>, Error> {
-		let favorite_section = Self::get_favorite_section(app_handle).await?;
-		let verified_section = Self::get_verified_section(app_handle).await?;
-		let retroachievements_section = Self::get_retroachievements_section(app_handle).await?;
-		let platform_section = Self::get_platform_section(app_handle).await?;
-		let collection_section = Self::get_collection_section(app_handle).await?;
-		let company_section = Self::get_company_section(app_handle).await?;
-		let genre_section = Self::get_genre_section(app_handle).await?;
-		let first_played_related_section = Self::get_played_related_section(app_handle).await?;
+		let (
+			favorite_section,
+			verified_section, 
+			retroachievements_section,
+			platform_section, 
+			collection_section,
+			company_section,
+			genre_section,
+			played_related_section,
+			favorite_related_section
+		) = try_join!(
+			Self::get_favorite_section(app_handle),
+			Self::get_verified_section(app_handle),
+			Self::get_retroachievements_section(app_handle),
+			Self::get_platform_section(app_handle),
+			Self::get_collection_section(app_handle),
+			Self::get_company_section(app_handle),
+			Self::get_genre_section(app_handle),
+			Self::get_played_related_section(app_handle),
+			Self::get_favorite_related_section(app_handle),
+		)?;
 		
 		let sections: Vec<SuggestionSection> = vec![
 			favorite_section,
 			verified_section, 
 			retroachievements_section,
-			first_played_related_section,
+			played_related_section,
 			platform_section,
 			collection_section,
 			company_section,
+			favorite_related_section,
 			genre_section,
 		].into_iter().filter(|section| !section.items.is_empty()).collect();
 		
@@ -166,7 +181,7 @@ impl SuggestionSectionService {
 				SuggestionSection {
 					items: vec![],
 					title: "".to_string(),
-					kind: SuggestionSectionKind::Collection,
+					kind: SuggestionSectionKind::Company,
 				}
 			) 
 		}
@@ -192,7 +207,7 @@ impl SuggestionSectionService {
 				SuggestionSection {
 					items: vec![],
 					title: "".to_string(),
-					kind: SuggestionSectionKind::Collection,
+					kind: SuggestionSectionKind::PlayedRelated,
 				}
 			)
 		}
@@ -211,6 +226,39 @@ impl SuggestionSectionService {
 				items: related_roms,
 				title,
 				kind: SuggestionSectionKind::PlayedRelated,
+			}
+		)	
+	} 
+	
+	pub async fn get_favorite_related_section(app_handle: &AppHandle) -> Result<SuggestionSection, Error> {
+		let favorite_roms = RomService::get_favorite_roms(
+			app_handle, 
+			RomPagination {limit: Self::LIMIT, offset: 0}
+		).await?;
+		if favorite_roms.items.len() == 0 {
+			return Ok(
+				SuggestionSection {
+					items: vec![],
+					title: "".to_string(),
+					kind: SuggestionSectionKind::FavoriteRelated,
+				}
+			)
+		}
+		let default_rom = favorite_roms.items.first().ok_or(
+			Error::NotFound("Failed to load favorite roms.".to_string())
+		)?;
+		let selected_rom = favorite_roms.items.choose(&mut rand::rng()).unwrap_or(default_rom);
+		let title = format!("Because you liked {}", selected_rom.name);
+		
+		let related_roms = Self::get_section_items(
+			|pagination| RomService::get_roms_by_genres(app_handle, selected_rom.metadatum.genres.clone(), pagination)
+		).await?;	
+		
+		Ok(
+			SuggestionSection {
+				items: related_roms,
+				title,
+				kind: SuggestionSectionKind::FavoriteRelated,
 			}
 		)	
 	} 

@@ -6,6 +6,7 @@ import GameCoverSection from './sections/game-cover-section'
 import {SuggestionSection} from '@/models/suggestion_section'
 import {getPlatformImage} from '@/utils/platform-image'
 import useServerUrl from '@/hooks/use-server-url'
+import {motion} from 'motion/react'
 
 function isPlatformSection(
 	section: SuggestionSection
@@ -66,7 +67,8 @@ const CONFIG: Record<
 			section.kind === 'collection' ||
 			section.kind === 'genre' ||
 			section.kind === 'company' ||
-			section.kind === 'playedRelated',
+			section.kind === 'playedRelated' ||
+			section.kind === 'favoriteRelated',
 		component: (section: SuggestionSection) => <GameCoverSection data={section} />
 	}
 }
@@ -78,11 +80,11 @@ export default function SuggestionSections() {
 	return (
 		<>
 			{suggestionSections?.map((section) => (
-				<>
+				<motion.div key={section.title} initial={{opacity: 0}} animate={{opacity: 1}}>
 					{Object.values(CONFIG)
 						.find((config) => config.shouldShow(section))
 						?.component(section, serverUrl)}
-				</>
+				</motion.div>
 			))}
 		</>
 	)
