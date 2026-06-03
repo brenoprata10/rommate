@@ -62,7 +62,11 @@ const CONFIG: Record<
 		}
 	},
 	default: {
-		shouldShow: (section) => section.kind === 'collection' || section.kind === 'genre' || section.kind === 'company',
+		shouldShow: (section) =>
+			section.kind === 'collection' ||
+			section.kind === 'genre' ||
+			section.kind === 'company' ||
+			section.kind === 'playedRelated',
 		component: (section: SuggestionSection) => <GameCoverSection data={section} />
 	}
 }

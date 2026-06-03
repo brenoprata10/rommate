@@ -19,11 +19,13 @@ impl SuggestionSectionService {
 		let collection_section = Self::get_collection_section(app_handle).await?;
 		let company_section = Self::get_company_section(app_handle).await?;
 		let genre_section = Self::get_genre_section(app_handle).await?;
+		let first_played_related_section = Self::get_played_related_section(app_handle).await?;
 		
 		let sections: Vec<SuggestionSection> = vec![
 			favorite_section,
 			verified_section, 
 			retroachievements_section,
+			first_played_related_section,
 			platform_section,
 			collection_section,
 			company_section,
@@ -140,7 +142,7 @@ impl SuggestionSectionService {
 		let title = format!("{}", genre);
 		
 		let genre_roms = Self::get_section_items(
-			move |pagination| RomService::get_roms_by_genre(app_handle, genre.clone(), pagination)
+			move |pagination| RomService::get_roms_by_genres(app_handle, vec![genre.clone()], pagination)
 		).await?;
 		
 		Ok(
@@ -182,6 +184,36 @@ impl SuggestionSectionService {
 			}
 		)	
 	}
+	
+	pub async fn get_played_related_section(app_handle: &AppHandle) -> Result<SuggestionSection, Error> {
+		let recently_played_roms = RomService::get_recently_played(app_handle).await?;
+		if recently_played_roms.items.len() == 0 {
+			return Ok(
+				SuggestionSection {
+					items: vec![],
+					title: "".to_string(),
+					kind: SuggestionSectionKind::Collection,
+				}
+			)
+		}
+		let default_rom = recently_played_roms.items.first().ok_or(
+			Error::NotFound("Failed to load related roms.".to_string())
+		)?;
+		let selected_rom = recently_played_roms.items.choose(&mut rand::rng()).unwrap_or(default_rom);
+		let title = format!("Because you played {}", selected_rom.name);
+		
+		let related_roms = Self::get_section_items(
+			|pagination| RomService::get_roms_by_genres(app_handle, selected_rom.metadatum.genres.clone(), pagination)
+		).await?;	
+		
+		Ok(
+			SuggestionSection {
+				items: related_roms,
+				title,
+				kind: SuggestionSectionKind::PlayedRelated,
+			}
+		)	
+	} 
 	
 	pub async fn get_section_items<F, Fut>(get_items: F) -> Result<Vec<Rom>, Error> 
 	  where 

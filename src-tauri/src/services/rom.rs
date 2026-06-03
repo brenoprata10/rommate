@@ -125,13 +125,19 @@ impl RomService {
         Ok(roms)
     }
     
-    pub async fn get_roms_by_genre(
+    pub async fn get_roms_by_genres(
         app_handle: &AppHandle,
-        genre: String,
+        genres: Vec<String>,
         pagination: RomPagination,
     ) -> Result<RomPayload, Error> {
         let url = RomService::get_roms_url_with_pagination(pagination);
-        let response = RommHttp::get(app_handle, &format!("{url}&genres={genre}"))?
+        let genre_params = genres
+            .iter()
+            .map(|genre| format!("genres={}", genre))
+            .collect::<Vec<String>>()
+            .join("&");
+            
+        let response = RommHttp::get(app_handle, &format!("{url}&{genre_params}"))?
             .send()
             .await?;
     

@@ -29,7 +29,7 @@ pub struct Rom {
     fs_extension: String,
     fs_path: String,
     pub fs_size_bytes: u64,
-    name: String,
+    pub name: String,
     slug: Option<String>,
     summary: Option<String>,
     alternative_names: Vec<String>,
