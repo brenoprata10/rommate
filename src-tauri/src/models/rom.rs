@@ -29,12 +29,12 @@ pub struct Rom {
     fs_extension: String,
     fs_path: String,
     pub fs_size_bytes: u64,
-    name: String,
+    pub name: String,
     slug: Option<String>,
     summary: Option<String>,
     alternative_names: Vec<String>,
     youtube_video_id: Option<String>,
-    metadatum: RomMetadatum,
+    pub metadatum: RomMetadatum,
     igdb_metadata: Option<IgdbMetadata>,
     ss_metadata: Option<ScreenScrapperMetadata>,
     launchbox_metadata: Option<LaunchBoxMetadata>,
@@ -244,25 +244,14 @@ struct RomFile {
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all(serialize = "camelCase"))]
-struct RomMetadatum {
+pub struct RomMetadatum {
     rom_id: u64,
-    genres: Vec<String>,
+    pub genres: Vec<String>,
     franchises: Vec<String>,
     collections: Vec<String>,
-    companies: Vec<String>,
+    pub companies: Vec<String>,
     game_modes: Vec<String>,
     age_ratings: Vec<String>,
     first_release_date: Option<u64>,
     average_rating: Option<f32>,
-}
-
-#[derive(Serialize, Deserialize, PartialEq)]
-#[serde(rename_all = "UPPERCASE")]
-pub struct RomStats {
-    platforms: u32,
-    roms: u64,
-    saves: u32,
-    states: u32,
-    screenshots: u32,
-    total_filesize_bytes: u64,
 }

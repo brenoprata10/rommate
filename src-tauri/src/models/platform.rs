@@ -4,11 +4,11 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all(serialize = "camelCase"))]
 pub struct Platform {
-    id: i32,
-    slug: String,
+    pub id: i32,
+    pub slug: String,
     fs_slug: String,
     rom_count: i32,
-    name: String,
+    pub name: String,
     igdb_slug: Option<String>,
     moby_slug: Option<String>,
     custom_name: Option<String>,
@@ -30,7 +30,7 @@ pub struct Platform {
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
     fs_size_bytes: i64,
-    is_unidentified: bool,
+    pub is_unidentified: bool,
     is_identified: bool,
     missing_from_fs: bool,
     display_name: String,
