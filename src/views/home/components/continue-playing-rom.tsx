@@ -31,9 +31,10 @@ function ContinuePlayingRom({rom, className, hideTitle}: {rom: Rom; className?: 
 		playRetroarch({
 			core: coreConfig[rom.platformFsSlug][0],
 			runner,
-			romPath: `/${rom.platformFsSlug}/${rom.fsName}`
+			romPath: `/${rom.platformFsSlug}/${rom.fsName}`,
+			romId: rom.id
 		})
-	}, [rom.platformFsSlug, rom.fsName])
+	}, [rom.platformFsSlug, rom.fsName, rom.id])
 
 	const checkFileDownloaded = useCallback(async () => {
 		const downloaded = await isFileDownloaded(rom.fsName, rom.platformFsSlug)

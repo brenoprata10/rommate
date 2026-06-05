@@ -228,17 +228,21 @@ impl RomService {
         Ok(())
     }
 
-    pub async fn download_save_file(app_handle: &AppHandle, rom_id: i32) -> Result<(), Error> {
-        let mut rom_saves = RomSaveService::get_rom_saves(app_handle, rom_id).await?;
-        rom_saves.sort_by_key(|save| save.updated_at);
-        
-        let latest_save = rom_saves.last().ok_or(Error::NotFound("No saves were returned".to_string()))?;
-        let file_name = format!("{}.{}", latest_save.file_name_no_tags, latest_save.file_extension);
+    pub async fn download_most_recent_save_file(app_handle: &AppHandle, rom_id: i32) -> Result<(), Error> {
+        let rom = Self::get_rom_by_id(app_handle, rom_id).await?;
+        let latest_save = RomSaveService::get_most_recent_rom_save(app_handle, rom_id).await?;
+        let file_name = format!(
+            "{}.{}", 
+            latest_save.file_name_no_tags, 
+            latest_save.file_extension
+        );
         let file_url = format!("/api/saves/{}/content", latest_save.id); 
+        let directory = format!("{}/{}", DownloaderService::get_saves_download_path()?, rom.platform_fs_slug);
         
         DownloaderService::file(
-            RommHttp::get(app_handle, &file_url)?, file_name,
-            DownloaderService::get_saves_download_path()?
+            RommHttp::get(app_handle, &file_url)?, 
+            file_name,
+            directory
         ).await?;
         Ok(())
     }

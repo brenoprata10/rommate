@@ -9,6 +9,7 @@ use std::{
 use tauri::{ipc::Channel, State};
 use tokio::{fs::File, io::AsyncWriteExt};
 use tokio_util::sync::CancellationToken;
+use tempfile::tempfile;
 
 use crate::{
     enums::{download_event::DownloadEvent, error::Error},
@@ -31,6 +32,16 @@ impl DownloaderService {
         file.write_all(&bytes)?;
 
         Ok(())
+    }
+    
+    pub async fn temporary_file(
+        request: RequestBuilder,
+    ) -> Result<std::fs::File, Error> {
+        let mut file = tempfile()?;
+        let bytes = request.send().await?.bytes().await?;
+        file.write_all(&bytes)?;
+    
+        Ok(file)
     }
 
     pub async fn with_stream(

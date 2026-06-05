@@ -1,4 +1,8 @@
-use std::{env, fs::exists, process::Command};
+use std::{env, fs::{exists}, process::Command};
+
+use sha2::{Sha256, Digest};
+use tokio::fs::File;
+use tokio::io::{AsyncReadExt};
 
 use crate::enums::error::Error;
 
@@ -44,5 +48,27 @@ impl FileService {
 
         FileService::open_directory(download_path)?;
         Ok(())
+    }
+    
+    pub async fn hash_file(mut file: File) -> std::io::Result<Vec<u8>> {
+        let mut hasher = Sha256::new();
+        let mut buf = [0u8; 8192];
+    
+        loop {
+            let n = file.read(&mut buf).await?;
+            if n == 0 { break; }
+            hasher.update(&buf[..n]);
+        }
+    
+        Ok(hasher.finalize().to_vec())
+    }
+    
+    pub async fn is_equal(first_file: File, second_file: File) -> Result<bool, Error> {
+        let first_file_metadata = first_file.metadata().await?;
+        let second_file_metadata = second_file.metadata().await?;
+        if first_file_metadata.len() != second_file_metadata.len() {
+            return Ok(false);
+        }
+        Ok(Self::hash_file(first_file).await? == Self::hash_file(second_file).await?)
     }
 }

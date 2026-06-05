@@ -1,8 +1,10 @@
+use tokio::{fs::File, io::AsyncReadExt};
+
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 use tauri_plugin_shell::ShellExt;
 
-use crate::{enums::error::Error, services::downloader::DownloaderService};
+use crate::{enums::error::Error, romm::romm_http::RommHttp, services::{downloader::DownloaderService, file::FileService, rom_save::RomSaveService}};
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "lowercase")]
@@ -47,10 +49,11 @@ pub struct RetroarchService {
     core: RetroarchCore,
     runner: RetroarchRunner,
     rom_path: String,
+    rom_id: i32
 }
 
 impl RetroarchService {
-    pub fn new(runner: RetroarchRunner, core: RetroarchCore, rom_path: String) -> Self {
+    pub fn new(runner: RetroarchRunner, core: RetroarchCore, rom_path: String, rom_id: i32) -> Self {
         match runner {
             RetroarchRunner::FlatpakLinux => RetroarchService {
                 config_path: "$HOME/.var/app/org.libretro.RetroArch/config/retroarch",
@@ -58,6 +61,7 @@ impl RetroarchService {
                 state_path: "/states",
                 save_path: "/saves",
                 rom_path,
+                rom_id,
                 runner,
                 core_filename: match core {
                     RetroarchCore::BsnesHdBeta => "bsnes_hd_beta_libretro.so",
@@ -87,6 +91,7 @@ impl RetroarchService {
                 state_path: "/states",
                 save_path: "/saves",
                 rom_path,
+                rom_id,
                 runner,
                 core_filename: match core {
                     RetroarchCore::BsnesHdBeta => "bsnes_hd_beta_libretro.so",
@@ -116,6 +121,7 @@ impl RetroarchService {
                 state_path: "\\states",
                 save_path: "\\saves",
                 rom_path,
+                rom_id,
                 runner,
                 core_filename: match core {
                     RetroarchCore::BsnesHdBeta => "bsnes_hd_beta_libretro.dll",
@@ -145,6 +151,7 @@ impl RetroarchService {
                 state_path: "/states",
                 save_path: "/saves",
                 rom_path,
+                rom_id,
                 runner,
                 core_filename: match core {
                     RetroarchCore::BsnesHdBeta => "bsnes_hd_beta_libretro.dylib",
@@ -172,6 +179,38 @@ impl RetroarchService {
     }
 
     pub async fn play(&self, app_handle: &AppHandle) -> Result<(), Error> {
+        //RomService::download_most_recent_save_file(app_handle, self.rom_id).await?;
+        
+        // Verify if current downloaded files is the same the one on the server
+        // 
+        // if they are not the same, ask the user what which one he wants to use
+        // if choosing local file:
+        // - Boot the game normally
+        // else:
+        // - download and replace local save file
+        // Move this to a separate place "sync_save_files"?
+        let latest_save = RomSaveService::get_most_recent_rom_save(app_handle, self.rom_id).await?;
+        let file_url = format!("/api/saves/{}/content", latest_save.id);
+        
+        let uploaded_save = DownloaderService::temporary_file(
+            RommHttp::get(app_handle, &file_url)?
+        ).await?;
+        
+        // We cannot use srm here
+        let mut local_save = File::open(
+            format!("{}{}.srm", DownloaderService::get_saves_download_path()?, self.rom_path)
+        ).await?;
+        
+        let mut buf = Vec::new();
+        local_save.read_to_end(&mut buf).await?;
+        
+        
+        let are_equal = FileService::is_equal(uploaded_save.into(), local_save).await?;
+        
+        println!("{}", are_equal);
+        
+        
+        
         let download_dir = DownloaderService::get_roms_download_path()?;
         let shell = app_handle.shell();
         let command = match self.runner {
