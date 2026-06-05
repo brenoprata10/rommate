@@ -126,10 +126,28 @@ impl DownloaderService {
         }?;
 
         Ok(format!(
-            "{}/Rommate/roms",
+            "{}/Rommate",
             home_dir_path
                 .to_str()
                 .expect("Failed to parse home dir to string.")
+        ))
+    }
+    
+    pub fn get_saves_download_path() -> Result<String, Error> {
+        let download_path = Self::get_download_path()?;
+    
+        Ok(format!(
+            "{}/saves",
+            download_path
+        ))
+    }
+    
+    pub fn get_roms_download_path() -> Result<String, Error> {
+        let download_path = Self::get_download_path()?;
+    
+        Ok(format!(
+            "{}/roms",
+            download_path
         ))
     }
 

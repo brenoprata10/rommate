@@ -106,28 +106,28 @@ struct RomUserCollection {
     user_id: Option<i32>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all(serialize = "camelCase"))]
-struct RomUserSave {
-    id: u32,
+pub struct RomUserSave {
+    pub id: u32,
     rom_id: u32,
     user_id: u32,
     file_name: String,
-    file_name_no_tags: String,
+    pub file_name_no_tags: String,
     file_name_no_ext: String,
-    file_extension: String,
+    pub file_extension: String,
     file_path: String,
     file_size_bytes: u64,
     full_path: String,
     download_path: String,
     missing_from_fs: bool,
     created_at: DateTime<Utc>,
-    updated_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
     emulator: Option<String>,
     screenshot: Option<RomUserScreenshot>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all(serialize = "camelCase"))]
 struct RomUserScreenshot {
     id: u32,

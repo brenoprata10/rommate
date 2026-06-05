@@ -8,7 +8,7 @@ pub struct FileService {}
 
 impl FileService {
     pub async fn is_downloaded(file_name: String, platform_slug: String) -> Result<bool, Error> {
-        let download_directory = DownloaderService::get_download_path()?;
+        let download_directory = DownloaderService::get_roms_download_path()?;
         let is_downloaded = exists(format!("{download_directory}/{platform_slug}/{file_name}"))?;
 
         Ok(is_downloaded)
@@ -37,7 +37,7 @@ impl FileService {
     }
 
     pub fn open_download_directory(platform_slug: Option<String>) -> Result<(), Error> {
-        let mut download_path = DownloaderService::get_download_path()?;
+        let mut download_path = DownloaderService::get_roms_download_path()?;
         if let Some(platform_slug) = platform_slug {
             download_path.push_str(format!("/{platform_slug}").as_str());
         }

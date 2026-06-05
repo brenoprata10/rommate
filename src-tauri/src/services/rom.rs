@@ -4,11 +4,8 @@ use tauri::{ipc::Channel, AppHandle, State};
 use tokio_util::sync::CancellationToken;
 
 use crate::{
-    enums::{download_event::DownloadEvent, error::Error},
-    models::{collection::RomCollection, rom::Rom},
-    romm::romm_http::RommHttp,
-    AppState,
-};
+    AppState, enums::{download_event::DownloadEvent, error::Error}, models::{collection::RomCollection, rom::Rom}, romm::romm_http::RommHttp, services::rom_save::RomSaveService
+    };
 
 use super::downloader::DownloaderService;
 
@@ -84,7 +81,7 @@ impl RomService {
             .await?;
 
         let rom = response.json::<Rom>().await?;
-
+        
         Ok(rom)
     }
 
@@ -203,7 +200,7 @@ impl RomService {
         let file_url = format!("/api/roms/{}/content/{}", rom.id, rom.fs_name);
         let file_directory = format!(
             "{}/{}",
-            DownloaderService::get_download_path()?,
+            DownloaderService::get_roms_download_path()?,
             rom.platform_fs_slug
         );
         let file_path = format!("{file_directory}/{}", rom.fs_name);
@@ -231,11 +228,18 @@ impl RomService {
         Ok(())
     }
 
-    pub fn download_save_file(rom_id: i32, platform_id: i32) -> Result<(), Error> {
-        //call getSaves
-        //Fetch the last save
-        //rename file with same name in dir to prevent data loss
-        //download file
+    pub async fn download_save_file(app_handle: &AppHandle, rom_id: i32) -> Result<(), Error> {
+        let mut rom_saves = RomSaveService::get_rom_saves(app_handle, rom_id).await?;
+        rom_saves.sort_by_key(|save| save.updated_at);
+        
+        let latest_save = rom_saves.last().ok_or(Error::NotFound("No saves were returned".to_string()))?;
+        let file_name = format!("{}.{}", latest_save.file_name_no_tags, latest_save.file_extension);
+        let file_url = format!("/api/saves/{}/content", latest_save.id); 
+        
+        DownloaderService::file(
+            RommHttp::get(app_handle, &file_url)?, file_name,
+            DownloaderService::get_saves_download_path()?
+        ).await?;
         Ok(())
     }
 }
