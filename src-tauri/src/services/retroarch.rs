@@ -204,7 +204,6 @@ impl RetroarchService {
         let mut buf = Vec::new();
         local_save.read_to_end(&mut buf).await?;
         
-        
         let are_equal = FileService::is_equal(uploaded_save.into(), local_save).await?;
         
         println!("{}", are_equal);

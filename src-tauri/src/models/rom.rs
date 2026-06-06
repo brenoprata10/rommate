@@ -25,7 +25,7 @@ pub struct Rom {
     platform_display_name: String,
     pub fs_name: String,
     fs_name_no_tags: String,
-    fs_name_no_ext: String,
+    pub fs_name_no_ext: String,
     fs_extension: String,
     fs_path: String,
     pub fs_size_bytes: u64,
