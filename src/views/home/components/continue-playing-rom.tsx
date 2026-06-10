@@ -49,7 +49,8 @@ function ContinuePlayingRom({rom, className, hideTitle}: {rom: Rom; className?: 
 			core: romCore,
 			runner,
 			romPath: `/${rom.platformFsSlug}/${rom.fsName}`,
-			romId: rom.id
+			romId: rom.id,
+			platformPath: rom.platformFsSlug
 		})
 	}, [rom.platformFsSlug, rom.fsName, rom.id, saveSyncData, romCore])
 
