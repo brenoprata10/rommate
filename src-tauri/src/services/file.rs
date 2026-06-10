@@ -50,7 +50,7 @@ impl FileService {
         Ok(())
     }
     
-    pub async fn hash_file(mut file: File) -> std::io::Result<Vec<u8>> {
+    pub async fn hash_file(file: &mut File) -> std::io::Result<Vec<u8>> {
         let mut hasher = Sha256::new();
         let mut buf = [0u8; 8192];
     
@@ -63,7 +63,7 @@ impl FileService {
         Ok(hasher.finalize().to_vec())
     }
     
-    pub async fn is_equal(first_file: File, second_file: File) -> Result<bool, Error> {
+    pub async fn is_equal(first_file: &mut File, second_file: &mut File) -> Result<bool, Error> {
         let first_file_metadata = first_file.metadata().await?;
         let second_file_metadata = second_file.metadata().await?;
         if first_file_metadata.len() != second_file_metadata.len() {

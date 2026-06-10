@@ -12,9 +12,8 @@ use tokio_util::sync::CancellationToken;
 use tempfile::tempfile;
 
 use crate::{
-    enums::{download_event::DownloadEvent, error::Error},
-    AppState,
-};
+    AppState, enums::{download_event::DownloadEvent, error::Error}, models::rom::Rom
+    };
 
 pub struct DownloaderService {}
 
@@ -144,6 +143,15 @@ impl DownloaderService {
         ))
     }
     
+    pub fn get_config_path() -> Result<String, Error> {
+        let download_path = Self::get_download_path()?;
+    
+        Ok(format!(
+            "{}/config",
+            download_path
+        ))
+    }
+    
     pub fn get_saves_download_path() -> Result<String, Error> {
         let download_path = Self::get_download_path()?;
     
@@ -151,6 +159,16 @@ impl DownloaderService {
             "{}/saves",
             download_path
         ))
+    }
+    
+    pub fn get_rom_save_dir(platform_fs_slug: String) -> Result<String, Error> {
+        Ok(
+            format!(
+                "{}/{}", 
+                DownloaderService::get_saves_download_path()?,
+                platform_fs_slug,
+            )
+        )
     }
     
     pub fn get_roms_download_path() -> Result<String, Error> {

@@ -64,8 +64,8 @@ pub struct Rom {
     merged_screenshots: Option<Vec<String>>,
     siblings: Vec<RomSiblings>,
     rom_user: RomUser,
-    user_saves: Option<Vec<RomUserSave>>,
-    user_states: Option<Vec<RomUserState>>,
+    pub user_saves: Option<Vec<RomUserSave>>,
+    pub user_states: Option<Vec<RomUserState>>,
     user_screenshots: Option<Vec<RomUserScreenshot>>,
     all_user_notes: Option<Vec<RomUserNote>>,
     user_collections: Option<Vec<RomUserCollection>>,
@@ -106,7 +106,7 @@ struct RomUserCollection {
     user_id: Option<i32>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all(serialize = "camelCase"))]
 pub struct RomUserSave {
     pub id: u32,
@@ -127,7 +127,7 @@ pub struct RomUserSave {
     screenshot: Option<RomUserScreenshot>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all(serialize = "camelCase"))]
 struct RomUserScreenshot {
     id: u32,

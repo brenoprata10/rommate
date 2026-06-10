@@ -10,17 +10,30 @@ import {cancelDownload} from '@/utils/http/downloader'
 import clsx from 'clsx'
 import {Ban, FolderOpen, Play, PlayIcon} from 'lucide-react'
 import {motion} from 'motion/react'
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import React, {ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 import {isFileDownloaded, openDownloadDirectory} from '@/utils/http/file'
 import {playRetroarch} from '@/utils/http/retroarch'
 import {coreConfig, isPlatformEmulationReady, runnerConfig} from '@/utils/retroarch'
+import useCheckSaveSync from '@/hooks/api/use-rom-check-save-sync'
+import {SaveSync, SaveSyncKind} from '@/models/rom-save'
+import {CircleCheckIcon, CircleXIcon, CircleQuestionMarkIcon} from 'lucide-react'
+
+const SAVE_SYNC_ICON_CONFIG: Record<SaveSyncKind, ReactNode> = {
+	[SaveSyncKind.CONFLICT]: <CircleXIcon className='stroke-red-400' />,
+	[SaveSyncKind.SYNCED]: <CircleCheckIcon className='stroke-green-500' />,
+	[SaveSyncKind.MISSING_LOCAL_FILE]: <CircleQuestionMarkIcon />,
+	[SaveSyncKind.MISSING_CLOUD_FILE]: null
+}
 
 function ContinuePlayingRom({rom, className, hideTitle}: {rom: Rom; className?: string; hideTitle?: boolean}) {
 	const romURL = `/rom/${rom.id}`
+	const isEmulationReady = isPlatformEmulationReady(rom.platformFsSlug)
 	const [isDownloaded, setIsDownloaded] = useState(false)
 	const {downloadRom, getRomDownload} = useDownloader()
+	const {data: saveSyncData} = useCheckSaveSync({romId: rom.id, enabled: isEmulationReady})
 	const romDownload = useMemo(() => getRomDownload(rom.id), [rom.id, getRomDownload])
 	const isDownloadFinished = romDownload?.event === 'cancelled' || romDownload?.event === 'finished'
+	const romCore = coreConfig[rom.platformFsSlug]?.[0]
 
 	const play = useCallback(() => {
 		const runner = runnerConfig[platform()] ?? null
@@ -28,13 +41,17 @@ function ContinuePlayingRom({rom, className, hideTitle}: {rom: Rom; className?: 
 		if (!runner) {
 			return
 		}
+
+		if (saveSyncData?.kind === SaveSyncKind.CONFLICT) {
+			return
+		}
 		playRetroarch({
-			core: coreConfig[rom.platformFsSlug][0],
+			core: romCore,
 			runner,
 			romPath: `/${rom.platformFsSlug}/${rom.fsName}`,
 			romId: rom.id
 		})
-	}, [rom.platformFsSlug, rom.fsName, rom.id])
+	}, [rom.platformFsSlug, rom.fsName, rom.id, saveSyncData, romCore])
 
 	const checkFileDownloaded = useCallback(async () => {
 		const downloaded = await isFileDownloaded(rom.fsName, rom.platformFsSlug)
@@ -78,9 +95,7 @@ function ContinuePlayingRom({rom, className, hideTitle}: {rom: Rom; className?: 
 
 	const getCtaButton = useCallback(() => {
 		const isReadyToPlay =
-			isDownloaded &&
-			isPlatformEmulationReady(rom.platformFsSlug) &&
-			['linux', 'windows', 'macos'].some((os) => os === platform())
+			isDownloaded && isEmulationReady && ['linux', 'windows', 'macos'].some((os) => os === platform())
 
 		if (isReadyToPlay) {
 			return (
@@ -98,10 +113,10 @@ function ContinuePlayingRom({rom, className, hideTitle}: {rom: Rom; className?: 
 		}
 		return (
 			<CtaButton onClick={startRomDownload}>
-				<PlayIcon /> Install
+				<PlayIcon /> {isEmulationReady ? 'Install' : 'Download'}
 			</CtaButton>
 		)
-	}, [isDownloaded, rom.platformFsSlug, openFolderPath, play, startRomDownload])
+	}, [isDownloaded, openFolderPath, play, startRomDownload, isEmulationReady])
 
 	return (
 		<div className={clsx(['grid grid-cols-[14.8rem_16.812rem] max-w-[31.688rem] w-full', className])}>
@@ -116,33 +131,45 @@ function ContinuePlayingRom({rom, className, hideTitle}: {rom: Rom; className?: 
 						</Heading>
 					</a>
 				)}
-				{romDownload && !isDownloadFinished ? (
-					<motion.div
-						className='flex flex-col gap-1 mb-2'
-						initial={{opacity: 0, height: 0}}
-						animate={{opacity: 1, height: 'auto'}}
-					>
-						<Heading variant={'h5'}>Downloading...</Heading>
-						<div className='flex gap-2'>
-							<div className='flex gap-2 w-full flex-col'>
-								<div
-									className={clsx([
-										'w-full flex gap-2 text-sm text-neutral-400 items-end',
-										romDownload.event === 'progress' ? 'justify-between' : 'justify-end'
-									])}
-								>
-									<DownloadStatus download={romDownload} romSizeBytes={rom.fsSizeBytes} />
-								</div>
-								<Progress className={clsx(['flex w-full max-h-[0.25rem]'])} value={getProgress()} />
-							</div>
-							<Button variant={'destructive'} onClick={cancelRomDownload}>
-								<Ban />
-							</Button>
+				<div className='flex flex-col gap-4'>
+					{isEmulationReady && (
+						<div className='flex flex-col gap-1'>
+							<RomDetails title={'Runner'} content={'Retroarch'} />
+							<RomDetails title={'Core'} content={romCore} />
+							{saveSyncData &&
+								[SaveSyncKind.SYNCED, SaveSyncKind.CONFLICT, SaveSyncKind.MISSING_LOCAL_FILE].includes(
+									saveSyncData.kind
+								) && <RomDetails title='Save Sync' content={<SaveSyncIcon data={saveSyncData} />} />}
 						</div>
-					</motion.div>
-				) : (
-					getCtaButton()
-				)}
+					)}
+					{romDownload && !isDownloadFinished ? (
+						<motion.div
+							className='flex flex-col gap-1 mb-2'
+							initial={{opacity: 0, height: 0}}
+							animate={{opacity: 1, height: 'auto'}}
+						>
+							<Heading variant={'h5'}>Downloading...</Heading>
+							<div className='flex gap-2'>
+								<div className='flex gap-2 w-full flex-col'>
+									<div
+										className={clsx([
+											'w-full flex gap-2 text-sm text-neutral-400 items-end',
+											romDownload.event === 'progress' ? 'justify-between' : 'justify-end'
+										])}
+									>
+										<DownloadStatus download={romDownload} romSizeBytes={rom.fsSizeBytes} />
+									</div>
+									<Progress className={clsx(['flex w-full max-h-[0.25rem]'])} value={getProgress()} />
+								</div>
+								<Button variant={'destructive'} onClick={cancelRomDownload}>
+									<Ban />
+								</Button>
+							</div>
+						</motion.div>
+					) : (
+						getCtaButton()
+					)}
+				</div>
 			</div>
 		</div>
 	)
@@ -164,6 +191,19 @@ const CtaButton = ({onClick, children}: {onClick: () => void; children: React.Re
 			{children}
 		</Button>
 	)
+}
+
+const RomDetails = ({title, content}: {title: string; content: ReactNode | string}) => {
+	return (
+		<div className='flex justify-between'>
+			<span className='text-neutral-300 font-medium'>{title}</span>
+			<span className='text-neutral-400 font-medium'>{content}</span>
+		</div>
+	)
+}
+
+const SaveSyncIcon = ({data}: {data: SaveSync}) => {
+	return SAVE_SYNC_ICON_CONFIG[data.kind]
 }
 
 export default React.memo(ContinuePlayingRom)

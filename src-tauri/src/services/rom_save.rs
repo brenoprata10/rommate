@@ -1,7 +1,9 @@
+use std::os::unix::fs::MetadataExt;
+
 use tauri::AppHandle;
 use tokio::{fs::File, io::AsyncReadExt, join};
 
-use crate::{enums::error::Error, models::rom::{Rom, RomUserSave}, romm::romm_http::RommHttp, services::{downloader::DownloaderService, file::FileService, rom::RomService}};
+use crate::{dtos::save_sync::{FileConflictInfo, SaveSync, SaveSyncKind}, enums::error::Error, models::rom::{Rom, RomUserSave}, romm::romm_http::RommHttp, services::{downloader::DownloaderService, file::FileService, rom::RomService}};
 
 pub struct RomSaveService {}
 
@@ -38,7 +40,7 @@ impl RomSaveService {
 	- if cloud file, replace local file with cloud file and play game
 	*/
 	
-	pub async fn is_save_synced(app_handle: &AppHandle, rom_id: i32) -> Result<bool, Error> {
+	pub async fn check_save_sync(app_handle: &AppHandle, rom_id: i32) -> Result<SaveSync, Error> {
 		let (rom, latest_save) = join!(
 			RomService::get_rom_by_id(app_handle, rom_id),
 			RomSaveService::get_most_recent_rom_save(app_handle, rom_id)
@@ -52,20 +54,50 @@ impl RomSaveService {
 		let latest_save = match latest_save {
 			Ok(latest_save) => latest_save,
 			// If there are no cloud saves, then there is no need to check any further
-			Err(_error) => return Ok(true)
+			Err(_error) => return Ok(SaveSync {
+				kind: SaveSyncKind::MissingCloudFile
+			})
 		};
 		let file_url = format!("/api/saves/{}/content", latest_save.id);
 		let uploaded_save = DownloaderService::temporary_file(
 			RommHttp::get(app_handle, &file_url)?
 		).await?;
 		
-		let rom_path = format!("{}/{}.{}", platform_fs_slug, fs_name_no_ext, latest_save.file_extension);
-		let mut local_save = File::open(
-			format!("{}{}", DownloaderService::get_saves_download_path()?, rom_path)
-		).await?;
+		let rom_path = format!(
+			"{}/{}.{}", platform_fs_slug, fs_name_no_ext, latest_save.file_extension
+		);
+		let mut local_save = match File::open(
+			format!("{}/{}", DownloaderService::get_saves_download_path()?, rom_path)
+		).await {
+			Ok(local_save) => local_save,
+			Err(_error) => return Ok( SaveSync {
+				kind: SaveSyncKind::MissingLocalFile
+			})
+		};
 		let mut buf = Vec::new();
 		local_save.read_to_end(&mut buf).await?;
 		
-		Ok(FileService::is_equal(uploaded_save.into(), local_save).await?)
+		let uploaded_save_metadata = uploaded_save.metadata()?;
+		
+		if FileService::is_equal(&mut uploaded_save.into(), &mut local_save).await? {
+			return Ok(SaveSync {
+				kind: SaveSyncKind::Synced
+			})
+		}
+		
+		let local_file_metadata = local_save.metadata().await?;
+		
+		Ok(SaveSync {
+			kind: SaveSyncKind::Conflict { 
+				cloud_file: FileConflictInfo {
+					creation_date: uploaded_save_metadata.created()?.into(),
+					length: uploaded_save_metadata.size()
+				}, 
+				local_file: FileConflictInfo {
+					creation_date: local_file_metadata.created()?.into(),
+					length: local_file_metadata.size()
+				}
+			}
+		})
 	}
 }

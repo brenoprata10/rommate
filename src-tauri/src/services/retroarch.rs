@@ -1,10 +1,11 @@
-use tokio::{fs::File, io::AsyncReadExt};
+use std::fs::{File, create_dir_all};
+use std::io::Write;
 
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 use tauri_plugin_shell::ShellExt;
 
-use crate::{enums::error::Error, romm::romm_http::RommHttp, services::{downloader::DownloaderService, file::FileService, rom_save::RomSaveService}};
+use crate::{dtos::save_sync::SaveSyncKind, enums::error::Error, services::{downloader::DownloaderService, rom::RomService, rom_save::RomSaveService}};
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "lowercase")]
@@ -49,11 +50,18 @@ pub struct RetroarchService {
     core: RetroarchCore,
     runner: RetroarchRunner,
     rom_path: String,
-    rom_id: i32
+    rom_id: i32,
+    rommate_config_path: String,
+    rom_platform_path: String
 }
 
 impl RetroarchService {
-    pub fn new(runner: RetroarchRunner, core: RetroarchCore, rom_path: String, rom_id: i32) -> Self {
+    pub fn new(runner: RetroarchRunner, core: RetroarchCore, rom_path: String, rom_id: i32, rom_platform_path: String) -> Self {
+        let rommate_config_path = format!(
+            "{}/rommate-config.cfg", 
+            DownloaderService::get_config_path().expect("Config path must be available")
+        );
+        
         match runner {
             RetroarchRunner::FlatpakLinux => RetroarchService {
                 config_path: "$HOME/.var/app/org.libretro.RetroArch/config/retroarch",
@@ -61,8 +69,10 @@ impl RetroarchService {
                 state_path: "/states",
                 save_path: "/saves",
                 rom_path,
+                rommate_config_path,
                 rom_id,
                 runner,
+                rom_platform_path,
                 core_filename: match core {
                     RetroarchCore::BsnesHdBeta => "bsnes_hd_beta_libretro.so",
                     RetroarchCore::Bsnes => "bsnes_libretro.so",
@@ -91,8 +101,10 @@ impl RetroarchService {
                 state_path: "/states",
                 save_path: "/saves",
                 rom_path,
+                rommate_config_path,
                 rom_id,
                 runner,
+                rom_platform_path,
                 core_filename: match core {
                     RetroarchCore::BsnesHdBeta => "bsnes_hd_beta_libretro.so",
                     RetroarchCore::Bsnes => "bsnes_libretro.so",
@@ -121,8 +133,10 @@ impl RetroarchService {
                 state_path: "\\states",
                 save_path: "\\saves",
                 rom_path,
+                rommate_config_path,
                 rom_id,
                 runner,
+                rom_platform_path,
                 core_filename: match core {
                     RetroarchCore::BsnesHdBeta => "bsnes_hd_beta_libretro.dll",
                     RetroarchCore::Bsnes => "bsnes_libretro.dll",
@@ -152,7 +166,9 @@ impl RetroarchService {
                 save_path: "/saves",
                 rom_path,
                 rom_id,
+                rommate_config_path,
                 runner,
+                rom_platform_path,
                 core_filename: match core {
                     RetroarchCore::BsnesHdBeta => "bsnes_hd_beta_libretro.dylib",
                     RetroarchCore::Bsnes => "bsnes_libretro.dylib",
@@ -177,38 +193,33 @@ impl RetroarchService {
             },
         }
     }
+    
+    async fn create_config_file(&self) -> Result<(), Error> {
+        // Create directories path if it does not exist
+        create_dir_all(DownloaderService::get_config_path()?)?;
+        
+        let mut file = File::create(&self.rommate_config_path)?;
+        
+        let save_download_path = DownloaderService::get_saves_download_path()?;
+        let platform_path = &self.rom_platform_path;
+        
+        file.write_all(
+            format!("
+                savefile_directory = \"{save_download_path}/{platform_path}\"
+                sort_savefiles_enable = \"false\"
+            ").as_bytes()
+        )?;
+        
+        Ok(())
+    }
 
     pub async fn play(&self, app_handle: &AppHandle) -> Result<(), Error> {
-        //RomService::download_most_recent_save_file(app_handle, self.rom_id).await?;
+        self.create_config_file().await?;
         
-        // Verify if current downloaded files is the same the one on the server
-        // 
-        // if they are not the same, ask the user what which one he wants to use
-        // if choosing local file:
-        // - Boot the game normally
-        // else:
-        // - download and replace local save file
-        // Move this to a separate place "sync_save_files"?
-        let latest_save = RomSaveService::get_most_recent_rom_save(app_handle, self.rom_id).await?;
-        let file_url = format!("/api/saves/{}/content", latest_save.id);
-        
-        let uploaded_save = DownloaderService::temporary_file(
-            RommHttp::get(app_handle, &file_url)?
-        ).await?;
-        
-        // We cannot use srm here
-        let mut local_save = File::open(
-            format!("{}{}.srm", DownloaderService::get_saves_download_path()?, self.rom_path)
-        ).await?;
-        
-        let mut buf = Vec::new();
-        local_save.read_to_end(&mut buf).await?;
-        
-        let are_equal = FileService::is_equal(uploaded_save.into(), local_save).await?;
-        
-        println!("{}", are_equal);
-        
-        
+        match RomSaveService::check_save_sync(app_handle, self.rom_id).await?.kind {
+            SaveSyncKind::MissingLocalFile => RomService::download_most_recent_save_file(app_handle, self.rom_id).await?,
+            _ => ()
+        };
         
         let download_dir = DownloaderService::get_roms_download_path()?;
         let shell = app_handle.shell();
@@ -217,6 +228,8 @@ impl RetroarchService {
                 "run",
                 "org.libretro.RetroArch",
                 "--fullscreen",
+                "--appendconfig",
+                &self.rommate_config_path,
                 "-L",
                 self.core_filename,
                 format!("{download_dir}{}", self.rom_path).as_str(),
@@ -225,6 +238,8 @@ impl RetroarchService {
                 .command(format!("{}\\retroarch.exe", self.config_path))
                 .args([
                     "--fullscreen",
+                    "--appendconfig",
+                    &self.rommate_config_path,
                     "-L",
                     self.core_filename,
                     format!("{download_dir}{}", self.rom_path.replace("/", "\\")).as_str(),
@@ -233,6 +248,8 @@ impl RetroarchService {
                 .command("/Applications/RetroArch.app/Contents/MacOS/RetroArch")
                 .args([
                     "--fullscreen",
+                    "--appendconfig",
+                    &self.rommate_config_path,
                     "-L",
                     self.core_filename,
                     format!("{download_dir}{}", self.rom_path).as_str(),
