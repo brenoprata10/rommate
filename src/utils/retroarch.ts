@@ -28,7 +28,7 @@ export const coreConfig: Record<string, RetroarchCore[]> = {
 	[RommPlatform.NDS]: [RetroarchCore.MELONDS, RetroarchCore.MELONDSDS],
 	[RommPlatform.GENESIS_SLASH_MEGADRIVE]: [RetroarchCore.GENESIS_PLUS_GX, RetroarchCore.GENESIS_PLUS_GX_WIDE],
 	[RommPlatform.PSP]: [RetroarchCore.PPSSPP],
-	[RommPlatform.PS]: [RetroarchCore.MEDNAFEN_PSX_HW],
+	[RommPlatform.PS]: [RetroarchCore.PCSX],
 	[RommPlatform._3DS]: [RetroarchCore.CITRA]
 }
 
