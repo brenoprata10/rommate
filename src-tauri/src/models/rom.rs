@@ -65,7 +65,7 @@ pub struct Rom {
     siblings: Vec<RomSiblings>,
     rom_user: RomUser,
     pub user_saves: Option<Vec<RomUserSave>>,
-    pub user_states: Option<Vec<RomUserState>>,
+    user_states: Option<Vec<RomUserState>>,
     user_screenshots: Option<Vec<RomUserScreenshot>>,
     all_user_notes: Option<Vec<RomUserNote>>,
     user_collections: Option<Vec<RomUserCollection>>,

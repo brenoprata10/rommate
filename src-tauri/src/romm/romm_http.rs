@@ -1,4 +1,4 @@
-use reqwest::{self, RequestBuilder};
+use reqwest::{self, RequestBuilder, multipart::{Form}};
 use tauri::AppHandle;
 
 use crate::{enums::error::Error, store::get_store_value};
@@ -34,9 +34,28 @@ impl RommHttp {
 
         Ok(request)
     }
+    
+    pub fn request_multipart(app_handle: &AppHandle, url: &str, method: reqwest::Method, form: Form) -> Result<RequestBuilder, Error> {
+        let boundary = form.boundary();
+        let request = RommHttp::request(app_handle, url, method)?
+            .header(
+                "Content-Type", 
+                format!(
+                    "multipart/form-data; boundary={}",
+                    boundary
+                )
+            )
+            .multipart(form);
+        
+        Ok(request)
+    }
 
     pub fn get(app_handle: &AppHandle, url: &str) -> Result<RequestBuilder, Error> {
         RommHttp::request(app_handle, url, reqwest::Method::GET)
+    }
+    
+    pub fn post_multipart(app_handle: &AppHandle, url: &str, form: Form) -> Result<RequestBuilder, Error> {
+        RommHttp::request_multipart(app_handle, url, reqwest::Method::POST, form)
     }
 }
 

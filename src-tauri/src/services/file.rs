@@ -1,8 +1,8 @@
-use std::{env, fs::{exists}, process::Command};
+use std::{env, fs::exists, path::PathBuf, process::Command};
+use std::fs::{self, File};
+use std::io::Read;
 
 use sha2::{Sha256, Digest};
-use tokio::fs::File;
-use tokio::io::{AsyncReadExt};
 
 use crate::enums::error::Error;
 
@@ -55,7 +55,7 @@ impl FileService {
         let mut buf = [0u8; 8192];
     
         loop {
-            let n = file.read(&mut buf).await?;
+            let n = file.read(&mut buf)?;
             if n == 0 { break; }
             hasher.update(&buf[..n]);
         }
@@ -64,11 +64,23 @@ impl FileService {
     }
     
     pub async fn is_equal(first_file: &mut File, second_file: &mut File) -> Result<bool, Error> {
-        let first_file_metadata = first_file.metadata().await?;
-        let second_file_metadata = second_file.metadata().await?;
+        let first_file_metadata = first_file.metadata()?;
+        let second_file_metadata = second_file.metadata()?;
         if first_file_metadata.len() != second_file_metadata.len() {
             return Ok(false);
         }
         Ok(Self::hash_file(first_file).await? == Self::hash_file(second_file).await?)
+    }
+    
+    pub async fn open_by_stem(stem: &str, dir_path: &str) -> Result<(File, PathBuf), Error> {
+        for entry in fs::read_dir(dir_path)? {
+            let entry = entry?;
+            if let Some(name) = entry.file_name().to_str() {
+                if name.starts_with(stem) {
+                    return Ok((File::open(entry.path())?, entry.path()));
+                }
+            }
+        }
+        Err(Error::NotFound("File not found.".to_string()))
     }
 }

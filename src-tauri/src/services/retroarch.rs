@@ -1,10 +1,11 @@
 use std::fs::{File, create_dir_all};
-use std::io::Write;
+use std::io::{Write};
 
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 use tauri_plugin_shell::ShellExt;
 
+use crate::services::file::FileService;
 use crate::{dtos::save_sync::SaveSyncKind, enums::error::Error, services::{downloader::DownloaderService, rom::RomService, rom_save::RomSaveService}};
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
@@ -200,15 +201,30 @@ impl RetroarchService {
         
         let mut file = File::create(&self.rommate_config_path)?;
         
-        let save_download_path = DownloaderService::get_saves_download_path()?;
         let platform_path = &self.rom_platform_path;
+        let save_download_path = DownloaderService::get_rom_save_dir(platform_path)?;
         
         file.write_all(
             format!("
-                savefile_directory = \"{save_download_path}/{platform_path}\"
+                savefile_directory = \"{save_download_path}\"
                 sort_savefiles_enable = \"false\"
             ").as_bytes()
         )?;
+        
+        Ok(())
+    }
+    
+    pub async fn upload_local_save_file(&self, app_handle: &AppHandle) -> Result<(), Error> {
+        let rom = RomService::get_rom_by_id(app_handle, self.rom_id).await?;
+        
+        let (local_save_file, path) = FileService::open_by_stem(
+            &rom.fs_name_no_ext,
+            &DownloaderService::get_rom_save_dir(&self.rom_platform_path)?
+        ).await?;
+        
+        RomSaveService::upload_save_file(app_handle, self.rom_id, local_save_file, path).await?;
+        
+        println!("uploaded successfully");
         
         Ok(())
     }
@@ -217,7 +233,7 @@ impl RetroarchService {
         self.create_config_file().await?;
         
         match RomSaveService::check_save_sync(app_handle, self.rom_id).await?.kind {
-            SaveSyncKind::MissingLocalFile => RomService::download_most_recent_save_file(app_handle, self.rom_id).await?,
+            SaveSyncKind::MissingLocalFile => RomSaveService::download_most_recent_save_file(app_handle, self.rom_id).await?,
             _ => ()
         };
         
@@ -267,6 +283,9 @@ impl RetroarchService {
             String::from_utf8(output.stdout),
             String::from_utf8(output.stderr)
         );
+        
+        println!("Trying to upload save...");
+        self.upload_local_save_file(app_handle).await?;
 
         Ok(())
     }
