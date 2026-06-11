@@ -1,4 +1,4 @@
-use reqwest::{self, RequestBuilder, multipart::{Form}};
+use reqwest::{self, Method, RequestBuilder, multipart::Form};
 use tauri::AppHandle;
 
 use crate::{enums::error::Error, store::get_store_value};
@@ -17,20 +17,24 @@ impl RommHttp {
         }?;
         let romm_url = stored_url.as_str().unwrap();
 
-        let romm_session = get_store_value(app_handle, "romm_session")?;
+        let romm_session = get_store_value(app_handle, "romm_session")?
+            .ok_or(Error::InvalidCredentials())?;
+        let romm_csrftoken = get_store_value(app_handle, "romm_csrftoken")?
+            .ok_or(Error::InvalidCredentials())?;
 
         let client = reqwest::Client::builder().build()?;
 
         let mut request = client.request(method, format!("{}{}", romm_url, url));
+        
+        let cookie_value = format!(
+            "romm_session={}; romm_csrftoken={}", 
+            romm_session.as_str().unwrap(),
+            romm_csrftoken.as_str().unwrap()
+        );
+        request = request.header("Cookie", cookie_value);
+        request = request.header("x-csrftoken", romm_csrftoken.as_str().unwrap());
 
-        request = if let Some(romm_token) = romm_session {
-            let header_value = format!("romm_session={}", romm_token.as_str().unwrap());
-            request.header("Cookie", header_value)
-        } else {
-            request
-        };
-
-        //pretty_print_request(&request);
+        pretty_print_request(&request);
 
         Ok(request)
     }
