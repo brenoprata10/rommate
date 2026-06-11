@@ -34,7 +34,7 @@ impl RommHttp {
         request = request.header("Cookie", cookie_value);
         request = request.header("x-csrftoken", romm_csrftoken.as_str().unwrap());
 
-        pretty_print_request(&request);
+        //pretty_print_request(&request);
 
         Ok(request)
     }
