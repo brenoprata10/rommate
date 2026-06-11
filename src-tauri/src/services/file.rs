@@ -1,8 +1,10 @@
 use std::{env, fs::exists, path::PathBuf, process::Command};
 use std::fs::{self, File};
-use std::io::Read;
+use std::io::{BufReader, Read};
 
+use base64::engine::general_purpose;
 use sha2::{Sha256, Digest};
+use base64::Engine;
 
 use crate::enums::error::Error;
 
@@ -83,4 +85,18 @@ impl FileService {
         }
         Err(Error::NotFound("File not found.".to_string()))
     }
+    
+    pub fn read_file_to_buffer(file: File) -> Result<Vec<u8>, Error> {
+       let mut content = Vec::new();
+       let mut reader = BufReader::new(file);
+       reader.read_to_end(&mut content)?;
+       
+       Ok(content)
+    }
+    
+    pub fn file_to_base64(file: File) -> Result<String, Error> {
+        let bytes = FileService::read_file_to_buffer(file)?;
+    
+        Ok(general_purpose::STANDARD.encode(bytes))
+    } 
 }

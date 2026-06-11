@@ -53,15 +53,20 @@ impl RomSaveService {
 		Ok(())
 	}
 	
-	pub async fn upload_save_file(app_handle: &AppHandle, rom_id: i32, file: File, path: PathBuf) -> Result<(), Error> {
-		println!("{:?}", file);
-		let url = format!("/api/saves?rom_id={}", rom_id);
-		let mut content = Vec::new();
-		let mut reader = BufReader::new(file);
-		reader.read_to_end(&mut content)?;
+	pub async fn upload_save_file(
+		app_handle: &AppHandle, 
+		rom_id: i32, 
+		// TODO receive single param here
+		file: File, 
+		path: PathBuf, 
+		screenshot: Option<(File, PathBuf)>
+	) -> Result<(), Error> {
+		let url = format!("/api/saves?rom_id={}&autocleanup=true", rom_id);
+		let file_content = FileService::read_file_to_buffer(file)?;
 		
 		let mut form = multipart::Form::new();
-		form = form.part("saveFile", multipart::Part::bytes(content)
+		form = form.part("saveFile", multipart::Part::bytes(file_content)
+			// TODO create fn to remove duplication here
 			.file_name(
 				path
 					.file_name()
@@ -72,6 +77,20 @@ impl RomSaveService {
 			)
 			.mime_str("application/octet-stream")?
 		);
+		if let Some((screenshot_file, screenshot_path)) = screenshot {
+			let screenshot_content = FileService::read_file_to_buffer(screenshot_file)?;
+			
+			form = form.part("screenshotFile", multipart::Part::bytes(screenshot_content)
+				.file_name(
+					screenshot_path.file_name()
+						.map(|name| name.to_string_lossy().into_owned())
+						.ok_or(
+							Error::NotFound("Could not read save screenshot name.".to_string())
+						)?
+				)
+				.mime_str("image/png")?
+			);
+		};
 		
 		let response = RommHttp::post_multipart(app_handle, &url, form)?.send().await?;
 		let status = response.status();

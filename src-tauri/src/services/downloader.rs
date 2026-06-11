@@ -171,6 +171,25 @@ impl DownloaderService {
         )
     }
     
+    pub fn get_state_download_path() -> Result<String, Error> {
+        let download_path = Self::get_download_path()?;
+    
+        Ok(format!(
+            "{}/states",
+            download_path
+        ))
+    }
+    
+    pub fn get_rom_state_dir(platform_fs_slug: &str) -> Result<String, Error> {
+        Ok(
+            format!(
+                "{}/{}", 
+                DownloaderService::get_state_download_path()?,
+                platform_fs_slug,
+            )
+        )
+    }
+    
     pub fn get_roms_download_path() -> Result<String, Error> {
         let download_path = Self::get_download_path()?;
     

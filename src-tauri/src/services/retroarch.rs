@@ -1,5 +1,6 @@
 use std::fs::{File, create_dir_all};
 use std::io::{Write};
+use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
@@ -22,6 +23,7 @@ pub enum RetroarchCore {
     Melondsds,
     Mgba,
     Mupen64plusNext,
+    ParallelN64,
     Ppsspp,
     Snes9x,
     Vitaquake2Rogue,
@@ -86,6 +88,7 @@ impl RetroarchService {
                     RetroarchCore::Melondsds => "melondsds_libretro.so",
                     RetroarchCore::Mgba => "mgba_libretro.so",
                     RetroarchCore::Mupen64plusNext => "mupen64plus_next_libretro.so",
+                    RetroarchCore::ParallelN64 => "parallel_n64_libretro.so",
                     RetroarchCore::Ppsspp => "ppsspp_libretro.so",
                     RetroarchCore::Snes9x => "snes9x_libretro.so",
                     RetroarchCore::Vitaquake2Rogue => "vitaquake2-rogue_libretro.so",
@@ -118,6 +121,7 @@ impl RetroarchService {
                     RetroarchCore::Melondsds => "melondsds_libretro.so",
                     RetroarchCore::Mgba => "mgba_libretro.so",
                     RetroarchCore::Mupen64plusNext => "mupen64plus_next_libretro.so",
+                    RetroarchCore::ParallelN64 => "parallel_n64_libretro.so",
                     RetroarchCore::Ppsspp => "ppsspp_libretro.so",
                     RetroarchCore::Snes9x => "snes9x_libretro.so",
                     RetroarchCore::Vitaquake2Rogue => "vitaquake2-rogue_libretro.so",
@@ -150,6 +154,7 @@ impl RetroarchService {
                     RetroarchCore::Melondsds => "melondsds_libretro.dll",
                     RetroarchCore::Mgba => "mgba_libretro.dll",
                     RetroarchCore::Mupen64plusNext => "mupen64plus_next_libretro.dll",
+                    RetroarchCore::ParallelN64 => "parallel_n64_libretro.dll",
                     RetroarchCore::Ppsspp => "ppsspp_libretro.dll",
                     RetroarchCore::Snes9x => "snes9x_libretro.dll",
                     RetroarchCore::Vitaquake2Rogue => "vitaquake2-rogue_libretro.dll",
@@ -182,6 +187,7 @@ impl RetroarchService {
                     RetroarchCore::Melondsds => "melondsds_libretro.dylib",
                     RetroarchCore::Mgba => "mgba_libretro.dylib",
                     RetroarchCore::Mupen64plusNext => "mupen64plus_next_libretro.dylib",
+                    RetroarchCore::ParallelN64 => "parallel_n64_libretro.dylib",
                     RetroarchCore::Ppsspp => "ppsspp_libretro.dylib",
                     RetroarchCore::Snes9x => "snes9x_libretro.dylib",
                     RetroarchCore::Vitaquake2Rogue => "vitaquake2-rogue_libretro.dylib",
@@ -203,11 +209,18 @@ impl RetroarchService {
         
         let platform_path = &self.rom_platform_path;
         let save_download_path = DownloaderService::get_rom_save_dir(platform_path)?;
+        let state_download_path = DownloaderService::get_rom_state_dir(platform_path)?;
         
         file.write_all(
             format!("
                 savefile_directory = \"{save_download_path}\"
+                savestate_directory = \"{state_download_path}\"
                 sort_savefiles_enable = \"false\"
+                sort_savestates_enable = \"false\"
+                savestate_thumbnail_enable = \"true\"
+                savestate_auto_save = \"true\"
+                autosave_interval = \"0\"
+                video_screenshot_show_message = \"false\"
             ").as_bytes()
         )?;
         
@@ -222,7 +235,18 @@ impl RetroarchService {
             &DownloaderService::get_rom_save_dir(&self.rom_platform_path)?
         ).await?;
         
-        RomSaveService::upload_save_file(app_handle, self.rom_id, local_save_file, path).await?;
+        let local_save_screenshot = FileService::open_by_stem(
+            &rom.fs_name_no_ext,
+            &DownloaderService::get_rom_state_dir(&self.rom_platform_path)?
+        ).await.ok();
+        
+        RomSaveService::upload_save_file(
+            app_handle, 
+            self.rom_id, 
+            local_save_file, 
+            path, 
+            local_save_screenshot,
+        ).await?;
         
         println!("uploaded successfully");
         
@@ -231,6 +255,9 @@ impl RetroarchService {
 
     pub async fn play(&self, app_handle: &AppHandle) -> Result<(), Error> {
         self.create_config_file().await?;
+        
+        create_dir_all(DownloaderService::get_rom_save_dir(&self.rom_platform_path)?)?;
+        create_dir_all(DownloaderService::get_rom_state_dir(&self.rom_platform_path)?)?;
         
         match RomSaveService::check_save_sync(app_handle, self.rom_id).await?.kind {
             SaveSyncKind::MissingLocalFile => RomSaveService::download_most_recent_save_file(app_handle, self.rom_id).await?,
