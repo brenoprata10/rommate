@@ -1,5 +1,5 @@
 use std::path::PathBuf;
-use std::{io::BufReader, os::unix::fs::MetadataExt};
+use std::{os::unix::fs::MetadataExt};
 
 use std::fs::File;
 use std::io::Read;
@@ -37,17 +37,12 @@ impl RomSaveService {
 	pub async fn download_most_recent_save_file(app_handle: &AppHandle, rom_id: i32) -> Result<(), Error> {
 		let rom = RomService::get_rom_by_id(app_handle, rom_id).await?;
 		let latest_save = RomSaveService::get_most_recent_rom_save(app_handle, rom_id).await?;
-		let file_name = format!(
-			"{}.{}", 
-			latest_save.file_name_no_tags, 
-			latest_save.file_extension
-		);
 		let file_url = format!("/api/saves/{}/content", latest_save.id); 
 		let directory = DownloaderService::get_rom_save_dir(&rom.platform_fs_slug)?;
 		
 		DownloaderService::file(
 			RommHttp::get(app_handle, &file_url)?, 
-			file_name,
+			latest_save.file_name,
 			directory
 		).await?;
 		Ok(())
@@ -56,38 +51,23 @@ impl RomSaveService {
 	pub async fn upload_save_file(
 		app_handle: &AppHandle, 
 		rom_id: i32, 
-		// TODO receive single param here
-		file: File, 
-		path: PathBuf, 
+		save_file: (File, PathBuf), 
 		screenshot: Option<(File, PathBuf)>
 	) -> Result<(), Error> {
+		let (file, path) = save_file;
 		let url = format!("/api/saves?rom_id={}&autocleanup=true", rom_id);
 		let file_content = FileService::read_file_to_buffer(file)?;
 		
 		let mut form = multipart::Form::new();
 		form = form.part("saveFile", multipart::Part::bytes(file_content)
-			// TODO create fn to remove duplication here
-			.file_name(
-				path
-					.file_name()
-					.map(|name| name.to_string_lossy().into_owned())
-					.ok_or(
-						Error::NotFound("Could not read save name.".to_string())
-					)?
-			)
+			.file_name(FileService::get_file_name(path)?)
 			.mime_str("application/octet-stream")?
 		);
 		if let Some((screenshot_file, screenshot_path)) = screenshot {
 			let screenshot_content = FileService::read_file_to_buffer(screenshot_file)?;
 			
 			form = form.part("screenshotFile", multipart::Part::bytes(screenshot_content)
-				.file_name(
-					screenshot_path.file_name()
-						.map(|name| name.to_string_lossy().into_owned())
-						.ok_or(
-							Error::NotFound("Could not read save screenshot name.".to_string())
-						)?
-				)
+				.file_name(FileService::get_file_name(screenshot_path)?)
 				.mime_str("image/png")?
 			);
 		};

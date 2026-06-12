@@ -26,7 +26,8 @@ export enum TauriCommandKey {
 	PLAY_RETROARCH_GAME = 'command_play_retroarch_game',
 	GET_SERVER_STATS = 'command_get_stats',
 	GET_SUGGESTION_SECTIONS = 'command_get_sections',
-	CHECK_SAVE_SYNC = 'command_check_save_sync'
+	CHECK_SAVE_SYNC = 'command_check_save_sync',
+	DOWNLOAD_MOST_RECENT_SAVE_FILE = 'command_download_most_recent_save_file'
 }
 
 export const tauriInvoke = async <T>(

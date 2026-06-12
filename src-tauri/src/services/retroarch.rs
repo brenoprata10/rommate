@@ -1,6 +1,5 @@
 use std::fs::{File, create_dir_all};
 use std::io::{Write};
-use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
@@ -230,7 +229,7 @@ impl RetroarchService {
     pub async fn upload_local_save_file(&self, app_handle: &AppHandle) -> Result<(), Error> {
         let rom = RomService::get_rom_by_id(app_handle, self.rom_id).await?;
         
-        let (local_save_file, path) = FileService::open_by_stem(
+        let local_save_file = FileService::open_by_stem(
             &rom.fs_name_no_ext,
             &DownloaderService::get_rom_save_dir(&self.rom_platform_path)?
         ).await?;
@@ -244,7 +243,6 @@ impl RetroarchService {
             app_handle, 
             self.rom_id, 
             local_save_file, 
-            path, 
             local_save_screenshot,
         ).await?;
         

@@ -16,26 +16,58 @@ import {playRetroarch} from '@/utils/http/retroarch'
 import {coreConfig, isPlatformEmulationReady, runnerConfig} from '@/utils/retroarch'
 import useCheckSaveSync from '@/hooks/api/use-rom-check-save-sync'
 import {SaveSync, SaveSyncKind} from '@/models/rom-save'
-import {CircleCheckIcon, CircleXIcon, CircleQuestionMarkIcon} from 'lucide-react'
+import {CircleCheckIcon, CircleXIcon, CloudDownloadIcon, LoaderIcon} from 'lucide-react'
+import useDownloadMostRecentSaveFile from '@/hooks/api/use-rom-download-most-recent-save-file'
 
-const SAVE_SYNC_ICON_CONFIG: Record<SaveSyncKind, ReactNode> = {
-	[SaveSyncKind.CONFLICT]: <CircleXIcon className='stroke-red-400' />,
-	[SaveSyncKind.SYNCED]: <CircleCheckIcon className='stroke-green-500' />,
-	[SaveSyncKind.MISSING_LOCAL_FILE]: <CircleQuestionMarkIcon />,
-	[SaveSyncKind.MISSING_CLOUD_FILE]: null
+const SAVE_SYNC_ICON_CONFIG: Record<
+	SaveSyncKind,
+	({onClick, isLoading}: {onClick?: () => void; isLoading?: boolean}) => ReactNode
+> = {
+	[SaveSyncKind.CONFLICT]: () => <CircleXIcon className='stroke-red-400' />,
+	[SaveSyncKind.SYNCED]: () => <CircleCheckIcon className='stroke-green-500' />,
+	[SaveSyncKind.MISSING_LOCAL_FILE]: ({onClick, isLoading}: {onClick?: () => void; isLoading?: boolean}) =>
+		isLoading ? (
+			<LoaderIcon className='stroke-neutral-400 animate-spin' />
+		) : (
+			<CloudDownloadIcon
+				className='stroke-neutral-400 cursor-pointer hover:stroke-neutral-500 transition-colors'
+				onClick={onClick}
+			/>
+		),
+	[SaveSyncKind.MISSING_CLOUD_FILE]: () => null
 }
 
-function ContinuePlayingRom({rom, className, hideTitle}: {rom: Rom; className?: string; hideTitle?: boolean}) {
+function ContinuePlayingRom({
+	rom,
+	className,
+	hideTitle,
+	onUpdateRom
+}: {
+	rom: Rom
+	className?: string
+	hideTitle?: boolean
+	onUpdateRom: () => Promise<void>
+}) {
 	const romURL = `/rom/${rom.id}`
 	const isEmulationReady = isPlatformEmulationReady(rom.platformFsSlug)
 	const [isDownloaded, setIsDownloaded] = useState(false)
 	const {downloadRom, getRomDownload} = useDownloader()
-	const {data: saveSyncData} = useCheckSaveSync({romId: rom.id, enabled: isEmulationReady})
+	const {
+		data: saveSyncData,
+		refetch: refetchSaveSyncData,
+		isRefetching: isRefetchingSaveSyncData
+	} = useCheckSaveSync({
+		romId: rom.id,
+		enabled: isEmulationReady
+	})
+	const {mutateAsync: downloadMostRecentSaveFile, isPending: isDownloadingSaveFile} = useDownloadMostRecentSaveFile({
+		romId: rom.id
+	})
 	const romDownload = useMemo(() => getRomDownload(rom.id), [rom.id, getRomDownload])
 	const isDownloadFinished = romDownload?.event === 'cancelled' || romDownload?.event === 'finished'
 	const romCore = coreConfig[rom.platformFsSlug]?.[0]
 
-	const play = useCallback(() => {
+	const play = useCallback(async () => {
 		const runner = runnerConfig[platform()] ?? null
 
 		if (!runner) {
@@ -45,14 +77,16 @@ function ContinuePlayingRom({rom, className, hideTitle}: {rom: Rom; className?: 
 		if (saveSyncData?.kind === SaveSyncKind.CONFLICT) {
 			return
 		}
-		playRetroarch({
+		await playRetroarch({
 			core: romCore,
 			runner,
 			romPath: `/${rom.platformFsSlug}/${rom.fsName}`,
 			romId: rom.id,
 			platformPath: rom.platformFsSlug
 		})
-	}, [rom.platformFsSlug, rom.fsName, rom.id, saveSyncData, romCore])
+		refetchSaveSyncData()
+		onUpdateRom()
+	}, [rom.platformFsSlug, rom.fsName, rom.id, saveSyncData, romCore, refetchSaveSyncData, onUpdateRom])
 
 	const checkFileDownloaded = useCallback(async () => {
 		const downloaded = await isFileDownloaded(rom.fsName, rom.platformFsSlug)
@@ -93,6 +127,16 @@ function ContinuePlayingRom({rom, className, hideTitle}: {rom: Rom; className?: 
 
 		return romDownload?.event === 'progress' ? romDownload.progress : 0
 	}, [romDownload])
+
+	const saveSyncIconClick = useCallback(
+		async (saveSyncDataKind: SaveSyncKind) => {
+			if (saveSyncDataKind === SaveSyncKind.MISSING_LOCAL_FILE) {
+				await downloadMostRecentSaveFile()
+				await refetchSaveSyncData()
+			}
+		},
+		[downloadMostRecentSaveFile, refetchSaveSyncData]
+	)
 
 	const getCtaButton = useCallback(() => {
 		const isReadyToPlay =
@@ -140,7 +184,18 @@ function ContinuePlayingRom({rom, className, hideTitle}: {rom: Rom; className?: 
 							{saveSyncData &&
 								[SaveSyncKind.SYNCED, SaveSyncKind.CONFLICT, SaveSyncKind.MISSING_LOCAL_FILE].includes(
 									saveSyncData.kind
-								) && <RomDetails title='Save Sync' content={<SaveSyncIcon data={saveSyncData} />} />}
+								) && (
+									<RomDetails
+										title='Save Sync'
+										content={
+											<SaveSyncIcon
+												data={saveSyncData}
+												isLoading={isDownloadingSaveFile || isRefetchingSaveSyncData}
+												onClick={() => saveSyncIconClick(saveSyncData.kind)}
+											/>
+										}
+									/>
+								)}
 						</div>
 					)}
 					{romDownload && !isDownloadFinished ? (
@@ -203,8 +258,8 @@ const RomDetails = ({title, content}: {title: string; content: ReactNode | strin
 	)
 }
 
-const SaveSyncIcon = ({data}: {data: SaveSync}) => {
-	return SAVE_SYNC_ICON_CONFIG[data.kind]
+const SaveSyncIcon = ({data, isLoading, onClick}: {data: SaveSync; isLoading?: boolean; onClick?: () => void}) => {
+	return SAVE_SYNC_ICON_CONFIG[data.kind]({onClick, isLoading})
 }
 
 export default React.memo(ContinuePlayingRom)

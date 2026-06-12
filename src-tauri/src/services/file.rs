@@ -99,4 +99,15 @@ impl FileService {
     
         Ok(general_purpose::STANDARD.encode(bytes))
     } 
+    
+    pub fn get_file_name(path: PathBuf) -> Result<String, Error> {
+        Ok(
+            path
+                .file_name()
+                .map(|name| name.to_string_lossy().into_owned())
+                .ok_or(
+                    Error::NotFound("Could not read save screenshot name.".to_string())
+                )?
+        )
+    }
 }

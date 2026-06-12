@@ -112,7 +112,7 @@ pub struct RomUserSave {
     pub id: u32,
     rom_id: u32,
     user_id: u32,
-    file_name: String,
+    pub file_name: String,
     pub file_name_no_tags: String,
     file_name_no_ext: String,
     pub file_extension: String,

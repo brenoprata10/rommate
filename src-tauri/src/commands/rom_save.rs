@@ -9,3 +9,11 @@ pub async fn command_check_save_sync(
 ) -> Result<SaveSync, Error> {
 	RomSaveService::check_save_sync(&app_handle, rom_id).await
 }
+
+#[tauri::command]
+pub async fn command_download_most_recent_save_file(
+	app_handle: AppHandle,
+	rom_id: i32
+) -> Result<(), Error> {
+	RomSaveService::download_most_recent_save_file(&app_handle, rom_id).await
+}
