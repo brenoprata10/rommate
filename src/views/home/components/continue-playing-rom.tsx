@@ -16,68 +16,8 @@ import {playRetroarch} from '@/utils/http/retroarch'
 import {coreConfig, isPlatformEmulationReady, runnerConfig} from '@/utils/retroarch'
 import useCheckSaveSync from '@/hooks/api/use-rom-check-save-sync'
 import {SaveSync, SaveSyncKind} from '@/models/rom-save'
-import {CircleCheckIcon, CircleXIcon, CloudDownloadIcon, LoaderIcon} from 'lucide-react'
 import useDownloadMostRecentSaveFile from '@/hooks/api/use-rom-download-most-recent-save-file'
-import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip'
-
-// TODO: Create a component for this logic
-const SAVE_SYNC_ICON_CONFIG: Record<
-	SaveSyncKind,
-	({onClick, isLoading}: {onClick?: () => void; isLoading?: boolean}) => ReactNode
-> = {
-	[SaveSyncKind.CONFLICT]: ({onClick}: {onClick?: () => void}) => {
-		return (
-			<Tooltip>
-				<TooltipTrigger asChild>
-					<CircleXIcon
-						className='stroke-red-400 cursor-pointer hover:stroke-red-500 transition-colors'
-						onClick={onClick}
-					/>
-				</TooltipTrigger>
-				<TooltipContent side='right' align='center'>
-					Conflict detected, click to resolve.
-				</TooltipContent>
-			</Tooltip>
-		)
-	},
-	[SaveSyncKind.SYNCED]: () => {
-		return (
-			<Tooltip>
-				<TooltipTrigger asChild>
-					<CircleCheckIcon className='stroke-green-500' />
-				</TooltipTrigger>
-				<TooltipContent side='right' align='center'>
-					Save Synced
-				</TooltipContent>
-			</Tooltip>
-		)
-	},
-	[SaveSyncKind.MISSING_LOCAL_FILE]: ({onClick, isLoading}: {onClick?: () => void; isLoading?: boolean}) => {
-		return isLoading ? (
-			<Tooltip>
-				<TooltipTrigger asChild>
-					<LoaderIcon className='stroke-neutral-400 animate-spin' />
-				</TooltipTrigger>
-				<TooltipContent side='right' align='center'>
-					Syncing Save...
-				</TooltipContent>
-			</Tooltip>
-		) : (
-			<Tooltip>
-				<TooltipTrigger asChild>
-					<CloudDownloadIcon
-						className='stroke-neutral-400 cursor-pointer hover:stroke-neutral-500 transition-colors'
-						onClick={onClick}
-					/>
-				</TooltipTrigger>
-				<TooltipContent side='right' align='center'>
-					Download Cloud Save
-				</TooltipContent>
-			</Tooltip>
-		)
-	},
-	[SaveSyncKind.MISSING_CLOUD_FILE]: () => null
-}
+import SaveSyncActions from '@/views/home/components/save-sync-actions'
 
 function ContinuePlayingRom({
 	rom,
@@ -170,15 +110,10 @@ function ContinuePlayingRom({
 		return romDownload?.event === 'progress' ? romDownload.progress : 0
 	}, [romDownload])
 
-	const saveSyncIconClick = useCallback(
-		async (saveSyncDataKind: SaveSyncKind) => {
-			if (saveSyncDataKind === SaveSyncKind.MISSING_LOCAL_FILE) {
-				await downloadMostRecentSaveFile()
-				await refetchSaveSyncData()
-			}
-		},
-		[downloadMostRecentSaveFile, refetchSaveSyncData]
-	)
+	const onDownloadCloudFile = useCallback(async () => {
+		await downloadMostRecentSaveFile()
+		await refetchSaveSyncData()
+	}, [downloadMostRecentSaveFile, refetchSaveSyncData])
 
 	const getCtaButton = useCallback(() => {
 		const isReadyToPlay =
@@ -223,21 +158,18 @@ function ContinuePlayingRom({
 						<div className='flex flex-col gap-1'>
 							<RomDetails title={'Runner'} content={'Retroarch'} />
 							<RomDetails title={'Core'} content={romCore} />
-							{saveSyncData &&
-								[SaveSyncKind.SYNCED, SaveSyncKind.CONFLICT, SaveSyncKind.MISSING_LOCAL_FILE].includes(
-									saveSyncData.kind
-								) && (
-									<RomDetails
-										title='Save Sync'
-										content={
-											<SaveSyncIcon
-												data={saveSyncData}
-												isLoading={isDownloadingSaveFile || isRefetchingSaveSyncData}
-												onClick={() => saveSyncIconClick(saveSyncData.kind)}
-											/>
-										}
-									/>
-								)}
+							{saveSyncData && saveSyncData.kind !== SaveSyncKind.MISSING_CLOUD_FILE && (
+								<RomDetails
+									title='Save Sync'
+									content={
+										<SaveSyncActions
+											saveSync={saveSyncData}
+											isSyncingSave={isDownloadingSaveFile || isRefetchingSaveSyncData}
+											onDownloadCloudFile={onDownloadCloudFile}
+										/>
+									}
+								/>
+							)}
 						</div>
 					)}
 					{romDownload && !isDownloadFinished ? (

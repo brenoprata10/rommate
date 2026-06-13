@@ -233,23 +233,28 @@ impl RetroarchService {
             &rom.fs_name_no_ext,
             ".srm",
             &DownloaderService::get_rom_save_dir(&self.rom_platform_path)?
-        ).await?;
-        
-        let local_save_screenshot = FileService::open_by_stem(
-            &rom.fs_name_no_ext,
-            ".png",
-            &DownloaderService::get_rom_state_dir(&self.rom_platform_path)?
         ).await.ok();
         
-        RomSaveService::upload_save_file(
-            app_handle, 
-            self.rom_id, 
-            local_save_file, 
-            local_save_screenshot,
-        ).await?;
+        if let Some(local_save_file) = local_save_file {
+            let local_save_screenshot = FileService::open_by_stem(
+                &rom.fs_name_no_ext,
+                ".png",
+                &DownloaderService::get_rom_state_dir(&self.rom_platform_path)?
+            ).await.ok();
+            
+            RomSaveService::upload_save_file(
+                app_handle, 
+                self.rom_id, 
+                local_save_file, 
+                local_save_screenshot,
+            ).await?;
+            
+            println!("uploaded successfully");
+            
+            return Ok(());
+        }
         
-        println!("uploaded successfully");
-        
+        println!("Could not find save file: {}", &rom.fs_name_no_ext);
         Ok(())
     }
 
