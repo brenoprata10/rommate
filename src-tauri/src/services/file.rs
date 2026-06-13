@@ -74,11 +74,11 @@ impl FileService {
         Ok(Self::hash_file(first_file).await? == Self::hash_file(second_file).await?)
     }
     
-    pub async fn open_by_stem(stem: &str, dir_path: &str) -> Result<(File, PathBuf), Error> {
+    pub async fn open_by_stem(stem: &str, suffix: &str, dir_path: &str) -> Result<(File, PathBuf), Error> {
         for entry in fs::read_dir(dir_path)? {
             let entry = entry?;
             if let Some(name) = entry.file_name().to_str() {
-                if name.starts_with(stem) {
+                if name.starts_with(stem) && name.ends_with(suffix) {
                     return Ok((File::open(entry.path())?, entry.path()));
                 }
             }

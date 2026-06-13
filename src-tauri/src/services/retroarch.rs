@@ -231,11 +231,13 @@ impl RetroarchService {
         
         let local_save_file = FileService::open_by_stem(
             &rom.fs_name_no_ext,
+            ".srm",
             &DownloaderService::get_rom_save_dir(&self.rom_platform_path)?
         ).await?;
         
         let local_save_screenshot = FileService::open_by_stem(
             &rom.fs_name_no_ext,
+            ".png",
             &DownloaderService::get_rom_state_dir(&self.rom_platform_path)?
         ).await.ok();
         
