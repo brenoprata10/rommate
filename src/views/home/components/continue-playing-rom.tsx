@@ -18,22 +18,64 @@ import useCheckSaveSync from '@/hooks/api/use-rom-check-save-sync'
 import {SaveSync, SaveSyncKind} from '@/models/rom-save'
 import {CircleCheckIcon, CircleXIcon, CloudDownloadIcon, LoaderIcon} from 'lucide-react'
 import useDownloadMostRecentSaveFile from '@/hooks/api/use-rom-download-most-recent-save-file'
+import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip'
 
+// TODO: Create a component for this logic
 const SAVE_SYNC_ICON_CONFIG: Record<
 	SaveSyncKind,
 	({onClick, isLoading}: {onClick?: () => void; isLoading?: boolean}) => ReactNode
 > = {
-	[SaveSyncKind.CONFLICT]: () => <CircleXIcon className='stroke-red-400' />,
-	[SaveSyncKind.SYNCED]: () => <CircleCheckIcon className='stroke-green-500' />,
-	[SaveSyncKind.MISSING_LOCAL_FILE]: ({onClick, isLoading}: {onClick?: () => void; isLoading?: boolean}) =>
-		isLoading ? (
-			<LoaderIcon className='stroke-neutral-400 animate-spin' />
+	[SaveSyncKind.CONFLICT]: ({onClick}: {onClick?: () => void}) => {
+		return (
+			<Tooltip>
+				<TooltipTrigger asChild>
+					<CircleXIcon
+						className='stroke-red-400 cursor-pointer hover:stroke-red-500 transition-colors'
+						onClick={onClick}
+					/>
+				</TooltipTrigger>
+				<TooltipContent side='right' align='center'>
+					Conflict detected, click to resolve.
+				</TooltipContent>
+			</Tooltip>
+		)
+	},
+	[SaveSyncKind.SYNCED]: () => {
+		return (
+			<Tooltip>
+				<TooltipTrigger asChild>
+					<CircleCheckIcon className='stroke-green-500' />
+				</TooltipTrigger>
+				<TooltipContent side='right' align='center'>
+					Save Synced
+				</TooltipContent>
+			</Tooltip>
+		)
+	},
+	[SaveSyncKind.MISSING_LOCAL_FILE]: ({onClick, isLoading}: {onClick?: () => void; isLoading?: boolean}) => {
+		return isLoading ? (
+			<Tooltip>
+				<TooltipTrigger asChild>
+					<LoaderIcon className='stroke-neutral-400 animate-spin' />
+				</TooltipTrigger>
+				<TooltipContent side='right' align='center'>
+					Syncing Save...
+				</TooltipContent>
+			</Tooltip>
 		) : (
-			<CloudDownloadIcon
-				className='stroke-neutral-400 cursor-pointer hover:stroke-neutral-500 transition-colors'
-				onClick={onClick}
-			/>
-		),
+			<Tooltip>
+				<TooltipTrigger asChild>
+					<CloudDownloadIcon
+						className='stroke-neutral-400 cursor-pointer hover:stroke-neutral-500 transition-colors'
+						onClick={onClick}
+					/>
+				</TooltipTrigger>
+				<TooltipContent side='right' align='center'>
+					Download Cloud Save
+				</TooltipContent>
+			</Tooltip>
+		)
+	},
 	[SaveSyncKind.MISSING_CLOUD_FILE]: () => null
 }
 
