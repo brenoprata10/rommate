@@ -4,11 +4,8 @@ use tauri::{ipc::Channel, AppHandle, State};
 use tokio_util::sync::CancellationToken;
 
 use crate::{
-    enums::{download_event::DownloadEvent, error::Error},
-    models::{collection::RomCollection, rom::Rom},
-    romm::romm_http::RommHttp,
-    AppState,
-};
+    AppState, enums::{download_event::DownloadEvent, error::Error}, models::{collection::RomCollection, rom::Rom}, romm::romm_http::RommHttp
+    };
 
 use super::downloader::DownloaderService;
 
@@ -84,7 +81,7 @@ impl RomService {
             .await?;
 
         let rom = response.json::<Rom>().await?;
-
+        
         Ok(rom)
     }
 
@@ -203,7 +200,7 @@ impl RomService {
         let file_url = format!("/api/roms/{}/content/{}", rom.id, rom.fs_name);
         let file_directory = format!(
             "{}/{}",
-            DownloaderService::get_download_path()?,
+            DownloaderService::get_roms_download_path()?,
             rom.platform_fs_slug
         );
         let file_path = format!("{file_directory}/{}", rom.fs_name);
@@ -228,14 +225,6 @@ impl RomService {
             cancellation_token,
         ));
 
-        Ok(())
-    }
-
-    pub fn download_save_file(rom_id: i32, platform_id: i32) -> Result<(), Error> {
-        //call getSaves
-        //Fetch the last save
-        //rename file with same name in dir to prevent data loss
-        //download file
         Ok(())
     }
 }

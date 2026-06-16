@@ -23,7 +23,7 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 thiserror = "2"
 tauri-plugin-store = "2"
-reqwest = {version = "0.12.23", features = ["cookies", "json", "stream"] }
+reqwest = {version = "0.12.23", features = ["cookies", "json", "stream", "multipart"] }
 chrono = {version = "0.4.41", features = ["serde"] }
 tokio = "1.47.1"
 dirs = "6.0.0"
@@ -34,6 +34,9 @@ tauri-plugin-process = "2"
 tauri-plugin-shell = "2"
 tauri-plugin-os = "2"
 rand = "0.10.1"
+tempfile = "3.27.0"
+sha2 = "0.11.0"
+base64 = "0.22.1"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-updater = "2"

@@ -30,11 +30,30 @@ pub async fn login(app_handle: AppHandle, payload: LoginPayload) -> Result<(), E
 
     match response.status() {
         StatusCode::OK => {
+            let mut session: Option<String> = None;
             for cookie in response.cookies() {
                 if cookie.name() == "romm_session" {
                     set_store_value(&app_handle, "romm_session", json!(cookie.value()))?;
+                    session = Some(cookie.value().to_string());
                 }
             }
+            
+            let heartbeat_response = client
+                .get(format!("{}/api/heartbeat", server_url))
+                .header(
+                    "Cookie",
+                    format!("romm_session={}", session.ok_or(Error::InvalidCredentials())?)
+                )
+                .send()
+                .await?;
+                
+            
+            for cookie in heartbeat_response.cookies() {
+                if cookie.name() == "romm_csrftoken" {
+                    set_store_value(&app_handle, "romm_csrftoken", json!(cookie.value()))?;
+                }
+            }
+
             set_store_value(&app_handle, "romm_url", json!(server_url))?;
             Ok(())
         }

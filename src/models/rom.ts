@@ -59,7 +59,7 @@ export type Rom = {
 	missingFromFs: boolean
 	mergedRaMetadata: RetroAchievementsMetadata | null
 	mergedScreenshots: string[] | null
-	siblings: RomSiblings[]
+	siblings?: RomSiblings[]
 	romUser: RomUser
 	userSaves: RomUserSave[] | null
 	userStates: RomUserState[] | null

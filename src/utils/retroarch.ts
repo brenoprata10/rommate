@@ -22,13 +22,13 @@ export const isPlatformEmulationReady = (platform: RommPlatform) => {
 export const coreConfig: Record<string, RetroarchCore[]> = {
 	[RommPlatform.SNES]: [RetroarchCore.SNES9X, RetroarchCore.BSNES, RetroarchCore.BSNES_HD_BETA],
 	[RommPlatform.GBA]: [RetroarchCore.MGBA],
-	[RommPlatform.N64]: [RetroarchCore.MUPEN64PLUS_NEXT],
+	[RommPlatform.N64]: [RetroarchCore.PARALLEL_N64, RetroarchCore.MUPEN64PLUS_NEXT],
 	[RommPlatform.NGC]: [RetroarchCore.DOLPHIN],
 	[RommPlatform.GC]: [RetroarchCore.DOLPHIN],
 	[RommPlatform.NDS]: [RetroarchCore.MELONDS, RetroarchCore.MELONDSDS],
 	[RommPlatform.GENESIS_SLASH_MEGADRIVE]: [RetroarchCore.GENESIS_PLUS_GX, RetroarchCore.GENESIS_PLUS_GX_WIDE],
 	[RommPlatform.PSP]: [RetroarchCore.PPSSPP],
-	[RommPlatform.PS]: [RetroarchCore.MEDNAFEN_PSX_HW],
+	[RommPlatform.PS]: [RetroarchCore.PCSX],
 	[RommPlatform._3DS]: [RetroarchCore.CITRA]
 }
 
