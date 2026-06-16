@@ -129,7 +129,7 @@ export enum RommPlatform {
 	GAME_DOT_COM = 'game-dot-com',
 	GAMESTICK = 'gamestick',
 	GEAR_VR = 'gear-vr',
-	GENESIS_SLASH_MEGADRIVE = 'genesis-slash-megadrive',
+	GENESIS_SLASH_MEGADRIVE = 'genesis',
 	GIZMONDO = 'gizmondo',
 	GLOUD = 'gloud',
 	GLULX = 'glulx',
@@ -254,7 +254,7 @@ export enum RommPlatform {
 	PHILIPS_VG_5000 = 'philips-vg-5000',
 	PHOTOCD = 'photocd',
 	PIPPIN = 'pippin',
-	PS = 'ps',
+	PS = 'psx',
 	PS2 = 'ps2',
 	PS3 = 'ps3',
 	PS4_1 = 'ps4--1', // PS4__1

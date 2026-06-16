@@ -6,6 +6,8 @@ export const playRetroarch = async (params: {
 	core: RetroarchCore
 	runner: RetroarchRunner
 	romPath: string
+	romId: number
+	platformPath: string
 }): Promise<TauriCommandPayload<null>> => {
 	return tauriInvoke(TauriCommandKey.PLAY_RETROARCH_GAME, params)
 }

@@ -25,7 +25,7 @@ pub struct Rom {
     platform_display_name: String,
     pub fs_name: String,
     fs_name_no_tags: String,
-    fs_name_no_ext: String,
+    pub fs_name_no_ext: String,
     fs_extension: String,
     fs_path: String,
     pub fs_size_bytes: u64,
@@ -62,9 +62,9 @@ pub struct Rom {
     missing_from_fs: bool,
     merged_ra_metadata: Option<RetroAchievementsMetadata>,
     merged_screenshots: Option<Vec<String>>,
-    siblings: Vec<RomSiblings>,
+    siblings: Option<Vec<RomSiblings>>,
     rom_user: RomUser,
-    user_saves: Option<Vec<RomUserSave>>,
+    pub user_saves: Option<Vec<RomUserSave>>,
     user_states: Option<Vec<RomUserState>>,
     user_screenshots: Option<Vec<RomUserScreenshot>>,
     all_user_notes: Option<Vec<RomUserNote>>,
@@ -106,28 +106,28 @@ struct RomUserCollection {
     user_id: Option<i32>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all(serialize = "camelCase"))]
-struct RomUserSave {
-    id: u32,
+pub struct RomUserSave {
+    pub id: u32,
     rom_id: u32,
     user_id: u32,
-    file_name: String,
-    file_name_no_tags: String,
+    pub file_name: String,
+    pub file_name_no_tags: String,
     file_name_no_ext: String,
-    file_extension: String,
+    pub file_extension: String,
     file_path: String,
     file_size_bytes: u64,
     full_path: String,
     download_path: String,
     missing_from_fs: bool,
     created_at: DateTime<Utc>,
-    updated_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
     emulator: Option<String>,
     screenshot: Option<RomUserScreenshot>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all(serialize = "camelCase"))]
 struct RomUserScreenshot {
     id: u32,

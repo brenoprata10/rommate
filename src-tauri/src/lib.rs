@@ -16,6 +16,7 @@ use commands::rom::{
 use commands::user::{command_get_logged_in_user, command_get_users};
 use commands::stat::command_get_stats;
 use commands::suggestion_section::command_get_sections;
+use commands::rom_save::{command_check_save_sync, command_download_most_recent_save_file, command_upload_local_save_file};
 use tokio_util::sync::CancellationToken;
 
 mod commands;
@@ -24,6 +25,7 @@ mod models;
 mod romm;
 mod services;
 mod store;
+mod dtos;
 
 pub struct AppState {
     pub downloads: HashMap<String, CancellationToken>,
@@ -62,7 +64,10 @@ pub fn run() {
             command_restart_app,
             command_play_retroarch_game,
             command_get_stats,
-            command_get_sections
+            command_get_sections,
+            command_check_save_sync,
+            command_download_most_recent_save_file,
+            command_upload_local_save_file
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

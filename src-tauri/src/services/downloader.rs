@@ -9,11 +9,11 @@ use std::{
 use tauri::{ipc::Channel, State};
 use tokio::{fs::File, io::AsyncWriteExt};
 use tokio_util::sync::CancellationToken;
+use tempfile::tempfile;
 
 use crate::{
-    enums::{download_event::DownloadEvent, error::Error},
-    AppState,
-};
+    AppState, enums::{download_event::DownloadEvent, error::Error}
+    };
 
 pub struct DownloaderService {}
 
@@ -31,6 +31,16 @@ impl DownloaderService {
         file.write_all(&bytes)?;
 
         Ok(())
+    }
+    
+    pub async fn temporary_file(
+        request: RequestBuilder,
+    ) -> Result<std::fs::File, Error> {
+        let mut file = tempfile()?;
+        let bytes = request.send().await?.bytes().await?;
+        file.write_all(&bytes)?;
+    
+        Ok(file)
     }
 
     pub async fn with_stream(
@@ -126,10 +136,66 @@ impl DownloaderService {
         }?;
 
         Ok(format!(
-            "{}/Rommate/roms",
+            "{}/Rommate",
             home_dir_path
                 .to_str()
                 .expect("Failed to parse home dir to string.")
+        ))
+    }
+    
+    pub fn get_config_path() -> Result<String, Error> {
+        let download_path = Self::get_download_path()?;
+    
+        Ok(format!(
+            "{}/config",
+            download_path
+        ))
+    }
+    
+    pub fn get_saves_download_path() -> Result<String, Error> {
+        let download_path = Self::get_download_path()?;
+    
+        Ok(format!(
+            "{}/saves",
+            download_path
+        ))
+    }
+    
+    pub fn get_rom_save_dir(platform_fs_slug: &str) -> Result<String, Error> {
+        Ok(
+            format!(
+                "{}/{}", 
+                DownloaderService::get_saves_download_path()?,
+                platform_fs_slug,
+            )
+        )
+    }
+    
+    pub fn get_state_download_path() -> Result<String, Error> {
+        let download_path = Self::get_download_path()?;
+    
+        Ok(format!(
+            "{}/states",
+            download_path
+        ))
+    }
+    
+    pub fn get_rom_state_dir(platform_fs_slug: &str) -> Result<String, Error> {
+        Ok(
+            format!(
+                "{}/{}", 
+                DownloaderService::get_state_download_path()?,
+                platform_fs_slug,
+            )
+        )
+    }
+    
+    pub fn get_roms_download_path() -> Result<String, Error> {
+        let download_path = Self::get_download_path()?;
+    
+        Ok(format!(
+            "{}/roms",
+            download_path
         ))
     }
 

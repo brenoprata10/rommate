@@ -17,7 +17,7 @@ export default function RomDetail() {
 	const params = useParams()
 	const {data: user} = useLoggedInUser()
 	const romId = Number(params.id)
-	const {data: rom, isLoading: isLoadingRom} = useRom({id: romId})
+	const {data: rom, isLoading: isLoadingRom, refetch: refetchRomData} = useRom({id: romId})
 	const notes = rom?.allUserNotes?.filter((note) => note.userId === user?.id)
 
 	// Score
@@ -40,7 +40,7 @@ export default function RomDetail() {
 				<div className='flex justify-between items-end'>
 					<div className='z-10 py-12 gap-9 flex flex-col'>
 						<Heading variant={'h1'}>{rom?.name}</Heading>
-						<ContinuePlayingRom rom={rom} hideTitle />
+						<ContinuePlayingRom rom={rom} hideTitle onUpdateRom={refetchRomData} />
 					</div>
 					<RomCarousel className='max-xl:hidden' images={rom?.mergedScreenshots ?? []} />
 				</div>
