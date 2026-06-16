@@ -1,6 +1,4 @@
 use std::path::PathBuf;
-use std::{os::unix::fs::MetadataExt};
-
 use std::fs::File;
 use std::io::Read;
 use reqwest::multipart;
@@ -135,11 +133,11 @@ impl RomSaveService {
 			kind: SaveSyncKind::Conflict { 
 				cloud_file: FileConflictInfo {
 					creation_date: latest_save.updated_at,
-					length: uploaded_save_metadata.size()
+					length: uploaded_save_metadata.len()
 				}, 
 				local_file: FileConflictInfo {
 					creation_date: local_file_metadata.created()?.into(),
-					length: local_file_metadata.size()
+					length: local_file_metadata.len()
 				}
 			}
 		})

@@ -1,4 +1,4 @@
-use reqwest::{self, Method, RequestBuilder, multipart::Form};
+use reqwest::{self, RequestBuilder, multipart::Form};
 use tauri::AppHandle;
 
 use crate::{enums::error::Error, store::get_store_value};
