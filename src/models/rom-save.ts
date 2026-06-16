@@ -1,4 +1,4 @@
-type FileConflictInfo = {
+export type FileConflictInfo = {
 	creationDate: string
 	length: number
 }

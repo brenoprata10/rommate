@@ -62,7 +62,7 @@ pub struct Rom {
     missing_from_fs: bool,
     merged_ra_metadata: Option<RetroAchievementsMetadata>,
     merged_screenshots: Option<Vec<String>>,
-    siblings: Vec<RomSiblings>,
+    siblings: Option<Vec<RomSiblings>>,
     rom_user: RomUser,
     pub user_saves: Option<Vec<RomUserSave>>,
     user_states: Option<Vec<RomUserState>>,

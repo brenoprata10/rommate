@@ -12,7 +12,9 @@ pub struct FileConflictInfo {
 #[serde(tag = "kind", rename_all = "camelCase")]
 pub enum SaveSyncKind {
 	Conflict {
+		#[serde(rename = "cloudFile")]
 		cloud_file: FileConflictInfo,
+		#[serde(rename = "localFile")]
 		local_file: FileConflictInfo,
 	},
 	Synced,

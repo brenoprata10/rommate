@@ -2,6 +2,7 @@ import {SaveSync, SaveSyncKind} from '@/models/rom-save'
 import {CircleCheckIcon, CircleXIcon, CloudDownloadIcon, LoaderIcon} from 'lucide-react'
 import {Popover, PopoverTrigger, PopoverContent} from '@/components/ui/popover'
 import {Tooltip, TooltipContent, TooltipTrigger} from '@/components/ui/tooltip'
+import SaveSyncCard from './save-sync-card'
 
 const SAVE_SYNC_LABEL_CONFIG: Record<SaveSyncKind, string | null> = {
 	[SaveSyncKind.CONFLICT]: 'Local and cloud saves don’t match.\nClick to choose a version.',
@@ -23,6 +24,8 @@ export default function SaveSyncActions({
 		return null
 	}
 
+	console.log(saveSync)
+
 	if (saveSync.kind === SaveSyncKind.CONFLICT) {
 		return (
 			<Tooltip>
@@ -39,6 +42,10 @@ export default function SaveSyncActions({
 								<p className='text-sm text-muted-foreground'>
 									Your local and cloud saves don't match. Select the version you'd like to use:
 								</p>
+							</div>
+							<div className='overflow-hidden flex gap-3 flex-col items-center'>
+								<SaveSyncCard data={saveSync.cloudFile} type='cloud' />
+								<SaveSyncCard data={saveSync.localFile} type='local' />
 							</div>
 						</div>
 					</PopoverContent>

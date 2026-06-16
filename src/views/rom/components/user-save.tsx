@@ -4,7 +4,7 @@ import {RomUserSave} from '@/models/rom'
 import bytes from 'bytes'
 import {motion} from 'motion/react'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import {formatDistanceToNow} from 'date-fns'
+import {getFormattedDistanceDate} from '@/utils/date'
 
 const BADGE_CLASSNAME = 'bg-neutral-700 text-neutral-200 text-xs font-medium'
 
@@ -13,10 +13,7 @@ const DEFAULT_ROMM_LOGO = '/romm_logo.jpg'
 function UserSave({data}: {data: RomUserSave}) {
 	const {data: screenshotUrl} = useAsset(data.screenshot?.downloadPath)
 	const [imageURL, setImageURL] = useState<string | null>(null)
-	const lastPlayedDate = useMemo(
-		() => formatDistanceToNow(data.updatedAt, {addSuffix: true}).replace('about', ''),
-		[data.updatedAt]
-	)
+	const lastPlayedDate = useMemo(() => getFormattedDistanceDate(data.updatedAt), [data.updatedAt])
 
 	useEffect(() => {
 		if (screenshotUrl) {

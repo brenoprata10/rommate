@@ -134,7 +134,7 @@ impl RomSaveService {
 		Ok(SaveSync {
 			kind: SaveSyncKind::Conflict { 
 				cloud_file: FileConflictInfo {
-					creation_date: uploaded_save_metadata.created()?.into(),
+					creation_date: latest_save.updated_at,
 					length: uploaded_save_metadata.size()
 				}, 
 				local_file: FileConflictInfo {
