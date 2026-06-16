@@ -12,6 +12,7 @@ import About from './components/about'
 import Score from './components/score'
 import Achievements from './components/achievements'
 import RomCollections from './components/collections'
+import {useCallback} from 'react'
 
 export default function RomDetail() {
 	const params = useParams()
@@ -25,6 +26,10 @@ export default function RomDetail() {
 	const ssScore = rom?.ssMetadata?.ssScore
 	const launchboxScore = rom?.launchboxMetadata?.communityRating
 	const hideScore = (!igdbScore || igdbScore === '0.0') && !ssScore && !launchboxScore
+
+	const handleUpdateRom = useCallback(async () => {
+		await refetchRomData()
+	}, [refetchRomData])
 
 	if (!rom || isLoadingRom) {
 		return null
@@ -40,7 +45,7 @@ export default function RomDetail() {
 				<div className='flex justify-between items-end'>
 					<div className='z-10 py-12 gap-9 flex flex-col'>
 						<Heading variant={'h1'}>{rom?.name}</Heading>
-						<ContinuePlayingRom rom={rom} hideTitle onUpdateRom={refetchRomData} />
+						<ContinuePlayingRom rom={rom} hideTitle onUpdateRom={handleUpdateRom} />
 					</div>
 					<RomCarousel className='max-xl:hidden' images={rom?.mergedScreenshots ?? []} />
 				</div>

@@ -15,7 +15,7 @@ import {isFileDownloaded, openDownloadDirectory} from '@/utils/http/file'
 import {playRetroarch} from '@/utils/http/retroarch'
 import {coreConfig, isPlatformEmulationReady, runnerConfig} from '@/utils/retroarch'
 import useCheckSaveSync from '@/hooks/api/use-rom-check-save-sync'
-import {SaveSync, SaveSyncKind} from '@/models/rom-save'
+import {SaveSyncKind} from '@/models/rom-save'
 import useDownloadMostRecentSaveFile from '@/hooks/api/use-rom-download-most-recent-save-file'
 import SaveSyncActions from '@/views/home/components/save-sync-actions'
 import useUploadLocalSaveFile from '@/hooks/api/use-rom-upload-local-save-file'
@@ -29,7 +29,7 @@ function ContinuePlayingRom({
 	rom: Rom
 	className?: string
 	hideTitle?: boolean
-	onUpdateRom: () => Promise<void>
+	onUpdateRom?: () => Promise<void>
 }) {
 	const romURL = `/rom/${rom.id}`
 	const isEmulationReady = isPlatformEmulationReady(rom.platformFsSlug)
@@ -71,7 +71,7 @@ function ContinuePlayingRom({
 			platformPath: rom.platformFsSlug
 		})
 		refetchSaveSyncData()
-		onUpdateRom()
+		onUpdateRom?.()
 	}, [rom.platformFsSlug, rom.fsName, rom.id, saveSyncData, romCore, refetchSaveSyncData, onUpdateRom])
 
 	const checkFileDownloaded = useCallback(async () => {
@@ -117,13 +117,13 @@ function ContinuePlayingRom({
 	const onDownloadCloudFile = useCallback(async () => {
 		await downloadMostRecentSaveFile()
 		await refetchSaveSyncData()
-		onUpdateRom()
+		onUpdateRom?.()
 	}, [downloadMostRecentSaveFile, refetchSaveSyncData, onUpdateRom])
 
 	const onUploadLocalFile = useCallback(async () => {
 		await uploadLocalSaveFile()
 		await refetchSaveSyncData()
-		onUpdateRom()
+		onUpdateRom?.()
 	}, [refetchSaveSyncData, uploadLocalSaveFile, onUpdateRom])
 
 	const getCtaButton = useCallback(() => {
@@ -251,10 +251,6 @@ const RomDetails = ({title, content}: {title: string; content: ReactNode | strin
 			<span className='text-neutral-400 font-medium'>{content}</span>
 		</div>
 	)
-}
-
-const SaveSyncIcon = ({data, isLoading, onClick}: {data: SaveSync; isLoading?: boolean; onClick?: () => void}) => {
-	return SAVE_SYNC_ICON_CONFIG[data.kind]({onClick, isLoading})
 }
 
 export default React.memo(ContinuePlayingRom)
