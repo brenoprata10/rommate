@@ -132,7 +132,7 @@ function ContinuePlayingRom({
 
 		if (isReadyToPlay) {
 			return (
-				<CtaButton onClick={play}>
+				<CtaButton disabled={saveSyncData?.kind === SaveSyncKind.CONFLICT} onClick={play}>
 					<Play /> Play
 				</CtaButton>
 			)
@@ -149,7 +149,7 @@ function ContinuePlayingRom({
 				<PlayIcon /> {isEmulationReady ? 'Install' : 'Download'}
 			</CtaButton>
 		)
-	}, [isDownloaded, openFolderPath, play, startRomDownload, isEmulationReady])
+	}, [isDownloaded, openFolderPath, play, startRomDownload, isEmulationReady, saveSyncData])
 
 	return (
 		<div className={clsx(['grid grid-cols-[14.8rem_16.812rem] max-w-[31.688rem] w-full', className])}>
@@ -217,9 +217,18 @@ function ContinuePlayingRom({
 	)
 }
 
-const CtaButton = ({onClick, children}: {onClick: () => void; children: React.ReactNode}) => {
+const CtaButton = ({
+	disabled,
+	onClick,
+	children
+}: {
+	disabled?: boolean
+	onClick: () => void
+	children: React.ReactNode
+}) => {
 	return (
 		<Button
+			disabled={disabled}
 			onClick={onClick}
 			className={`
 				bg-neutral-900
