@@ -226,25 +226,25 @@ impl RetroarchService {
         Ok(())
     }
     
-    pub async fn upload_local_save_file(&self, app_handle: &AppHandle) -> Result<(), Error> {
-        let rom = RomService::get_rom_by_id(app_handle, self.rom_id).await?;
+    pub async fn upload_local_save_file(app_handle: &AppHandle, rom_id: i32) -> Result<(), Error> {
+        let rom = RomService::get_rom_by_id(app_handle, rom_id).await?;
         
         let local_save_file = FileService::open_by_stem(
             &rom.fs_name_no_ext,
             ".srm",
-            &DownloaderService::get_rom_save_dir(&self.rom_platform_path)?
+            &DownloaderService::get_rom_save_dir(&rom.platform_fs_slug)?
         ).await.ok();
         
         if let Some(local_save_file) = local_save_file {
             let local_save_screenshot = FileService::open_by_stem(
                 &rom.fs_name_no_ext,
                 ".png",
-                &DownloaderService::get_rom_state_dir(&self.rom_platform_path)?
+                &DownloaderService::get_rom_state_dir(&rom.platform_fs_slug)?
             ).await.ok();
             
             RomSaveService::upload_save_file(
                 app_handle, 
-                self.rom_id, 
+                rom_id, 
                 local_save_file, 
                 local_save_screenshot,
             ).await?;
@@ -317,7 +317,7 @@ impl RetroarchService {
         );
         
         println!("Trying to upload save...");
-        self.upload_local_save_file(app_handle).await?;
+        RetroarchService::upload_local_save_file(app_handle, self.rom_id).await?;
 
         Ok(())
     }

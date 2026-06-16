@@ -14,17 +14,17 @@ const SAVE_SYNC_LABEL_CONFIG: Record<SaveSyncKind, string | null> = {
 export default function SaveSyncActions({
 	saveSync,
 	isSyncingSave,
+	onUploadLocalFile,
 	onDownloadCloudFile
 }: {
 	saveSync: SaveSync
 	isSyncingSave?: boolean
+	onUploadLocalFile: () => void
 	onDownloadCloudFile: () => void
 }) {
 	if (saveSync.kind === SaveSyncKind.MISSING_CLOUD_FILE) {
 		return null
 	}
-
-	console.log(saveSync)
 
 	if (saveSync.kind === SaveSyncKind.CONFLICT) {
 		return (
@@ -44,8 +44,8 @@ export default function SaveSyncActions({
 								</p>
 							</div>
 							<div className='overflow-hidden flex gap-3 flex-col items-center'>
-								<SaveSyncCard data={saveSync.cloudFile} type='cloud' />
-								<SaveSyncCard data={saveSync.localFile} type='local' />
+								<SaveSyncCard data={saveSync.cloudFile} type='cloud' onClick={onDownloadCloudFile} />
+								<SaveSyncCard data={saveSync.localFile} type='local' onClick={onUploadLocalFile} />
 							</div>
 						</div>
 					</PopoverContent>

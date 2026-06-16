@@ -27,7 +27,8 @@ export enum TauriCommandKey {
 	GET_SERVER_STATS = 'command_get_stats',
 	GET_SUGGESTION_SECTIONS = 'command_get_sections',
 	CHECK_SAVE_SYNC = 'command_check_save_sync',
-	DOWNLOAD_MOST_RECENT_SAVE_FILE = 'command_download_most_recent_save_file'
+	DOWNLOAD_MOST_RECENT_SAVE_FILE = 'command_download_most_recent_save_file',
+	UPLOAD_LOCAL_SAVE_FILE = 'command_upload_local_save_file'
 }
 
 export const tauriInvoke = async <T>(

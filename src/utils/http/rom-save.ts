@@ -8,3 +8,7 @@ export const checkSaveSync = async (romId: number): Promise<TauriCommandPayload<
 export const downloadMostRecentSaveFile = async (romId: number): Promise<TauriCommandPayload<SaveSync>> => {
 	return tauriInvoke(TauriCommandKey.DOWNLOAD_MOST_RECENT_SAVE_FILE, {romId})
 }
+
+export const uploadLocalSaveFile = async (romId: number): Promise<TauriCommandPayload<void>> => {
+	return tauriInvoke(TauriCommandKey.UPLOAD_LOCAL_SAVE_FILE, {romId})
+}

@@ -44,7 +44,7 @@ function UserSave({data}: {data: RomUserSave}) {
 			/>
 			<div className='font-medium text-neutral-200 px-3 py-5 flex flex-col gap-3'>
 				{data.fileName}
-				<div className='flex gap-3'>
+				<div className='flex gap-3 flex-wrap'>
 					<Badge className={BADGE_CLASSNAME}>{lastPlayedDate}</Badge>
 					<Badge className={BADGE_CLASSNAME}>{bytes(data.fileSizeBytes)}</Badge>
 				</div>

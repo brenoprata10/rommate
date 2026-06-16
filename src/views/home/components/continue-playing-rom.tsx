@@ -18,6 +18,7 @@ import useCheckSaveSync from '@/hooks/api/use-rom-check-save-sync'
 import {SaveSync, SaveSyncKind} from '@/models/rom-save'
 import useDownloadMostRecentSaveFile from '@/hooks/api/use-rom-download-most-recent-save-file'
 import SaveSyncActions from '@/views/home/components/save-sync-actions'
+import useUploadLocalSaveFile from '@/hooks/api/use-rom-upload-local-save-file'
 
 function ContinuePlayingRom({
 	rom,
@@ -43,6 +44,9 @@ function ContinuePlayingRom({
 		enabled: isEmulationReady
 	})
 	const {mutateAsync: downloadMostRecentSaveFile, isPending: isDownloadingSaveFile} = useDownloadMostRecentSaveFile({
+		romId: rom.id
+	})
+	const {mutateAsync: uploadLocalSaveFile, isPending: isUploadingLocalSaveFile} = useUploadLocalSaveFile({
 		romId: rom.id
 	})
 	const romDownload = useMemo(() => getRomDownload(rom.id), [rom.id, getRomDownload])
@@ -113,7 +117,14 @@ function ContinuePlayingRom({
 	const onDownloadCloudFile = useCallback(async () => {
 		await downloadMostRecentSaveFile()
 		await refetchSaveSyncData()
-	}, [downloadMostRecentSaveFile, refetchSaveSyncData])
+		onUpdateRom()
+	}, [downloadMostRecentSaveFile, refetchSaveSyncData, onUpdateRom])
+
+	const onUploadLocalFile = useCallback(async () => {
+		await uploadLocalSaveFile()
+		await refetchSaveSyncData()
+		onUpdateRom()
+	}, [refetchSaveSyncData, uploadLocalSaveFile, onUpdateRom])
 
 	const getCtaButton = useCallback(() => {
 		const isReadyToPlay =
@@ -164,7 +175,8 @@ function ContinuePlayingRom({
 									content={
 										<SaveSyncActions
 											saveSync={saveSyncData}
-											isSyncingSave={isDownloadingSaveFile || isRefetchingSaveSyncData}
+											isSyncingSave={isDownloadingSaveFile || isRefetchingSaveSyncData || isUploadingLocalSaveFile}
+											onUploadLocalFile={onUploadLocalFile}
 											onDownloadCloudFile={onDownloadCloudFile}
 										/>
 									}
