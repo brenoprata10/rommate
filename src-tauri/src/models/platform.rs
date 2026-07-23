@@ -26,7 +26,7 @@ pub struct Platform {
     family_slug: Option<String>,
     url: Option<String>,
     url_logo: Option<String>,
-    aspect_ratio: String,
+    aspect_ratio: Option<String>,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
     fs_size_bytes: i64,

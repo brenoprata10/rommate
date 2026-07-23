@@ -21,7 +21,7 @@ export type Platform = {
 	familySlug: string | null
 	url: string | null
 	urlLogo: string | null
-	aspectRatio: string
+	aspectRatio: string | null
 	createdAt: string
 	updatedAt: string
 	fsSizeBytes: number
