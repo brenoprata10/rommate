@@ -190,7 +190,8 @@ enum RomFileCategory {
 	MOD = 'mod',
 	DEMO = 'demo',
 	TRANSLATION = 'translation',
-	PROTOTYPE = 'prototype'
+	PROTOTYPE = 'prototype',
+	GAME = 'game'
 }
 
 export type RomFile = {

@@ -219,6 +219,7 @@ enum RomFileCategory {
     Patch,
     Update,
     Mod,
+    Game,
     Demo,
     Translation,
     Prototype,
