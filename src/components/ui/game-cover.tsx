@@ -56,6 +56,7 @@ function GameCover({
 			/>
 			{platformImageUrl && (
 				<img
+					loading='lazy'
 					src={platformImageUrl}
 					width={25}
 					height={25}

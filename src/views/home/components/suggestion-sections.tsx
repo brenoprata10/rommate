@@ -3,16 +3,10 @@ import VerifiedSection from './sections/verified-section'
 import FavoriteSection from './sections/favorite-section'
 import RetroachievementSection from './sections/retroachievement-section'
 import GameCoverSection from './sections/game-cover-section'
-import {SuggestionSection} from '@/models/suggestion_section'
+import {SuggestionSection, SuggestionSectionKind} from '@/models/suggestion_section'
 import {getPlatformImage} from '@/utils/platform-image'
 import useServerUrl from '@/hooks/use-server-url'
 import {motion} from 'motion/react'
-
-function isPlatformSection(
-	section: SuggestionSection
-): section is SuggestionSection & {kind: {platform: {slug: string; isUnidentified: boolean}}} {
-	return typeof section.kind === 'object' && 'platform' in section.kind
-}
 
 const CONFIG: Record<
 	string,
@@ -22,21 +16,21 @@ const CONFIG: Record<
 	}
 > = {
 	favorite: {
-		shouldShow: (section) => section.kind === 'favorite',
+		shouldShow: (section) => section.kind === SuggestionSectionKind.FAVORITE,
 		component: (section: SuggestionSection) => <FavoriteSection data={section} />
 	},
 	verified: {
-		shouldShow: (section) => section.kind === 'verified',
+		shouldShow: (section) => section.kind === SuggestionSectionKind.VERIFIED,
 		component: (section: SuggestionSection) => <VerifiedSection data={section} />
 	},
 	retroachievements: {
-		shouldShow: (section) => section.kind === 'retroachievements',
+		shouldShow: (section) => section.kind === SuggestionSectionKind.RETROACHIEVEMENTS,
 		component: (section: SuggestionSection) => <RetroachievementSection data={section} />
 	},
 	platform: {
-		shouldShow: (section) => isPlatformSection(section),
+		shouldShow: (section) => section.kind === SuggestionSectionKind.PLATFORM,
 		component: (section: SuggestionSection, serverUrl) => {
-			if (!isPlatformSection(section)) {
+			if (section.kind !== SuggestionSectionKind.PLATFORM) {
 				return null
 			}
 
@@ -50,9 +44,9 @@ const CONFIG: Record<
 							src={
 								serverUrl
 									? getPlatformImage({
-											slug: section.kind.platform.slug,
+											slug: section.slug,
 											serverUrl,
-											isUnidentified: section.kind.platform.isUnidentified
+											isUnidentified: section.isUnidentified
 										})
 									: undefined
 							}
@@ -64,11 +58,13 @@ const CONFIG: Record<
 	},
 	default: {
 		shouldShow: (section) =>
-			section.kind === 'collection' ||
-			section.kind === 'genre' ||
-			section.kind === 'company' ||
-			section.kind === 'playedRelated' ||
-			section.kind === 'favoriteRelated',
+			[
+				SuggestionSectionKind.COLLECTION,
+				SuggestionSectionKind.GENRE,
+				SuggestionSectionKind.COMPANY,
+				SuggestionSectionKind.PLAYED_RELATED,
+				SuggestionSectionKind.FAVORITE_RELATED
+			].includes(section.kind),
 		component: (section: SuggestionSection) => <GameCoverSection data={section} />
 	}
 }
