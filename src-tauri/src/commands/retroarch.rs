@@ -2,7 +2,7 @@ use tauri::AppHandle;
 
 use crate::{
     enums::error::Error,
-    services::retroarch::{RetroarchCore, RetroarchService, RetroarchRunner},
+    services::retroarch::{RetroarchCore, RetroarchRunner, RetroarchService},
 };
 
 #[tauri::command]
@@ -12,7 +12,7 @@ pub async fn command_play_retroarch_game(
     core: RetroarchCore,
     rom_path: String,
     rom_id: i32,
-    platform_path: String
+    platform_path: String,
 ) -> Result<(), Error> {
     let config = RetroarchService::new(runner, core, rom_path, rom_id, platform_path);
     config.play(&app_handle).await

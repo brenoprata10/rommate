@@ -1,12 +1,16 @@
-use std::fs::{File, create_dir_all};
-use std::io::{Write};
+use std::fs::{create_dir_all, File};
+use std::io::Write;
 
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 use tauri_plugin_shell::ShellExt;
 
 use crate::services::file::FileService;
-use crate::{dtos::save_sync::SaveSyncKind, enums::error::Error, services::{downloader::DownloaderService, rom::RomService, rom_save::RomSaveService}};
+use crate::{
+    dtos::save_sync::SaveSyncKind,
+    enums::error::Error,
+    services::{downloader::DownloaderService, rom::RomService, rom_save::RomSaveService},
+};
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "lowercase")]
@@ -54,16 +58,22 @@ pub struct RetroarchService {
     rom_path: String,
     rom_id: i32,
     rommate_config_path: String,
-    rom_platform_path: String
+    rom_platform_path: String,
 }
 
 impl RetroarchService {
-    pub fn new(runner: RetroarchRunner, core: RetroarchCore, rom_path: String, rom_id: i32, rom_platform_path: String) -> Self {
+    pub fn new(
+        runner: RetroarchRunner,
+        core: RetroarchCore,
+        rom_path: String,
+        rom_id: i32,
+        rom_platform_path: String,
+    ) -> Self {
         let rommate_config_path = format!(
-            "{}/rommate-config.cfg", 
+            "{}/rommate-config.cfg",
             DownloaderService::get_config_path().expect("Config path must be available")
         );
-        
+
         match runner {
             RetroarchRunner::FlatpakLinux => RetroarchService {
                 config_path: "$HOME/.var/app/org.libretro.RetroArch/config/retroarch",
@@ -199,19 +209,20 @@ impl RetroarchService {
             },
         }
     }
-    
+
     async fn create_config_file(&self) -> Result<(), Error> {
         // Create directories path if it does not exist
         create_dir_all(DownloaderService::get_config_path()?)?;
-        
+
         let mut file = File::create(&self.rommate_config_path)?;
-        
+
         let platform_path = &self.rom_platform_path;
         let save_download_path = DownloaderService::get_rom_save_dir(platform_path)?;
         let state_download_path = DownloaderService::get_rom_state_dir(platform_path)?;
-        
+
         file.write_all(
-            format!("
+            format!(
+                "
                 savefile_directory = \"{save_download_path}\"
                 savestate_directory = \"{state_download_path}\"
                 sort_savefiles_enable = \"false\"
@@ -220,55 +231,69 @@ impl RetroarchService {
                 savestate_auto_save = \"true\"
                 autosave_interval = \"0\"
                 video_screenshot_show_message = \"false\"
-            ").as_bytes()
+            "
+            )
+            .as_bytes(),
         )?;
-        
+
         Ok(())
     }
-    
+
     pub async fn upload_local_save_file(app_handle: &AppHandle, rom_id: i32) -> Result<(), Error> {
         let rom = RomService::get_rom_by_id(app_handle, rom_id).await?;
-        
+
         let local_save_file = FileService::open_by_stem(
             &rom.fs_name_no_ext,
             ".srm",
-            &DownloaderService::get_rom_save_dir(&rom.platform_fs_slug)?
-        ).await.ok();
-        
+            &DownloaderService::get_rom_save_dir(&rom.platform_fs_slug)?,
+        )
+        .await
+        .ok();
+
         if let Some(local_save_file) = local_save_file {
             let local_save_screenshot = FileService::open_by_stem(
                 &rom.fs_name_no_ext,
                 ".png",
-                &DownloaderService::get_rom_state_dir(&rom.platform_fs_slug)?
-            ).await.ok();
-            
+                &DownloaderService::get_rom_state_dir(&rom.platform_fs_slug)?,
+            )
+            .await
+            .ok();
+
             RomSaveService::upload_save_file(
-                app_handle, 
-                rom_id, 
-                local_save_file, 
+                app_handle,
+                rom_id,
+                local_save_file,
                 local_save_screenshot,
-            ).await?;
-            
+            )
+            .await?;
+
             println!("uploaded successfully");
-            
+
             return Ok(());
         }
-        
+
         println!("Could not find save file: {}", &rom.fs_name_no_ext);
         Ok(())
     }
 
     pub async fn play(&self, app_handle: &AppHandle) -> Result<(), Error> {
         self.create_config_file().await?;
-        
-        create_dir_all(DownloaderService::get_rom_save_dir(&self.rom_platform_path)?)?;
-        create_dir_all(DownloaderService::get_rom_state_dir(&self.rom_platform_path)?)?;
-        
-        match RomSaveService::check_save_sync(app_handle, self.rom_id).await?.kind {
-            SaveSyncKind::MissingLocalFile => RomSaveService::download_most_recent_save_file(app_handle, self.rom_id).await?,
-            _ => ()
+
+        create_dir_all(DownloaderService::get_rom_save_dir(
+            &self.rom_platform_path,
+        )?)?;
+        create_dir_all(DownloaderService::get_rom_state_dir(
+            &self.rom_platform_path,
+        )?)?;
+
+        if let SaveSyncKind::MissingLocalFile =
+            RomSaveService::check_save_sync(app_handle, self.rom_id)
+                .await?
+                .kind
+        {
+            RomSaveService::download_most_recent_save_file(app_handle, self.rom_id).await?
         };
-        
+
         let download_dir = DownloaderService::get_roms_download_path()?;
         let shell = app_handle.shell();
         let command = match self.runner {
@@ -315,7 +340,7 @@ impl RetroarchService {
             String::from_utf8(output.stdout),
             String::from_utf8(output.stderr)
         );
-        
+
         println!("Trying to upload save...");
         RetroarchService::upload_local_save_file(app_handle, self.rom_id).await?;
 

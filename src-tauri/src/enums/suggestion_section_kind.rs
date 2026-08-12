@@ -18,4 +18,3 @@ pub enum SuggestionSectionKind {
     },
     Retroachievements,
 }
-

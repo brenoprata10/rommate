@@ -10,4 +10,3 @@ pub struct SuggestionSection {
     #[serde(flatten)]
     pub kind: SuggestionSectionKind,
 }
-

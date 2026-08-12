@@ -1,7 +1,8 @@
 use tauri::AppHandle;
 
 use crate::{
-    enums::error::Error, models::collection::VirtualCollection, services::collection::CollectionService,
+    enums::error::Error, models::collection::VirtualCollection,
+    services::collection::CollectionService,
 };
 
 #[tauri::command]

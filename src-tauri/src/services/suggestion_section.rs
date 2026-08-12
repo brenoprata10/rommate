@@ -60,7 +60,7 @@ impl SuggestionSectionService {
         Ok(sections)
     }
 
-    pub async fn get_section(
+    /* pub async fn get_section(
         app_handle: &AppHandle,
         kind: SuggestionSectionKind,
     ) -> Result<SuggestionSection, Error> {
@@ -85,7 +85,7 @@ impl SuggestionSectionService {
         };
 
         Ok(section)
-    }
+    }*/
 
     pub async fn get_favorite_section(app_handle: &AppHandle) -> Result<SuggestionSection, Error> {
         let favorite_roms = Self::get_section_items(|pagination| {
@@ -102,7 +102,7 @@ impl SuggestionSectionService {
 
     pub async fn get_verified_section(app_handle: &AppHandle) -> Result<SuggestionSection, Error> {
         let verified_roms = Self::get_section_items(|pagination| {
-            RomService::get_verified_roms(&app_handle, pagination)
+            RomService::get_verified_roms(app_handle, pagination)
         })
         .await?;
 
@@ -130,7 +130,7 @@ impl SuggestionSectionService {
 
     pub async fn get_platform_section(app_handle: &AppHandle) -> Result<SuggestionSection, Error> {
         let platforms = PlatformService::get_platforms(app_handle).await?;
-        if platforms.len() == 0 {
+        if platforms.is_empty() {
             return Ok(SuggestionSection {
                 items: vec![],
                 title: "".to_string(),
@@ -154,7 +154,7 @@ impl SuggestionSectionService {
 
         Ok(SuggestionSection {
             items: platform_roms,
-            title: format!("{}", platform.name),
+            title: platform.name.to_string(),
             kind: SuggestionSectionKind::Platform {
                 slug: platform.slug.clone(),
                 is_unidentified: platform.is_unidentified,
@@ -166,7 +166,7 @@ impl SuggestionSectionService {
         app_handle: &AppHandle,
     ) -> Result<SuggestionSection, Error> {
         let collections = CollectionService::get_all(app_handle).await?;
-        if collections.len() == 0 {
+        if collections.is_empty() {
             return Ok(SuggestionSection {
                 items: vec![],
                 title: "".to_string(),
@@ -202,12 +202,11 @@ impl SuggestionSectionService {
         let genres = recently_added_roms
             .items
             .into_iter()
-            .map(|rom| rom.metadatum.genres)
-            .flatten();
+            .flat_map(|rom| rom.metadatum.genres);
         let genre = genres
             .choose(&mut rand::rng())
             .unwrap_or("Action".to_string());
-        let title = format!("{}", genre);
+        let title = genre.to_string();
 
         let genre_roms = Self::get_section_items(move |pagination| {
             RomService::get_roms_by_genres(app_handle, vec![genre.clone()], pagination)
@@ -226,10 +225,9 @@ impl SuggestionSectionService {
         let companies: Vec<String> = recently_added_roms
             .items
             .into_iter()
-            .map(|rom| rom.metadatum.companies)
-            .flatten()
+            .flat_map(|rom| rom.metadatum.companies)
             .collect();
-        if companies.len() == 0 {
+        if companies.is_empty() {
             return Ok(SuggestionSection {
                 items: vec![],
                 title: "".to_string(),
@@ -256,7 +254,7 @@ impl SuggestionSectionService {
         app_handle: &AppHandle,
     ) -> Result<SuggestionSection, Error> {
         let recently_played_roms = RomService::get_recently_played(app_handle).await?;
-        if recently_played_roms.items.len() == 0 {
+        if recently_played_roms.items.is_empty() {
             return Ok(SuggestionSection {
                 items: vec![],
                 title: "".to_string(),
@@ -297,7 +295,7 @@ impl SuggestionSectionService {
         })
         .await?;
 
-        if favorite_roms.len() == 0 {
+        if favorite_roms.is_empty() {
             return Ok(SuggestionSection {
                 items: vec![],
                 title: "".to_string(),
@@ -358,11 +356,9 @@ impl SuggestionSectionService {
     fn get_random_offset(total: u32) -> u32 {
         let max_offset = total.saturating_sub(Self::LIMIT);
 
-        let random_offset = {
+        {
             let mut rng = rng();
             rng.random_range(0..=max_offset)
-        };
-
-        random_offset
+        }
     }
 }

@@ -4,27 +4,27 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct FileConflictInfo {
-	pub creation_date: DateTime<Utc>,
-	pub length: u64,
+    pub creation_date: DateTime<Utc>,
+    pub length: u64,
 }
 
 #[derive(Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "camelCase")]
 pub enum SaveSyncKind {
-	Conflict {
-		#[serde(rename = "cloudFile")]
-		cloud_file: FileConflictInfo,
-		#[serde(rename = "localFile")]
-		local_file: FileConflictInfo,
-	},
-	Synced,
-	MissingLocalFile,
-	MissingCloudFile	
+    Conflict {
+        #[serde(rename = "cloudFile")]
+        cloud_file: FileConflictInfo,
+        #[serde(rename = "localFile")]
+        local_file: FileConflictInfo,
+    },
+    Synced,
+    MissingLocalFile,
+    MissingCloudFile,
 }
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SaveSync {
-	#[serde(flatten)]
-	pub kind: SaveSyncKind,
+    #[serde(flatten)]
+    pub kind: SaveSyncKind,
 }

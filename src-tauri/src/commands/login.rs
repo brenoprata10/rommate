@@ -37,17 +37,19 @@ pub async fn login(app_handle: AppHandle, payload: LoginPayload) -> Result<(), E
                     session = Some(cookie.value().to_string());
                 }
             }
-            
+
             let heartbeat_response = client
                 .get(format!("{}/api/heartbeat", server_url))
                 .header(
                     "Cookie",
-                    format!("romm_session={}", session.ok_or(Error::InvalidCredentials())?)
+                    format!(
+                        "romm_session={}",
+                        session.ok_or(Error::InvalidCredentials())?
+                    ),
                 )
                 .send()
                 .await?;
-                
-            
+
             for cookie in heartbeat_response.cookies() {
                 if cookie.name() == "romm_csrftoken" {
                     set_store_value(&app_handle, "romm_csrftoken", json!(cookie.value()))?;

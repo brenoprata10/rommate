@@ -75,10 +75,10 @@ impl VirtualCollection {
             r#type: Some("user-collection".to_string()),
         }
     }
-    
+
     pub fn kind(&self) -> RomCollection {
         match (self.is_virtual, self.is_smart) {
-            (true, _) => RomCollection::Virtual, 
+            (true, _) => RomCollection::Virtual,
             (_, true) => RomCollection::Smart,
             _ => RomCollection::Default,
         }
