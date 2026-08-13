@@ -4,10 +4,10 @@
   "version": "0.2.1",
   "identifier": "com.brenoprata.rommate",
   "build": {
-    "beforeDevCommand": "npm run dev",
-    "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "npm run build",
-    "frontendDist": "../dist"
+    "beforeDevCommand": "npm run dev --prefix ./romm/frontend",
+    "devUrl": "http://localhost:3000",
+    "beforeBuildCommand": "npm run build --prefix ./romm/frontend",
+    "frontendDist": "../romm/frontend/dist"
   },
   "app": {
     "windows": [
@@ -15,7 +15,9 @@
         "title": "Rommate",
         "fullscreen": false,
         "width": 1920,
-        "height": 1080
+        "height": 1080,
+	"label": "main",
+	"url": "pages/home.html"
       }
     ],
     "security": {
