@@ -1,4 +1,4 @@
 [submodule "romm"]
 	path = romm
-	url = https://github.com/rommapp/romm.git
+	url = https://github.com/brenoprata10/romm
 	branch = master
