@@ -3,7 +3,7 @@ use axum::{
     extract::{Path, State},
     http::{header, HeaderMap, Method, StatusCode},
     response::IntoResponse,
-    routing::{any, post},
+    routing::{any, get, post},
     Router,
 };
 
@@ -68,6 +68,10 @@ async fn set_target(
     (StatusCode::OK, "ok")
 }
 
+async fn get_target(State(state): State<ProxyAppState>) -> impl IntoResponse {
+    (StatusCode::OK, state.target.read().await.clone())
+}
+
 async fn proxy(
     State(state): State<ProxyAppState>,
     method: Method,
@@ -82,9 +86,6 @@ async fn proxy(
         url.push('?');
         url.push_str(&q);
     }
-
-    // Optional tiny log
-    println!("→ {} {}", method, url);
 
     // Rewrite Origin/Referer to upstream (avoids CSRF 403s on many backends)
     let base_u = Url::parse(&base).ok();
@@ -187,7 +188,7 @@ async fn proxy(
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let proxy_state = ProxyAppState {
-        target: Arc::new(RwLock::new("http://home:8081".to_string())),
+        target: Arc::new(RwLock::new("".to_string())),
         client: reqwest::Client::new(),
     };
 
@@ -195,7 +196,8 @@ pub fn run() {
         .setup(|_app| {
             tauri::async_runtime::spawn(async {
                 let proxy_app = Router::new()
-                    .route("/set-target", post(set_target))
+                    .route("/api/target", post(set_target))
+                    .route("/api/target", get(get_target))
                     .route("/{*rest}", any(proxy))
                     .with_state(proxy_state);
 
